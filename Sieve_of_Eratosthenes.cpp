@@ -23,7 +23,7 @@ void initialize(int max_number){
 
 void strike_numbers(int prime_number){
     for (int index = 0; index < sieve.size(); ++index){
-        // cout << "\nIndex: " << index << " of the element " << sieve[index] << "\n";
+        cout << "\nIndex: " << index << " of the element " << sieve[index] << "\n";
         if (sieve[index] % prime_number == 0){
             // cout << "Erasing number " << sieve[index] << " with index " << index << " from the array.\n";
             sieve.erase(sieve.begin() + index);
