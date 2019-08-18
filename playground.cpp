@@ -1,55 +1,30 @@
 #include "std_lib_facilities.h"
-#include <unistd.h>
 
-unsigned int microseconds = 100000;
-
-vector <int> sieve = {};
 vector <int> primes = {};
 
-void show_sieve_isides(){
-    cout << "\nSieve vector now contains:\n";
-    for (int x: sieve){
-        cout << x << ", ";
-    }
-    cout << "\n";   
-}
-
-void initialize(int max_number){
-    for (int i = 2; i <= max_number; ++i){
-        sieve.push_back(i);
-    }
-    show_sieve_isides();
-}
-
-void strike_numbers(int prime_number){
-    for (int index = 0; index < sieve.size(); ++index){
-        // cout << "\nIndex: " << index << " of the element " << sieve[index] << "\n";
-        if (sieve[index] % prime_number == 0){
-            // cout << "Erasing number " << sieve[index] << " with index " << index << " from the array.\n";
-            sieve.erase(sieve.begin() + index);
+bool is_prime(int prime_number){
+    for (int index = 2; index < prime_number; ++index){
+        if (prime_number % index == 0 && prime_number > 2)
+            return false; 
         }
+    return true;
     }
-    primes.push_back(prime_number);
-    cout << "Prime number used: "<< prime_number << "\n";
-    usleep(microseconds);
-    show_sieve_isides();
-}
 
 int main() {
-    int max = 0;
-    int first_prime = 2;
-    cout << "Chose and write maximum number to search primes in.\n";
-    cin >> max;
-    initialize(max);
+    int user_input = 1;
+    int starting_prime = 2;
 
-    while (sieve.size() > 0){
-        strike_numbers(first_prime);
-        if (sieve.size() > 0)
-            first_prime = sieve[0];
-        else
-            break;
+    cout << "Chose and write number of primes you want to see.\n";
+    cin >> user_input;
+
+    while (primes.size() < user_input){
+        if (is_prime(starting_prime)){
+            primes.push_back(starting_prime);
+        }
+        ++starting_prime;
     }
-    cout << "List of primes from 0 to "<< max << "\n"; 
+    cout << "List of "<< user_input << " primes.\n"; 
     for (int x: primes)
         cout << x << ", "; 
+    cout << "\n";    
 }       
