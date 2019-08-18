@@ -5,3 +5,5 @@ hw.out
 .vscode/settings.json
 .vscode/tasks.json
 std_lib_facilities.out
+githubkey.pub
+githubkey
