@@ -1,31 +1,23 @@
+// Find mode (the number that appears most) in the array
 #include "std_lib_facilities.h"
+#include <stdlib.h>
 
-vector <int> primes = {};
+vector <int> numbers = {};
 
-bool is_prime(int prime_number){
-    for (int index = 2; index < prime_number; ++index){
-        if (prime_number % index == 0 && prime_number > 2)
-            return false; 
-        }
-    return true;
-    }
+void initialize(int max, int step){
+	for (int index = 0; index < max; ++index) {
+		int randint = rand() % step + 1;
+		numbers.push_back(randint);
+	}
+}
 
 int main() {
-    int user_input = 1;
-    int starting_prime = 2;
+    int max_numbers = 100;
+    int number_cap = 10;
+	initialize(max_numbers, number_cap);
+	cout << "test initialize:\n";
+	for (int x : numbers) {
+		cout << x << "\t";
+	}
 
-    cout << "Chose and write number of primes you want to see.\n";
-    cin >> user_input;
-
-    while (primes.size() < user_input){
-        if (is_prime(starting_prime)){
-            primes.push_back(starting_prime);
-        }
-        ++starting_prime;
-    }
-    cout << "List of "<< user_input << " primes.\n"; 
-    for (int x: primes)
-        cout << x << ", "; 
-    cout << "\n";    
 }       
-// office test commit
