@@ -1,25 +1,73 @@
-// Quadratic equations solver
+// Vectors and names
 #include "std_lib_facilities.h"
 
+vector <int> scores = {};
+vector <string> names = {};
+
+bool is_unique(string input) {
+	for (string name : names) {
+		if (name == input) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void list_score(string input) {
+	bool found = false;
+	for (int index = 0; index < names.size(); ++index) {
+		if (names[index] == input) {
+			cout << names[index] << " has score of " << scores[index] << "\n";
+			found = true;
+			break;
+		}
+	}
+	if (found == false) {
+		cout << "Name not found.\n";
+	}
+}
+
+void list_names(int input) {
+	bool found = false;
+	for (int index= 0; index< scores.size(); ++index) {
+		if (scores[index] == input) {
+			cout << names[index] << " has the same score of " << scores[index] << "\n";
+			found = true;
+		}
+	}
+	if (found == false) {
+		cout << "Score not found.\n";
+	}
+}
+
+void list_all() {
+	for (int index = 0; index < scores.size(); ++index) {
+		cout << names[index] << " had scored " << scores[index] << " points.\n";
+	}
+}
+
 int main() {
-	cout << "Quadratic equation is equation with the form ax2 + bx + c = 0, and a is not zero.\n";
-	cout << "Please write a, b and c separated with whitespace.\n";
-	double a = 1;
-	double b = 0;
-	double c = 0;
-	cin >> a >> b >> c;
-	double discriminant = b * b - a * c;
-	
-	if (a == 0) {
-		cout << "a can't be equal to zero!\n";
-	}
-	else if (discriminant > 0) {
-		double x1 = (b * -1 + sqrt(discriminant)) / 2 * a;
-		double x2 = (b * -1 - sqrt(discriminant)) / 2 * a;
-		cout << "Equation has two roots: " << x1 << " and " << x2 << "\n";
-	}
-	else if (discriminant == 0) {
-		int x = (b * -1) / 2 * a;
-		cout << "Equation has one root: " << x << "\n";
+	int score = 0;
+	string name = "";
+	cout << "Hello. Please enter set of name and score pairs (like <Joe 17>)\n";
+	cout << "To terminate, enter <NoName 0>\n";
+	cout << "To show scores assosciated with name, enter <Name -1>\n";
+	cout << "To list all names having the same score n, enter <List n>\n";
+	while (true) {
+		cin >> name >> score;
+		if (name == "NoName" && score == 0) {
+			list_all();
+			break;
+		}
+		else if (score == -1)
+			list_score(name);
+		else if (name == "List")
+			list_names(score);
+		else if (is_unique(name) == false)
+			cout << "Name is already present\n";
+		else {
+			names.push_back(name);
+			scores.push_back(score);
+		}
 	}
 }       
