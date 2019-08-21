@@ -1,6 +1,6 @@
+
 .vscode/launch.json
 .vscode/settings.json
 .vscode/tasks.json
-std_lib_facilities.out
-playground.out
 /.vs
+/out/build/x64-Debug
