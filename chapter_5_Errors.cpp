@@ -1,4 +1,5 @@
 // Chapter 5 excercise 2 3 4 5 6
+// ubuntu home cmake conf 
 #include "std_lib_facilities.h"
 
 const double kelvin = -273.15;
