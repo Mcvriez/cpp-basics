@@ -1,28 +1,47 @@
-// Chapter 5 excercise 7 quadratic equation p2 (this time it works)
-// back to office
+// Chapter 5 excercise 8 sum of ints
 #include "std_lib_facilities.h"
 
 int main() {
-	cout << "Quadratic equation is equation with the form ax2 + bx + c = 0, and a is not zero.\n";
-	while (true) {
-		cout << "\nPlease write a, b and c separated with whitespace.\n";
-		double a = 1;
-		double b = 0;
-		double c = 0;
-		cin >> a >> b >> c;
-		double discriminant = b * b - 4 * a * c;
-		cout << "discriminant of the equation is " << discriminant << "\n";
-		if (a == 0) {
-			cout << "a can't be equal to zero!\n";
+	cout << "Sum of first N integers\n";
+	try {
+		int number = 0;
+		int read = 0;
+		int sum = 0;
+		vector <int> values = {};
+
+		cout << "Please enter number (positive and integer) of values you want to sum:\n";
+		cin >> number;
+		if (number < 1) {
+			cout << "Number should be positive.\n";
+			return 0;
 		}
-		else if (discriminant > 0) {
-			double x1 = (b * -1 + sqrt(discriminant)) / (2 * a);
-			double x2 = (b * -1 - sqrt(discriminant)) / (2 * a);
-			cout << "Equation has two roots: " << x1 << " and " << x2 << "\n";
-		}
-		else if (discriminant == 0) {
-			double x = (b * -1) / 2 * a;
-			cout << "Equation has one root: " << x << "\n";
+		else {
+			cout << "Please enter some integers (press any character to stop):\n";
+			while (cin >> read) {
+				values.push_back(read);
+			}
+			if (values.size() < number) {
+				cout << "Number of values should be less than array of values.\n";
+				return 0;
+			}
+			else {
+				for (int index = 0; index < number; ++index) {
+					sum += values[index];
+				}
+				cout << "The sum of first " << number << " elements is: " << sum << "\n";
+				return 0;
+			}
 		}
 	}
+	catch (exception& e) {
+		cerr << "Error: " << e.what() << endl;
+		keep_window_open();
+		return 1;
+	}
+	catch (...) {
+		cerr << "Unknown exception!\n";
+		keep_window_open();
+		return 2;
+	}
+
 }
