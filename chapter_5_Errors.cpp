@@ -1,63 +1,28 @@
-// Chapter 5 excercise 2 3 4 5 6
-// ubuntu home cmake conf 
+// Chapter 5 excercise 7 quadratic equation p2 (this time it works)
+// back to office
 #include "std_lib_facilities.h"
 
-const double kelvin = -273.15;
-const double fahrenheit = -459.67;
-const string error_message = "Invalid input\n";
-
-double ctok(double c)
-{	
-	double k = c - kelvin;
-	return k;
-}
-
-double ktoc (double k)
-{
-	double c = k + kelvin;
-	return c;
-}
-
-double ftoc(double f)
-{
-	double c = (f - 32) * 5 / 9;
-	return c;
-}
-
-double ctof(double c)
-{
-	double f = c * 9 / 5 + 32;
-	return f;
-}
-
-int main(){
-	cout << "Please enter degree and scale system (c for Celcius, k for Kelvin, f for Fahrenheit\n";
+int main() {
+	cout << "Quadratic equation is equation with the form ax2 + bx + c = 0, and a is not zero.\n";
 	while (true) {
-		double degree = 0;
-		char system = 'c';
-		cin >> degree >> system;
-		if (system != 'c' && system != 'k' && system != 'f') {
-			cout << error_message;
-			//error(error_message);
+		cout << "\nPlease write a, b and c separated with whitespace.\n";
+		double a = 1;
+		double b = 0;
+		double c = 0;
+		cin >> a >> b >> c;
+		double discriminant = b * b - 4 * a * c;
+		cout << "discriminant of the equation is " << discriminant << "\n";
+		if (a == 0) {
+			cout << "a can't be equal to zero!\n";
 		}
-		else if (system == 'c' && degree >= kelvin) {
-			double k = ctok(degree);
-			double f = ctof(degree);
-			cout << degree << " degrees in Celcius are equal to " << k << " Kelvin and " << f << " Fahrenheit\n";
+		else if (discriminant > 0) {
+			double x1 = (b * -1 + sqrt(discriminant)) / (2 * a);
+			double x2 = (b * -1 - sqrt(discriminant)) / (2 * a);
+			cout << "Equation has two roots: " << x1 << " and " << x2 << "\n";
 		}
-		else if (system == 'k' && degree >= 0) {
-			double c = ktoc(degree);
-			double f = ctof(c);
-			cout << degree << " degrees in Kelvin are equal to " << c << " Celcius and " << f << " Fahrenheit\n";
-		}
-		else if (system == 'f' && degree >= fahrenheit) {
-			double c = ftoc(degree);
-			double k = ctok(c);
-			cout << degree << " degrees in Fahrenheit are equal to " << c << " Celcius and " << k << " Kelvin\n";
-		}
-		else {
-			cout << error_message;
-			//error(error_message);
+		else if (discriminant == 0) {
+			double x = (b * -1) / 2 * a;
+			cout << "Equation has one root: " << x << "\n";
 		}
 	}
 }
