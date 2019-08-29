@@ -1,73 +1,63 @@
-// Chapter 5 excercise 12/13 Bulls and cows
+// Chapter 5 excercise 14
+
 #include "std_lib_facilities.h"
+vector <int> monday;
+vector <int> tuesday;
+vector <int> wednesday;
+vector <int> thursday;
+vector <int> friday;
+vector <int> saturday;
+vector <int> sunday;
+int rejected = 0;
 
-vector <int> game(4);
 
-bool is_unique(int test, int pos) {
-	for (int i = 0; i < pos; ++i) {
-		if (test == game[i]) return false;
-	}
-	return true;
+void app_exit() {
+	cout << "Program statistics:\n";
+	int sum = 0; cout << "monday:\n";
+	for (int x : monday) { sum += x; cout << x << ","; }
+	cout << "\nSum: "<< sum << "\n"; sum = 0; cout << "tuesday:\n";
+	for (int x : tuesday) { sum += x; cout << x << ","; }
+	cout << "\nSum: " << sum << "\n"; sum = 0; cout << "wednesday:\n";
+	for (int x : wednesday) { sum += x; cout << x << ","; }
+	cout << "\nSum: " << sum << "\n"; sum = 0; cout << "thursday:\n";
+	for (int x : thursday) { sum += x; cout << x << ","; }
+	cout << "\nSum: " << sum << "\n"; sum = 0; cout << "friday:\n";
+	for (int x : friday) { sum += x; cout << x << ","; }
+	cout << "\nSum: " << sum << "\n"; sum = 0; cout << "saturday:\n";
+	for (int x : saturday) { sum += x; cout << x << ","; }
+	cout << "\nSum: " << sum << "\n"; sum = 0; cout << "sunday:\n";
+	for (int x : sunday) { sum += x; cout << x << ","; }
+	cout << "\nSum: " << sum << "\n";
+	cout << "\nTotal rejects is: " << rejected << "\n";
+
 }
 
-void initialize() {
-	int seed = 0;
-	cout << "Enter int number that will be used as a seed:\n";
-	cin >> seed;
-	if (!cin) { error("Wrong input\n"); }
-	cout << "calling srand(" << seed << ")\n";
-	srand(seed); //doesn't work, I don't know why, each time same sequence
-	for (int i = 0; i < 4; ++i) {
-		game[i] = randint(9);
-		while(!is_unique(game[i], i))
-			game[i] = randint(9);
+int user_input(){
+	string weekday = "";
+	int value = 0;
+	cout << "Enter day of the week and number or stop 0 to stop and see the stats\n";
+	cin >> weekday >> value;
+	if (!cin) error("Invalid input!\n");
+	if (weekday == "stop" && value == 0) return 0;
+	else if (weekday == "Monday" || weekday == "monday" || weekday == "mon" || weekday == "Mon") monday.push_back(value);
+	else if (weekday == "Tuesday" || weekday == "tuesday" || weekday == "tue" || weekday == "Tue") tuesday.push_back(value);
+	else if (weekday == "Wednesday" || weekday == "wednesday" || weekday == "wed" || weekday == "Wed") wednesday.push_back(value);
+	else if (weekday == "Thursday" || weekday == "thursday" || weekday == "thu" || weekday == "Thu") thursday.push_back(value);
+	else if (weekday == "Friday" || weekday == "friday" || weekday == "fri" || weekday == "Fri") friday.push_back(value);
+	else if (weekday == "Saturday" || weekday == "saturday" || weekday == "sat" || weekday == "Sat") saturday.push_back(value);
+	else if (weekday == "Sunday" || weekday == "sunday" || weekday == "sun" || weekday == "Sun") sunday.push_back(value);
+	else {
+		cout << weekday << " " << value << " was rejected\n";
+		++rejected;
 	}
-}
-
-void print_game() {
-	cout << "Game contains:\n";
-	for (int x : game) cout << x;
-	cout << "\n";
-}
-
-int play() {
-	int guess = 0;
-	int bull = 0;
-	int cow = 0;
-
-	cout << "\nEnter your guess. (Four numbers from 0 to 9):\n";
-	cin >> guess;
-	if (!cin) error("Wrong input\n");
-	int x0 = guess / 1000; 
-	guess -= x0 * 1000;
-	int x1 = guess / 100;
-	guess -= x1 * 100;
-	int x2 = guess / 10;
-	int x3 = guess -= x2 * 10;
-	vector <int> vguess = { x0, x1, x2, x3 };
-	cout << "Your guess is: " << x0 << x1 << x2 << x3 << "\n";
-	for (int i = 0; i < 4; ++i) {
-		if (vguess[i] == game[i]) ++bull;
-		for (int j = 0; j < 4; ++j) {
-			if (vguess[j] == game[i] && i != j) {
-				++cow;
-			}
-		}
-	}
-	if (bull == 4) {
-		cout << "You won!\n";
-		return 0;
-	}
-	cout << "You have " << bull << " bulls and " << cow << " cows\n";
+	return 1;
 }
 
 int main() {
-	initialize();
-	print_game();
 	while (true) {
-		if (play() == 0) {
-			initialize();
-			print_game();
+		if (user_input() == 0) {
+			app_exit(); break;
 		}
 	}
+	return 0;
 }
