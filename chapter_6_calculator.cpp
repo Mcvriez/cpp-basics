@@ -49,7 +49,7 @@ Token Token_stream::get()
 	switch (ch) {
 	case '=':    // for "print"
 	case 'x':    // for "quit"
-	case '(': case ')': case '+': case '-': case '*': case '/': case '{': case '}':
+	case '(': case ')': case '+': case '-': case '*': case '/': case '{': case '}': case '!':
 		return Token(ch);        // let each character represent itself
 	case '.':
 	case '0': case '1': case '2': case '3': case '4':
@@ -89,8 +89,21 @@ double primary()
 		if (t.kind != '}') error("'}' expected");
 		return d;
 	}
-	case '8':            // we use '8' to represent a number
-		return t.value;  // return the number's value
+	case '8': 
+		{           // we use '8' to represent a number
+			Token t2 = ts.get();
+			if (t2.kind == '!') {
+				int ileft = int(t.value);
+				for (int index = 1; index < t.value; ++index) {
+					ileft *= index;
+				}
+				return ileft;
+			}
+			else {
+				ts.putback(t2);
+				return t.value;  // return the number's value
+			}
+		}
 	default:
 		error("primary expected");
 	}
@@ -105,6 +118,14 @@ double term()
 
 	while (true) {
 		switch (t.kind) {
+		case '!':
+		{
+			int ileft = int(left);
+			for (int index = 1; index < left; ++index) {
+				ileft *= index;
+			}
+			return ileft;
+		}
 		case '*':
 			left *= primary();
 			t = ts.get();
@@ -152,10 +173,11 @@ double expression()
 
 
 int main()
-cout << "Welcome to our simple calculator.\nPlease enter expressions using floating-point numbers.\n";
-cout << "Functions addition, substraction, multiplication and division are available, as well as usage of parenthesis.\nTi get result enter =, to queit enter x\n"
+
 try
-{
+{	
+	cout << "Welcome to our simple calculator.\nPlease enter expressions using floating-point numbers.\n";
+	cout << "Functions addition, substraction, multiplication and division are available, as well as usage of parenthesis.\nTo get result, enter =, to quit enter x\n";
 	double val = 0;
 	while (cin) {
 		Token t = ts.get();
