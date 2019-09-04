@@ -5,7 +5,7 @@ class Token {
 public:
 	char kind;        // what kind of token
 	double value;     // for numbers: a value 
-	Token(char ch)    // make a Token from a char
+	Token(char ch)    // make a Token from a char 
 		:kind(ch), value(0) { }
 	Token(char ch, double val)     // make a Token from a char and a double
 		:kind(ch), value(val) { }
@@ -14,20 +14,15 @@ public:
 
 class Token_stream {
 public:
-	Token_stream();   // make a Token_stream that reads from cin
-	Token get();      // get a Token (get() is defined elsewhere)
+	Token_stream()
+		:full(false), buffer(0)    {} // no Token in buffer
+  	Token get();      // get a Token (get() is defined elsewhere)
 	void putback(Token t);    // put a Token back
 private:
 	bool full;        // is there a Token in the buffer?
 	Token buffer;     // here is where we keep a Token put back using putback()
 };
-
-
-// The constructor just sets full to indicate that the buffer is empty:
-Token_stream::Token_stream()
-	:full(false), buffer(0)    // no Token in buffer
-{
-}
+	
 
 
 // The putback() member function puts its argument back into the Token_stream's buffer:
@@ -52,9 +47,9 @@ Token Token_stream::get()
 	cin >> ch;    // note that >> skips whitespace (space, newline, tab, etc.)
 
 	switch (ch) {
-	case ';':    // for "print"
-	case 'q':    // for "quit"
-	case '(': case ')': case '+': case '-': case '*': case '/':
+	case '=':    // for "print"
+	case 'x':    // for "quit"
+	case '(': case ')': case '+': case '-': case '*': case '/': case '{': case '}':
 		return Token(ch);        // let each character represent itself
 	case '.':
 	case '0': case '1': case '2': case '3': case '4':
@@ -85,6 +80,13 @@ double primary()
 		double d = expression();
 		t = ts.get();
 		if (t.kind != ')') error("')' expected");
+		return d;
+	}
+	case '{':    // handle '(' expression ')'
+	{
+		double d = expression();
+		t = ts.get();
+		if (t.kind != '}') error("'}' expected");
 		return d;
 	}
 	case '8':            // we use '8' to represent a number
@@ -150,13 +152,15 @@ double expression()
 
 
 int main()
+cout << "Welcome to our simple calculator.\nPlease enter expressions using floating-point numbers.\n";
+cout << "Functions addition, substraction, multiplication and division are available, as well as usage of parenthesis.\nTi get result enter =, to queit enter x\n"
 try
 {
 	double val = 0;
 	while (cin) {
 		Token t = ts.get();
-		if (t.kind == 'q') break; // 'q' for quit
-		if (t.kind == ';')        // ';' for "print now"
+		if (t.kind == 'x') break; // 'q' for quit
+		if (t.kind == '=')        // ';' for "print now"
 			cout << "=" << val << '\n';
 		else
 			ts.putback(t);
