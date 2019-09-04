@@ -1,203 +1,71 @@
 #include "std_lib_facilities.h"
+/*
+Write a program where you first enter a set of name-and-value pairs, such
+as Joe 17 and Barbara 22 . For each pair, add the name to a vector called
+names and the number to a vector called scores (in corresponding po-
+sitions, so that if names[7]=="Joe" then scores[7]==17 ). Terminate input
+with NoName 0 . Check that each name is unique and terminate with an
+error message if a name is entered twice. Write out all the (name,score)
+pairs, one per line.
+Define a class Name_value that holds a string and a value. Rework exer-
+cise 19 in Chapter 4 to use a vector<Name_value> instead of two vectors.
+*/
 
 
-class Token {
-public:
-	char kind;        // what kind of token
-	double value;     // for numbers: a value 
-	Token(char ch)    // make a Token from a char 
-		:kind(ch), value(0) { }
-	Token(char ch, double val)     // make a Token from a char and a double
-		:kind(ch), value(val) { }
+class Name_value {
+	public:
+		string name;        
+		double value;     
+		Name_value()     
+			:name(), value(0) { } 
+		Name_value(string name, double val)     
+			:name(name), value(val) { }
+		bool is_unique(string testname);
 };
 
+vector <Name_value> names;
 
-class Token_stream {
-public:
-	Token_stream()
-		:full(false), buffer(0)    {} // no Token in buffer
-  	Token get();      // get a Token (get() is defined elsewhere)
-	void putback(Token t);    // put a Token back
-private:
-	bool full;        // is there a Token in the buffer?
-	Token buffer;     // here is where we keep a Token put back using putback()
-};
-	
-
-
-// The putback() member function puts its argument back into the Token_stream's buffer:
-void Token_stream::putback(Token t)
-{
-	if (full) error("putback() into a full buffer");
-	buffer = t;       // copy t to buffer
-	full = true;      // buffer is now full
-}
-
-
-
-Token Token_stream::get()
-{
-	if (full) {       // do we already have a Token ready?
-		// remove token from buffer
-		full = false;
-		return buffer;
-	}
-
-	char ch;
-	cin >> ch;    // note that >> skips whitespace (space, newline, tab, etc.)
-
-	switch (ch) {
-	case '=':    // for "print"
-	case 'x':    // for "quit"
-	case '(': case ')': case '+': case '-': case '*': case '/': case '{': case '}': case '!':
-		return Token(ch);        // let each character represent itself
-	case '.':
-	case '0': case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9':
-	{
-		cin.putback(ch);         // put digit back into the input stream
-		double val;
-		cin >> val;              // read a floating-point number
-		return Token('8', val);   // let '8' represent "a number"
-	}
-	default:
-		error("Bad token");
-	}
-}
-
-
-Token_stream ts;        // provides get() and putback() 
-
-double expression();    // declaration so that primary() can call expression()
-
-// deal with numbers and parentheses
-double primary()
-{
-	Token t = ts.get();
-	switch (t.kind) {
-	case '(':    // handle '(' expression ')'
-	{
-		double d = expression();
-		t = ts.get();
-		if (t.kind != ')') error("')' expected");
-		return d;
-	}
-	case '{':    // handle '(' expression ')'
-	{
-		double d = expression();
-		t = ts.get();
-		if (t.kind != '}') error("'}' expected");
-		return d;
-	}
-	case '8': 
-		{           // we use '8' to represent a number
-			Token t2 = ts.get();
-			if (t2.kind == '!') {
-				int ileft = int(t.value);
-				for (int index = 1; index < t.value; ++index) {
-					ileft *= index;
-				}
-				return ileft;
+bool Name_value::is_unique(string testname){
+			for (Name_value nv: names) {
+				if (nv.name == testname) return false;
 			}
-			else {
-				ts.putback(t2);
-				return t.value;  // return the number's value
-			}
+		return true;
 		}
-	default:
-		error("primary expected");
+
+void terminate(){
+	cout << "Vector contains  following names:\n";
+	for (Name_value nv: names){
+		cout << nv.name << " " << nv.value << "\n";
 	}
 }
 
-
-// deal with *, /
-double term()
-{
-	double left = primary();
-	Token t = ts.get();        // get the next token from token stream
-
-	while (true) {
-		switch (t.kind) {
-		case '!':
+int main() {
+	try
+	{	
+		cout << "Enter pairs of names and values. Each name should be unique. Enter NoName 0 to exit.\n";
+		while (true)
 		{
-			int ileft = int(left);
-			for (int index = 1; index < left; ++index) {
-				ileft *= index;
+			Name_value nv;
+			cin >> nv.name >> nv.value;
+			if (nv.name == "NoName" && nv.value == 0){
+				terminate();
+				return 0;
 			}
-			return ileft;
-		}
-		case '*':
-			left *= primary();
-			t = ts.get();
-			break;
-		case '/':
-		{
-			double d = primary();
-			if (d == 0) error("divide by zero");
-			left /= d;
-			t = ts.get();
-			break;
-		}
-		default:
-			ts.putback(t);     // put t back into the token stream
-			return left;
+			if (nv.is_unique(nv.name)) {
+				names.push_back(nv);
+			}
+			else {error("Name is not unique");}
 		}
 	}
-}
-
-
-
-// deal with + and -
-double expression()
-{
-	double left = term();      // read and evaluate a Term
-	Token t = ts.get();        // get the next token from token stream
-
-	while (true) {
-		switch (t.kind) {
-		case '+':
-			left += term();    // evaluate Term and add
-			t = ts.get();
-			break;
-		case '-':
-			left -= term();    // evaluate Term and subtract
-			t = ts.get();
-			break;
-		default:
-			ts.putback(t);     // put t back into the token stream
-			return left;       // finally: no more + or -: return the answer
-		}
+	catch (exception& e) {
+		cerr << "error: " << e.what() << '\n';
+		keep_window_open();
+		return 1;
 	}
-}
-
-
-
-int main()
-
-try
-{	
-	cout << "Welcome to our simple calculator.\nPlease enter expressions using floating-point numbers.\n";
-	cout << "Functions addition, substraction, multiplication and division are available, as well as usage of parenthesis.\nTo get result, enter =, to quit enter x\n";
-	double val = 0;
-	while (cin) {
-		Token t = ts.get();
-		if (t.kind == 'x') break; // 'q' for quit
-		if (t.kind == '=')        // ';' for "print now"
-			cout << "=" << val << '\n';
-		else
-			ts.putback(t);
-		val = expression();
+	catch (...) {
+		cerr << "Oops: unknown exception!\n";
+		keep_window_open();
+		return 2;
 	}
-	keep_window_open();
-}
-catch (exception& e) {
-	cerr << "error: " << e.what() << '\n';
-	keep_window_open();
-	return 1;
-}
-catch (...) {
-	cerr << "Oops: unknown exception!\n";
-	keep_window_open();
-	return 2;
 }
 
