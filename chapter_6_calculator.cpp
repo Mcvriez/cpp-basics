@@ -1,69 +1,37 @@
-// Chapter 6 excercise 8 Bulls and cows redo with chars
+// Chapter 6 excercise 9
 #include "std_lib_facilities.h"
+#include <math.h> 
 
-vector <char> game (4);
+/*Write a program that reads digits and composes them into integers. For
+example, 123 is read as the characters 1, 2, and 3. The program should
+output 123 is 1 hundred and 2 tens and 3 ones . The number should be
+output as an int value. Handle numbers with one, two, three, or four
+digits. Hint: To get the integer value 5 from the character '5' subtract '0' ,
+that is, '5' – '0'==5 */
 
-bool is_unique(char ch, int pos) {
-	for (int i = 0; i < pos; ++i) {
-		if (ch == game[i]) return false;
-	}
-	return true;
-}
+vector <char> chars;
 
-void initialize() {
-	int seed = 0;
-	cout << "Enter int number that will be used as a seed:\n";
-	cin >> seed;
-	if (!cin) { cout << ("Wrong input\n"); }
-	cout << "calling srand(" << seed << ")\n";
-	srand(seed); //doesn't work, I don't know why, each time same sequence
-	for (int i = 0; i < 4; ++i) {
-		char randchar = 97 + randint(25);
-		game[i] = randchar;
-		while (!is_unique(game[i], i)) {
-			char randchar = 97 + randint(25);
-			game[i] = randchar;
-		}
+void read() {
+	cout << "Enter 1-4 digits ending with ;\n";
+	int counter = 4;
+	while (counter >= 0) {
+		char ch;
+		cin >> ch;
+		if (!cin) error("reading error\n");
+		if (ch == ';') break;
+		chars.push_back(ch);
+		if (counter == 0 && ch != ';') error("invalid input");
+		--counter;
 	}
 }
 
-void print_game() {
-	cout << "Game contains:\n";
-	for (char x : game) cout << x;
-	cout << "\n";
+void int_char() {
+	int number = 0;
+	for (int i = chars.size() - 1; i >= 0; --i) {
+		int value = (chars[i] - '0') * pow(10, 3 - i);
+		number += value;
+	}
+	cout << number 
 }
 
-int play() {
-	int bull = 0;
-	int cow = 0;
-	char c1; char c2; char c3; char c4;
-	cout << "\nEnter your guess - four letters:\n";
-	cin >> c1 >> c2 >> c3 >> c4;
-	if (!cin) error("Wrong input\n");
-	vector <char> vguess = { c1, c2, c3, c4 };
-	cout << "Your guess is: " << c1 << c2 << c3 << c4 << "\n";
-	for (int i = 0; i < 4; ++i) {
-		if (vguess[i] == game[i]) ++bull;
-		for (int j = 0; j < 4; ++j) {
-			if (vguess[j] == game[i] && i != j) {
-				++cow;
-			}
-		}
-	}
-	if (bull == 4) {
-		cout << "You won!\n";
-		return 0;
-	}
-	cout << "You have " << bull << " bulls and " << cow << " cows\n";
-}
-
-int main() {
-	initialize();
-	//print_game();
-	while (true) {
-		if (play() == 0) {
-			initialize();
-			//print_game();
-		}
-	}
-}
+int main() {}
