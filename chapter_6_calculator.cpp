@@ -1,73 +1,69 @@
+// Chapter 6 excercise 8 Bulls and cows redo with chars
 #include "std_lib_facilities.h"
-/*
-Write a program that checks if a sentence is correct according to the “En-
-glish” grammar in §6.4.1. Assume that every sentence is terminated by
-a full stop (.) surrounded by whitespace. For example, birds fly but the
-fish swim . is a sentence, but birds fly but the fish swim (terminating dot
-missing) and birds fly but the fish swim. (no space before dot) are not. For
-each sentence entered, the program should simply respond “OK” or “not
-OK.” Hint: Don’t bother with tokens; just read into a string using >>
-*/
-vector <string> verbs = { "rules", "fly", "swim" };
-vector <string> articles = { "the" };
-vector <string> nouns = { "birds", "fish", "C++" };
-vector <string> conjuctions = { "and", "or", "but" };
 
-bool is_verb(string word){
-	for (string x : verbs) {
-		if (word == x) return true;
+vector <char> game (4);
+
+bool is_unique(char ch, int pos) {
+	for (int i = 0; i < pos; ++i) {
+		if (ch == game[i]) return false;
 	}
-	return false;
+	return true;
 }
 
-bool is_article(string word) {
-	for (string x : articles) {
-		if (word == x) return true;
-	}
-	return false;
-}
-
-bool is_noun(string word) {
-	for (string x : nouns) {
-		if (word == x) return true;
-	}
-	return false;
-}
-
-bool is_conjuction(string word) {
-	for (string x : conjuctions) {
-		if (word == x) return true;
-	}
-	return false;
-}
-
-int sentence() {
-	string w1; string w2; string w3; string w4;
-	cin >> w1;
-	cout << w1 << " : first word\n";
-	if (is_article(w1)) { cin >> w2; }
-	else if (is_noun(w1)) { w2 = w1; }
-	cout << w2 << " : second word\n";
-	if (is_noun(w2)) {
-		cin >> w3;
-		cout << w3<< " : third word\n";
-		if (is_verb(w3)) {
-			cin >> w4;
-			cout << w4 << " : forth word\n";
-			if (w4 == ".") { return 0; }
-			if (is_conjuction(w4)) { cout << "conjuction found: " << w4 << "\n"; return sentence(); }			
+void initialize() {
+	int seed = 0;
+	cout << "Enter int number that will be used as a seed:\n";
+	cin >> seed;
+	if (!cin) { cout << ("Wrong input\n"); }
+	cout << "calling srand(" << seed << ")\n";
+	srand(seed); //doesn't work, I don't know why, each time same sequence
+	for (int i = 0; i < 4; ++i) {
+		char randchar = 97 + randint(25);
+		game[i] = randchar;
+		while (!is_unique(game[i], i)) {
+			char randchar = 97 + randint(25);
+			game[i] = randchar;
 		}
 	}
-	while (w1 != ".") {
-		cin >> w1;
+}
+
+void print_game() {
+	cout << "Game contains:\n";
+	for (char x : game) cout << x;
+	cout << "\n";
+}
+
+int play() {
+	int bull = 0;
+	int cow = 0;
+	char c1; char c2; char c3; char c4;
+	cout << "\nEnter your guess - four letters:\n";
+	cin >> c1 >> c2 >> c3 >> c4;
+	if (!cin) error("Wrong input\n");
+	vector <char> vguess = { c1, c2, c3, c4 };
+	cout << "Your guess is: " << c1 << c2 << c3 << c4 << "\n";
+	for (int i = 0; i < 4; ++i) {
+		if (vguess[i] == game[i]) ++bull;
+		for (int j = 0; j < 4; ++j) {
+			if (vguess[j] == game[i] && i != j) {
+				++cow;
+			}
+		}
 	}
-	return 1;
+	if (bull == 4) {
+		cout << "You won!\n";
+		return 0;
+	}
+	cout << "You have " << bull << " bulls and " << cow << " cows\n";
 }
 
 int main() {
-	string word;
+	initialize();
+	//print_game();
 	while (true) {
-		if (sentence() == 0) cout << "OK\n";
-		else cout << "Not OK\n";
+		if (play() == 0) {
+			initialize();
+			//print_game();
+		}
 	}
 }
