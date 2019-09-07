@@ -1,50 +1,35 @@
-// Chapter 6 excercise 9
+// Chapter 6 excercise 10
 #include "std_lib_facilities.h"
-#include <math.h> 
 
-/*Write a program that reads digits and composes them into integers. For
-example, 123 is read as the characters 1, 2, and 3. 
+/*A permutation is an ordered subset of a set. For example, say you wanted
+to pick a combination to a vault. There are 60 possible numbers, and
+you need three different numbers for the combination. There are P(60,3)
+permutations for the combination, where P is defined by the formula:
 
-The program should
-output 123 is 1 hundred and 2 tens and 3 ones . 
+P (a, b) = a! / (a − b)!
 
-The number should be output as an int value. Handle numbers with one, two, three, or four
-digits. Hint: To get the integer value 5 from the character '5' subtract '0' ,
-that is, '5' � '0'==5 */
+where ! is used as a suffix factorial operator. For example, 4! is 4*3*2*1.
+Combinations are similar to permutations, except that the order of the
+objects doesn’t matter. For example, if you were making a “banana split”
+sundae and wished to use three different flavors of ice cream out of five
+that you had, you wouldn’t care if you used a scoop of vanilla at the
+beginning or the end; you would still have used vanilla. The formula for
+combinations is:
 
-vector <char> chars;
+C (a, b) = P (a,b) / b!
 
-void read() {
-	cout << "Enter 1-4 digits ending with ;\n";
-	int counter = 0;
-	while (counter <= 4) {
-		char ch;
-		cin >> ch;
-		if (!cin) error("reading error\n");
-		if (ch == ';') break;
-		if (counter == 4 && ch != ';') error("invalid input");
-		chars.push_back(ch);
-		++counter;
-	}
-}
 
-void int_char() {
-	int  number = 0;
-	for (int i = 0; i < chars.size(); ++i){
-		number += (chars[i] - '0') *  pow(10, chars.size() - i - 1);
-	}
-	cout << number << " is ";
-	if (number > 999) cout << chars[0] << " thouthand " << chars[1] << " hundred " << chars[2] << " tens " << chars[3] << " ones.\n";
-	else if (number > 99) cout << chars[0] << " hundred " << chars[1] << " tens " << chars[2] << " ones.\n";
-	else if (number > 9) cout << chars[0] << " tens " << chars[1] << " ones.\n";
-	else if (number > 0) cout << chars[0] << " ones.\n";
-	cout << "\n\n";
-	chars = {};
-}
+Design a program that asks users for two numbers, asks them whether
+they want to calculate permutations or combinations, and prints out the
+result. This will have several parts. Do an analysis of the above require-
+ments. Write exactly what the program will have to do. Then, go into
+the design phase. Write pseudo code for the program, and break it into
+sub-components. This program should have error checking. Make sure
+that all erroneous inputs will generate good error messages.*/
+
 
 int main() {
 	while (true){
-		read();
-		int_char();
+
 	}
 }
