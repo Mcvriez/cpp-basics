@@ -27,9 +27,64 @@ the design phase. Write pseudo code for the program, and break it into
 sub-components. This program should have error checking. Make sure
 that all erroneous inputs will generate good error messages.*/
 
+// ask for two numbers
+// read them to two integers
+// ask what to calculate P or C
+
+int factorial(int x){
+	for (int i = x - 1; i > 0; --i){
+		x *= i;
+	}
+	return x;
+}
+
+int permutation(int x, int y) {return factorial(x) / factorial(x-y);} // P(a, b) = a!/(a−b)!
+int combination(int x, int y) {return permutation(x, y) / factorial(y);} // C(a, b) = P(a,b)/b!
+
+
+void user_input(){
+	cout << "Enter two positive integers separated by white space. First number should be bigger than second:\nFirst number: ";
+	int x;
+	int y;
+	string input;
+	cin >> x;
+	cout << "Second number: ";
+	cin >> y;
+	if (!cin) error ("Invalid input - integers\n");
+	if (x < 0 || y < 0) cout << "Numbers should be positive\n";
+	else if (x < y) {
+		cout << "Number of the permutations is zero.\n\n";
+	}
+	else {
+		cout << "Enter what you want to calculate - number of permutations (P) or number of combinations (C):\n";
+		cin >> input;
+		if (!cin) error ("Invalid input - result\n");
+		if (input == "C" || input == "c") {
+			int result = combination(x, y);
+			cout << "Number of combinations is: " << result << "\n\n";
+		}
+		else if (input == "P" || input == "p") {
+			int result = permutation(x,y);
+			cout << "Number of permutations is: " << result << "\n\n";
+		}
+		else cout << "Invalid input - type of operation. Try again\n";
+	}
+}
 
 int main() {
 	while (true){
-
+		try {
+			user_input();
+			}
+		catch (exception& e) {
+		cerr << "Error: " << e.what() << endl;
+		keep_window_open();
+		return 1;
+		}
+	catch (...) {
+		cerr << "Unknown exception!\n";
+		keep_window_open();
+		return 2;
+		}
 	}
 }
