@@ -1,31 +1,71 @@
 /*
-	calculator08buggy.cpp
+The grammar for input is:
+	
+Calculate:
+	Statement:
+		Expression
+		Declaration	
+	Print:
+		;	
+	Quit:
+		q
+		
+		Declaration:
+			let Name = Expression
 
-	Helpful comments removed.
+		Expression:
+			Term
+			Expression + Term
+			Expression – Term
+			
+			Term:
+				Primary
+				Term * Primary
+				Term / Primary
+				Term % Primary
+				
+				Primary:
+					Name
+					Number
+					( Expression )
+					– Primary
+					+ Primary
+						
+						Name:
+							string header: floating-point-literal 
+						Number:
+							floating-point-literal
+						
+Tests:
 
-	We have inserted 3 bugs that the compiler will catch and 3 that it won't.
+(123+----12)/(34/17 -2); - divide by zero
+1237812382163872168372163 * 12312;
+sdfjsadkjfksadjfkjas0981239'''a3 32 00923u	2302	309u092	3;;;;;;;;23423 23; ;23 ;234;23; 
+let let = 5;
+let quit = 5;
+let 123 = 124;
+
 */
 
 #include "std_lib_facilities.h"
 
 struct Token {
-	char kind;
-	double value;
-	string name;
-	Token(char ch) :kind(ch), value(0) { }
-	Token(char ch, double val) :kind(ch), value(val) { }
-	Token(char ch, string n) :kind(ch), name(n) { } // 1
+	char kind;        // type of the token - number, name, or some operation
+	double value;     // value for digits 
+	string name;      // and names
+	// initialization:
+	Token(char ch) :kind(ch), value(0) { }                       // with only char, operations 
+	Token(char ch, double val) :kind(ch), value(val) { }         // numbers
+	Token(char ch, string n) :kind(ch), name(n) { }              // names (error was here)
 };
 
 class Token_stream {
 	bool full;
 	Token buffer;
 public:
-	Token_stream() :full(0), buffer(0) { }
-
+	Token_stream() :full(false), buffer(0) { } 
 	Token get();
 	void unget(Token t) { buffer = t; full = true; }
-
 	void ignore(char);
 };
 
@@ -62,26 +102,27 @@ Token Token_stream::get()
 	case '7':
 	case '8':
 	case '9':
-	{	cin.unget();
+	{	
+	cin.unget(); // put character back to stream, alternative to cin.putback(ch)
 	double val;
 	cin >> val;
 	return Token(number, val);
 	}
 	default:
-		if (isalpha(ch)) {
+		if (isalpha(ch)) { // isalpha checks whether ch is an alphabetic letter
 			string s;
 			s += ch;
-			while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s = ch;
+			while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s += ch; // (error was here)
 			cin.unget();
 			if (s == "let") return Token(let);
-			if (s == "quit") return Token(name);
+			if (s == "quit") return Token(quit); // (error was here)
 			return Token(name, s);
 		}
 		error("Bad token");
 	}
 }
 
-void Token_stream::ignore(char c)
+void Token_stream::ignore(char c)       // reads till the specified character, needed to clear incorrect input statement
 {
 	if (full && c == buffer.kind) {
 		full = false;
@@ -100,7 +141,7 @@ struct Variable {
 	Variable(string n, double v) :name(n), value(v) { }
 };
 
-vector<Variable> names;
+vector <Variable> names;
 
 double get_value(string s)
 {
@@ -128,25 +169,27 @@ bool is_declared(string s)
 
 Token_stream ts;
 
-double expression();
+double expression(); // we define it here because otherwise primary() won't compile
 
 double primary()
 {
 	Token t = ts.get();
 	switch (t.kind) {
-	case '(':
-	{	double d = expression();
-	t = ts.get();
-	if (t.kind != ')') error("'(' expected");
-	}
-	case '-':
-		return -primary();
-	case number:
-		return t.value;
-	case name:
-		return get_value(t.name);
-	default:
-		error("primary expected");
+		case '(':
+			{	
+			double d = expression();
+			t = ts.get();
+			if (t.kind != ')') error("'(' expected");
+			return d;    // error was here
+			}
+		case '-':
+			return -primary();
+		case number:
+			return t.value;
+		case name:
+			return get_value(t.name);
+		default:
+			error("primary expected");
 	}
 }
 
@@ -194,11 +237,17 @@ double expression()
 double declaration()
 {
 	Token t = ts.get();
+	
 	if (t.kind != 'a') error("name expected in declaration");
+	
 	string name = t.name;
+
 	if (is_declared(name)) error(name, " declared twice");
+	
 	Token t2 = ts.get();
+	
 	if (t2.kind != '=') error("= missing in declaration of ", name);
+	
 	double d = expression();
 	names.push_back(Variable(name, d));
 	return d;
