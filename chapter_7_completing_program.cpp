@@ -27,9 +27,11 @@ Calculate:
 				Primary:
 					Name
 					Number
-					( Expression )
+					(Expression)
 					– Primary
 					+ Primary
+					sqrt(Expression)
+					pow((Expression), (Expression))
 						
 						Name:
 							string header: floating-point-literal 
@@ -74,6 +76,9 @@ const char quit = 'Q';
 const char print = ';';
 const char number = '8';
 const char name = 'a';
+const char square = 'S';
+const char power = 'P';
+
 
 Token Token_stream::get()
 {
@@ -90,6 +95,7 @@ Token Token_stream::get()
 	case '%':
 	case ';':
 	case '=':
+	case ',':
 		return Token(ch);
 	case '.':
 	case '0':
@@ -108,14 +114,18 @@ Token Token_stream::get()
 	cin >> val;
 	return Token(number, val);
 	}
+	case '#':
+		return Token(let);
 	default:
 		if (isalpha(ch)) { // isalpha checks whether ch is an alphabetic letter
 			string s;
 			s += ch;
 			while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s += ch; // (error was here)
 			cin.unget();
-			if (s == "let") return Token(let);
-			if (s == "quit") return Token(quit); // (error was here)
+			if (s == "sqrt") return Token(square);
+			if (s == "pow") return Token(power);
+			if (s == "exit") return Token(quit); // (error was here)
+			
 			return Token(name, s);
 		}
 		error("Bad token");
@@ -142,6 +152,8 @@ struct Variable {
 };
 
 vector <Variable> names;
+
+const Variable k ("k", 1000);
 
 double get_value(string s)
 {
@@ -176,18 +188,52 @@ double primary()
 	Token t = ts.get();
 	switch (t.kind) {
 		case '(':
-			{	
+		{	
 			double d = expression();
 			t = ts.get();
-			if (t.kind != ')') error("'(' expected");
-			return d;    // error was here
+			if (t.kind != ')') {
+				ts.unget(t); // to make cleaner work
+				error("')' expected");
 			}
+			return d;    // error was here
+		}
 		case '-':
 			return -primary();
 		case number:
 			return t.value;
 		case name:
 			return get_value(t.name);
+		case square: 
+		{
+			t = ts.get();
+			if (t.kind != '(') error("'(' expected");
+			ts.unget(t);
+			double d = expression();
+			if (d < 0) {
+				error("You can't get square root of the negative number");
+			}
+			return sqrt(d); 
+		}
+		case power: {
+			t = ts.get();
+			if (t.kind != '(') {
+				ts.unget(t);
+				error("'(' expected");
+			}
+			double d = expression();
+			t = ts.get();
+			if (t.kind != ',') {
+				ts.unget(t);
+				error("',' expected in the power statement");
+			}
+			double i = expression();
+			t = ts.get();
+			if (t.kind != ')') {
+				ts.unget(t);
+				error("')' expected");
+			}
+			return(powf(d, i));			
+		}
 		default:
 			error("primary expected");
 	}
@@ -289,21 +335,22 @@ void calculate()
 	}
 }
 
-int main()
-
-try {
-	calculate();
-	return 0;
-}
-catch (exception& e) {
-	cerr << "exception: " << e.what() << endl;
-	char c;
-	while (cin >> c && c != ';');
-	return 1;
-}
-catch (...) {
-	cerr << "exception\n";
-	char c;
-	while (cin >> c && c != ';');
-	return 2;
+int main() {
+names.push_back(k);
+	try {
+		calculate();
+		return 0;
+	}
+	catch (exception& e) {
+		cerr << "exception: " << e.what() << endl;
+		char c;
+		while (cin >> c && c != ';');
+		return 1;
+	}
+	catch (...) {
+		cerr << "exception\n";
+		char c;
+		while (cin >> c && c != ';');
+		return 2;
+	}
 }
