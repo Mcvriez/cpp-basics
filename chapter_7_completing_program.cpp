@@ -5,13 +5,18 @@ Calculate:
 	Statement:
 		Expression
 		Declaration	
+		Redeclaration
+
 	Print:
 		;	
 	Quit:
 		q
-		
+	
 		Declaration:
-			let Name = Expression
+			# Name = Expression
+		
+		Redeclaraton:
+			existing Name = Expression
 
 		Expression:
 			Term
@@ -117,10 +122,10 @@ Token Token_stream::get()
 	case '#':
 		return Token(let);
 	default:
-		if (isalpha(ch)) { // isalpha checks whether ch is an alphabetic letter
+		if (isalpha(ch) ) { // isalpha checks whether ch is an alphabetic letter
 			string s;
 			s += ch;
-			while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s += ch; // (error was here)
+			while (cin.get(ch) && (isalpha(ch) || isdigit(ch)) || ch == '_') s += ch; // (error was here)
 			cin.unget();
 			if (s == "sqrt") return Token(square);
 			if (s == "pow") return Token(power);
@@ -201,8 +206,9 @@ double primary()
 			return -primary();
 		case number:
 			return t.value;
-		case name:
-			return get_value(t.name);
+		case name: {
+			return get_value(t.name); 
+		}
 		case square: 
 		{
 			t = ts.get();
@@ -284,7 +290,7 @@ double declaration()
 {
 	Token t = ts.get();
 	
-	if (t.kind != 'a') error("name expected in declaration");
+	if (t.kind != name) error("name expected in declaration");
 	
 	string name = t.name;
 
@@ -293,11 +299,30 @@ double declaration()
 	Token t2 = ts.get();
 	
 	if (t2.kind != '=') error("= missing in declaration of ", name);
-	
 	double d = expression();
 	names.push_back(Variable(name, d));
 	return d;
 }
+
+double assignment() {
+	Token t = ts.get();
+	string tname = t.name;
+	double tvalue = t.value;
+
+	if (!is_declared(tname)) error("undeclared variable: ", tname);
+
+	Token t2 = ts.get();
+	if (t2.kind == '=') 
+	{
+		double d = expression();
+		set_value(tname, d);
+		return d;
+	}
+	cin.unget();
+	ts.unget(t);
+	return expression();
+}
+
 
 double statement()
 {
@@ -305,6 +330,9 @@ double statement()
 	switch (t.kind) {
 	case let:
 		return declaration();
+	case name:
+		ts.unget(t);
+		return assignment();
 	default:
 		ts.unget(t);
 		return expression();
