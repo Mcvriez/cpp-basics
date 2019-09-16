@@ -156,22 +156,28 @@ struct Variable {
 	string name;
 	double value;
 	bool constant;
-	Variable(string n, double v) :name(n), value(v), constant(false){ }
 	Variable(string n, double v, bool c) :name(n), value(v), constant(c) { }
 };
 
-vector <Variable> names;
+class Symbol_table {
+	vector <Variable> names;
+public:
+	Symbol_table() :names() {}
+	double get_value(string s);
+	void set_value(string s, double d);
+	double define_name(string var, double val, bool cons);
+	bool is_declared(string s);
+};
 
-const Variable k ("k", 1000, true);
 
-double get_value(string s)
+double Symbol_table::get_value(string s)
 {
 	for (int i = 0; i < names.size(); ++i)
 		if (names[i].name == s) return names[i].value;
 	error("get: undefined name ", s);
 }
 
-void set_value(string s, double d)
+void Symbol_table::set_value(string s, double d)
 {
 	for (int i = 0; i <= names.size(); ++i) {
 		if (names[i].name == s) {
@@ -184,7 +190,14 @@ void set_value(string s, double d)
 	error("set: undefined name ", s);
 }
 
-bool is_declared(string s)
+double Symbol_table::define_name(string var, double val, bool cons)
+{
+	if (is_declared(var)) error(var, " declared twice");
+	names.push_back(Variable(var, val, cons));
+	return val;
+}
+
+bool Symbol_table::is_declared(string s)
 {
 	for (int i = 0; i < names.size(); ++i)
 		if (names[i].name == s) return true;
@@ -192,7 +205,7 @@ bool is_declared(string s)
 }
 
 Token_stream ts;
-
+Symbol_table st;
 double expression(); // we define it here because otherwise primary() won't compile
 
 double primary()
@@ -214,7 +227,7 @@ double primary()
 		case number:
 			return t.value;
 		case name: {
-			return get_value(t.name); 
+			return st.get_value(t.name); 
 		}
 		case square: 
 		{
@@ -298,11 +311,11 @@ double declaration(bool cons)
 	Token t = ts.get();
 	if (t.kind != name) error("name expected in declaration");
 	string name = t.name;
-	if (is_declared(name)) error(name, " declared twice");
+	if (st.is_declared(name)) error(name, " declared twice");
 	Token t2 = ts.get();
 	if (t2.kind != '=') error("= missing in declaration of ", name);
 	double d = expression();
-	names.push_back(Variable(name, d, cons));
+	st.define_name(name, d, cons);
 	return d;
 }
 
@@ -311,13 +324,13 @@ double assignment() {
 	string tname = t.name;
 	double tvalue = t.value;
 
-	if (!is_declared(tname)) error("undeclared variable: ", tname);
+	if (!st.is_declared(tname)) error("undeclared variable: ", tname);
 
 	Token t2 = ts.get();
 	if (t2.kind == '=') 
 	{
 		double d = expression();
-		set_value(tname, d);
+		st.set_value(tname, d);
 		return d;
 	}
 	cin.unget();
@@ -368,7 +381,7 @@ void calculate()
 }
 
 int main() {
-names.push_back(k);
+st.define_name("k", 1000, true);
 	try {
 		calculate();
 		return 0;
