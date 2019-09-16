@@ -83,6 +83,7 @@ const char number = '8';
 const char name = 'a';
 const char square = 'S';
 const char power = 'P';
+const char constant = 'C';
 
 
 Token Token_stream::get()
@@ -127,6 +128,7 @@ Token Token_stream::get()
 			s += ch;
 			while (cin.get(ch) && (isalpha(ch) || isdigit(ch)) || ch == '_') s += ch; // (error was here)
 			cin.unget();
+			if (s == "const") return Token(constant);
 			if (s == "sqrt") return Token(square);
 			if (s == "pow") return Token(power);
 			if (s == "exit") return Token(quit); // (error was here)
@@ -153,12 +155,14 @@ void Token_stream::ignore(char c)       // reads till the specified character, n
 struct Variable {
 	string name;
 	double value;
-	Variable(string n, double v) :name(n), value(v) { }
+	bool constant;
+	Variable(string n, double v) :name(n), value(v), constant(false){ }
+	Variable(string n, double v, bool c) :name(n), value(v), constant(c) { }
 };
 
 vector <Variable> names;
 
-const Variable k ("k", 1000);
+const Variable k ("k", 1000, true);
 
 double get_value(string s)
 {
@@ -169,11 +173,14 @@ double get_value(string s)
 
 void set_value(string s, double d)
 {
-	for (int i = 0; i <= names.size(); ++i)
+	for (int i = 0; i <= names.size(); ++i) {
 		if (names[i].name == s) {
+			if (names[i].constant == true) error("can't redefine constant: ", names[i].name);
 			names[i].value = d;
+			names[i].constant = false;
 			return;
 		}
+	}
 	error("set: undefined name ", s);
 }
 
@@ -286,21 +293,16 @@ double expression()
 	}
 }
 
-double declaration()
+double declaration(bool cons)
 {
 	Token t = ts.get();
-	
 	if (t.kind != name) error("name expected in declaration");
-	
 	string name = t.name;
-
 	if (is_declared(name)) error(name, " declared twice");
-	
 	Token t2 = ts.get();
-	
 	if (t2.kind != '=') error("= missing in declaration of ", name);
 	double d = expression();
-	names.push_back(Variable(name, d));
+	names.push_back(Variable(name, d, cons));
 	return d;
 }
 
@@ -329,7 +331,9 @@ double statement()
 	Token t = ts.get();
 	switch (t.kind) {
 	case let:
-		return declaration();
+		return declaration(false);
+	case constant:
+		return declaration(true);
 	case name:
 		ts.unget(t);
 		return assignment();
