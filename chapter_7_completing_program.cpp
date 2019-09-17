@@ -2,6 +2,7 @@
 The grammar for input is:
 	
 Calculate:
+	Statement ; Statement ;
 	Statement:
 		Expression
 		Declaration	
@@ -10,8 +11,9 @@ Calculate:
 	Print:
 		;	
 	Quit:
-		q
-	
+		quit || Quit || QUIT
+	Help:
+		help || Help || HELP
 		Declaration:
 			# Name = Expression
 		
@@ -43,18 +45,21 @@ Calculate:
 						Number:
 							floating-point-literal
 						
-Tests:
-
-(123+----12)/(34/17 -2); - divide by zero
-1237812382163872168372163 * 12312;
-sdfjsadkjfksadjfkjas0981239'''a3 32 00923u	2302	309u092	3;;;;;;;;23423 23; ;23 ;234;23; 
-let let = 5;
-let quit = 5;
-let 123 = 124;
-
 */
 
 #include "std_lib_facilities.h"
+
+const char let = 'L';
+const char quit = 'Q';
+const char print = ';';
+const char number = '8';
+const char name = 'a';
+const char square = 'S';
+const char mod = 'M';
+const char power = 'P';
+const char constant = 'C';
+const char help = 'H';
+
 
 struct Token {
 	char kind;        // type of the token - number, name, or some operation
@@ -76,66 +81,56 @@ public:
 	void ignore(char);
 };
 
-const char let = 'L';
-const char quit = 'Q';
-const char print = ';';
-const char number = '8';
-const char name = 'a';
-const char square = 'S';
-const char power = 'P';
-const char constant = 'C';
-
-
 Token Token_stream::get()
 {
 	if (full) { full = false; return buffer; }
 	char ch;
-	cin >> ch;
-	switch (ch) {
-	case '(':
-	case ')':
-	case '+':
-	case '-':
-	case '*':
-	case '/':
-	case '%':
-	case ';':
-	case '=':
-	case ',':
-		return Token(ch);
-	case '.':
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-	{	
-	cin.unget(); // put character back to stream, alternative to cin.putback(ch)
-	double val;
-	cin >> val;
-	return Token(number, val);
+	cin.get(ch);
+	while (isspace(ch)) {
+		if (ch == '\n') return Token(print); // if newline detected, return print Token
+		cin.get(ch);
 	}
-	case '#':
-		return Token(let);
-	default:
-		if (isalpha(ch) ) { // isalpha checks whether ch is an alphabetic letter
-			string s;
-			s += ch;
-			while (cin.get(ch) && (isalpha(ch) || isdigit(ch)) || ch == '_') s += ch; // (error was here)
-			cin.unget();
-			if (s == "const") return Token(constant);
-			if (s == "sqrt") return Token(square);
-			if (s == "pow") return Token(power);
-			if (s == "exit") return Token(quit); // (error was here)
-			
-			return Token(name, s);
+	switch (ch) 
+	{
+		case '(':
+		case ')':
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+		case '%':
+		case ';':
+		case '=':
+		case ',':
+			return Token(ch);
+		case '.':	case '0':	case '1':	case '2':	
+		case '3':	case '4':	case '5':	case '6':	
+		case '7':	case '8':	case '9':	
+		{	
+			cin.unget(); // put character back to stream, alternative to cin.putback(ch)
+			double val;
+			cin >> val;
+			return Token(number, val);
 		}
-		error("Bad token");
+		case '#':
+			return Token(let);
+		default:
+			if (isalpha(ch)) // isalpha checks whether ch is an alphabetic letter
+			{
+				string s;
+				s += ch;
+				while (cin.get(ch) && (isalpha(ch) || isdigit(ch)) || ch == '_') s += ch; // (error was here)
+				cin.unget();
+				if (s == "const") return Token(constant);
+				if (s == "sqrt") return Token(square);
+				if (s == "mod") return Token(mod);
+				if (s == "pow") return Token(power);
+				if (s == "quit" || s == "Quit" || s == "QUIT") return Token(quit); // (error was here)
+				if (s == "help" || s == "Help" || s == "HELP") return Token(help); // (error was here)
+				return Token(name, s);
+			}
+
+			error("Bad token");
 	}
 }
 
@@ -240,6 +235,17 @@ double primary()
 			}
 			return sqrt(d); 
 		}
+		case mod:
+		{
+			t = ts.get();
+			if (t.kind != '(') error("'(' expected");
+			ts.unget(t);
+			double d = expression();
+			if (d < 0) {
+				return d *= -1;
+			}
+			return d;
+		}
 		case power: {
 			t = ts.get();
 			if (t.kind != '(') {
@@ -338,7 +344,6 @@ double assignment() {
 	return expression();
 }
 
-
 double statement()
 {
 	Token t = ts.get();
@@ -370,9 +375,14 @@ void calculate()
 		cout << prompt;
 		Token t = ts.get();
 		while (t.kind == print) t = ts.get();
-		if (t.kind == quit) return;
-		ts.unget(t);
-		cout << result << statement() << endl;
+		if (t.kind == help) {
+			cout << "\nCalculation application\n\nSupports all arithmetic operations including parenthesis, pow(x,y), mod(x) and sqrt(x) functions\nuse #x = y notation to define a variable\nuse x = y notation to redefine it\nuse const x = y to define a constant (can't be redefined)\n\nEnter 'help' to receive this this message\nEnter 'quit' for quit\n";
+		}
+		else {
+			if (t.kind == quit) return;
+			ts.unget(t);
+			cout << result << statement() << endl;
+		}
 	}
 	catch (runtime_error& e) {
 		cerr << e.what() << endl;
