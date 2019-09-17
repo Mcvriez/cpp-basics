@@ -110,7 +110,8 @@ Token Token_stream::get()
 			cin.unget(); // put character back to stream, alternative to cin.putback(ch)
 			double val;
 			cin >> val;
-			return Token(number, val);
+			int val1 = narrow_cast<int>(val);
+			return Token(number, val1);
 		}
 		case '#':
 			return Token(let);
