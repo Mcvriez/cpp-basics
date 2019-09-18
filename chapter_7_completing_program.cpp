@@ -59,6 +59,7 @@ const char mod = 'M';
 const char power = 'P';
 const char constant = 'C';
 const char help = 'H';
+const char newline = '\n';
 
 
 struct Token {
@@ -87,7 +88,7 @@ Token Token_stream::get()
 	char ch;
 	cin.get(ch);
 	while (isspace(ch)) {
-		if (ch == '\n') return Token(print); // if newline detected, return print Token
+		if (ch == newline) return Token(print); // if newline detected, return print Token
 		cin.get(ch);
 	}
 	switch (ch) 
@@ -127,7 +128,7 @@ Token Token_stream::get()
 				if (s == "mod") return Token(mod);
 				if (s == "pow") return Token(power);
 				if (s == "quit" || s == "Quit" || s == "QUIT") return Token(quit); // (error was here)
-				if (s == "help" || s == "Help" || s == "HELP") return Token(help); // (error was here)
+				if (s == "help" || s == "Help" || s == "HELP") return Token(help); 
 				return Token(name, s);
 			}
 
@@ -144,8 +145,8 @@ void Token_stream::ignore(char c)       // reads till the specified character, n
 	full = false;
 
 	char ch;
-	while (cin >> ch)
-		if (ch == c) return;
+	while (cin.get(ch))
+		if (ch == c || ch == newline) return;
 }
 
 struct Variable {
@@ -320,7 +321,7 @@ double declaration(bool cons)
 	string name = t.name;
 	if (st.is_declared(name)) error(name, " declared twice");
 	Token t2 = ts.get();
-	if (t2.kind != '=') error("= missing in declaration of ", name);
+	if (t2.kind != '=') { ts.unget(t2);  error("= missing in declaration of ", name);}
 	double d = expression();
 	st.define_name(name, d, cons);
 	return d;
@@ -372,23 +373,24 @@ const string result = "= ";
 
 void calculate()
 {
-	while (true) try {
-		cout << prompt;
-		Token t = ts.get();
-		while (t.kind == print) t = ts.get();
-		if (t.kind == help) {
-			cout << "\nCalculation application\n\nSupports all arithmetic operations including parenthesis, pow(x,y), mod(x) and sqrt(x) functions\nuse #x = y notation to define a variable\nuse x = y notation to redefine it\nuse const x = y to define a constant (can't be redefined)\n\nEnter 'help' to receive this this message\nEnter 'quit' for quit\n";
+	while (true) 
+		try {
+			cout << prompt;
+			Token t = ts.get();
+			while (t.kind == print) t = ts.get();
+			if (t.kind == help) {
+				cout << "\nCalculation application\n\nSupports all arithmetic operations including parenthesis, pow(x,y), mod(x) and sqrt(x) functions\nuse #x = y notation to define a variable\nuse x = y notation to redefine it\nuse const x = y to define a constant (can't be redefined)\n\nEnter 'help' to receive this this message\nEnter 'quit' for quit\n";
+			}
+			else {
+				if (t.kind == quit) return;
+				ts.unget(t);
+				cout << result << statement() << endl;
+			}
 		}
-		else {
-			if (t.kind == quit) return;
-			ts.unget(t);
-			cout << result << statement() << endl;
+		catch (runtime_error& e) {
+			cerr << e.what() << endl;
+			clean_up_mess();
 		}
-	}
-	catch (runtime_error& e) {
-		cerr << e.what() << endl;
-		clean_up_mess();
-	}
 }
 
 int main() {
