@@ -1,43 +1,41 @@
 #include "std_lib_facilities.h"
 
-int x = 7;
-int y = 9;
+// Write a program using a single file containing three namespaces X, Y, and Z 
+// so that the following main() works correctly
+// Each namespace needs to define a variable called var and a function called
+// print() that outputs the appropriate var using cout
 
-const int cx = 7;
-const int cy = 9;
-
-double dx = 7.7;
-double dy = 9.9;
-
-
-/*
-
-void swap_v(int a, int b) {
-	int temp;
-	temp = a, a = b;
-	b = temp;
-	cout << '\n' << a << " " << b << "\n\n";
-	cout << '\n' << x << " " << y << "\n\n";
-
+namespace X {
+	int var = 0;
+	void print() { cout << var << '\n'; }
 }
 
-void swap_r(int& a, int& b) {
-	int temp;
-	temp = a; a = b;
-	b = temp;
-	cout << '\n' << a << " " << b << "\n\n";
-	cout << '\n' << x << " " << y << "\n\n";
+namespace Y {
+	int var = 0;
+	void print() { cout << var << '\n'; }
 }
 
-
-*/
-
-void swap_cr(const int& a, const int& b) {
-	int temp; temp = a, a = b;
-	b = temp;
+namespace Z {
+	int var = 0;
+	void print() { cout << var << '\n'; }
 }
 
-int main (){
-	swap_cr(dx, dy);
+int main()
+{
+	X::var = 7;
+	X::print(); // print X’s var
+
+	using namespace Y;
+	var = 9;
+	print(); // print Y’s var
 	
+	{ 
+		using Z::var;
+		using Z::print;
+		var = 11;
+		print(); // print Z’s var
+	}
+	
+	print(); // print Y’s var
+	X::print(); // print X’s var
 }
