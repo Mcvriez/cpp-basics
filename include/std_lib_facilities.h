@@ -10,7 +10,7 @@
 
 	Revised April 25, 2010: simple_error() added
 */
-
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS 1
 #ifndef H112
 #define H112 201004L
 

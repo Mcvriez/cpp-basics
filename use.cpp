@@ -1,8 +1,8 @@
 #include "my.h"
+int foo = 7;
 
 int main() 
 {
-	int foo = 7;
 	print_foo();
 	print(99);
 }
