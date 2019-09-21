@@ -18,6 +18,8 @@ Your fibonacci() function should make such a sequence starting with its x and y 
 
 */
 
+// exercise 4 http://prntscr.com/p90jkc
+
 vector <int> numbers;
 const string label = "Here comes the vector:\n";
 
@@ -36,7 +38,7 @@ void fibonacci(int x, int y, vector<int>& vect, int n) {
 
 
 int main() {
-	fibonacci(1, 2, numbers, 20);
+	fibonacci(1, 2, numbers, 50);
 	print(label, numbers);
 }
 
