@@ -1,31 +1,29 @@
 #include "std_lib_facilities.h"
 
 /*
-Create a vector of Fibonacci number sand print them using the function from exercise 2. 
-To create the vector, write a function, 
+Write two functions that reverse the order of elements in a vector<int>.
 
-fibonacci(x, y, v, n),
-where integers x and y are ints, 
-v is an empty vector<int>, 
-and n is the number of elements to put into v; 
-v[0] will be x
-and v[1] will be y.
+For example:
+1, 3, 5, 7, 9 becomes 9, 7, 5, 3, 1. 
 
-A Fibonacci number is one that is part of a sequence where each element is the
-sum of the two previous ones.
-For example, starting with 1 and 2, we get 1, 2, 3, 5, 8, 13, 21, . . ..
-Your fibonacci() function should make such a sequence starting with its x and y arguments.
+The first reverse function should produce a new vector with the reversed sequence, 
+leaving its original vector unchanged. 
+
+The other reverse function should reverse the
+elements of its vector without using any other vectors (hint: swap).
 
 */
 
-// exercise 4 http://prntscr.com/p90jkc
-
 vector <int> numbers;
+vector <int> reversed;
+
 const string label = "Here comes the vector:\n";
+const string label_r = "Here comes the revested vector:\n";
 
 void print(const string& s, const vector<int>& vv) {
 	cout << s;
-	for (int x : vv) cout << x << '\n';
+	for (int x : vv) cout << x << '\t';
+	cout << "\n\n";
 }
 
 void fibonacci(int x, int y, vector<int>& vect, int n) {
@@ -36,9 +34,27 @@ void fibonacci(int x, int y, vector<int>& vect, int n) {
 	}
 }
 
+void reverse_1(const vector<int>& source, vector<int>& result) {
+	for (int i = source.size() - 1; i >= 0; --i) { 
+		result.push_back(source[i]); 
+	}
+}
+
+void reverse_2(vector<int>& source) {
+	int ss = source.size() - 1;
+	for (int i = 0; i < ss ; ++i) {
+		swap(source[i], source[ss]);
+		--ss;
+	}
+}
 
 int main() {
-	fibonacci(1, 2, numbers, 50);
+	fibonacci(3, 4, numbers, 15);
+	// reverse_1(numbers, reversed);
+	print(label, numbers);
+	// print(label_r, reversed);
+
+	reverse_2(numbers);
 	print(label, numbers);
 }
 
