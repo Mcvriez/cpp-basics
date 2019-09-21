@@ -14,15 +14,15 @@ elements of its vector without using any other vectors (hint: swap).
 
 */
 
-vector <int> numbers;
-vector <int> reversed;
+vector <string> words = { "shit", "piss", "fuck", "cunt", "cocksucker", "motherfucker",  "tits" };
+vector <string> reversed;
 
 const string label = "Here comes the vector:\n";
-const string label_r = "Here comes the revested vector:\n";
+const string label_r = "Here comes the reversed vector:\n";
 
-void print(const string& s, const vector<int>& vv) {
+void print(const string& s, const vector<string>& vv) {
 	cout << s;
-	for (int x : vv) cout << x << '\t';
+	for (string x : vv) cout << x << '\t';
 	cout << "\n\n";
 }
 
@@ -34,13 +34,13 @@ void fibonacci(int x, int y, vector<int>& vect, int n) {
 	}
 }
 
-void reverse_1(const vector<int>& source, vector<int>& result) {
+void reverse_1(const vector<string>& source, vector<string>& result) {
 	for (int i = source.size() - 1; i >= 0; --i) { 
 		result.push_back(source[i]); 
 	}
 }
 
-void reverse_2(vector<int>& source) {
+void reverse_2(vector<string>& source) {
 	int ss = source.size() - 1;
 	for (int i = 0; i < ss ; ++i) {
 		swap(source[i], source[ss]);
@@ -49,12 +49,11 @@ void reverse_2(vector<int>& source) {
 }
 
 int main() {
-	fibonacci(3, 4, numbers, 15);
-	// reverse_1(numbers, reversed);
-	print(label, numbers);
-	// print(label_r, reversed);
+	print(label, words);
+	reverse_1(words, reversed);
+	print(label_r, reversed);
 
-	reverse_2(numbers);
-	print(label, numbers);
+	reverse_2(reversed);
+	print(label, reversed);
 }
 
