@@ -1,59 +1,72 @@
 #include "std_lib_facilities.h"
 
 /*
-Write two functions that reverse the order of elements in a vector<int>.
 
-For example:
-1, 3, 5, 7, 9 becomes 9, 7, 5, 3, 1. 
+1) Read five names into a vector<string> name, 
+2) then prompt the user for the ages of the people named and store the ages in a vector<double> age.
+3) Then print out the five ( name[i] , age[i] ) pairs.
 
-The first reverse function should produce a new vector with the reversed sequence, 
-leaving its original vector unchanged. 
+4) Sort the names ( sort(name.begin(),name.end()) ) and print out the ( name[i] , age[i] ) pairs. 
 
-The other reverse function should reverse the
-elements of its vector without using any other vectors (hint: swap).
+The tricky part here is to get the age vector in the correct order to match the sorted
+name vector. 
+Hint: Before sorting name , take a copy and use that to make a copy of age in the right order after sorting name.
+
+Then, do that exercise again but allowing an arbitrary number of names.
 
 */
 
-vector <string> words = { "shit", "piss", "fuck", "cunt", "cocksucker", "motherfucker",  "tits" };
-vector <string> reversed;
+vector <string> name;
+vector <double> age;
+const int sz = 5;
 
-const string label = "Here comes the vector:\n";
-const string label_r = "Here comes the reversed vector:\n";
+void print(const vector<string>& names, const vector <double>& ages) {
+	cout << endl;
+	for (int i = 0; i < names.size(); i++) {
+		cout << names[i] << " is age of " << ages[i] << endl;
+	}
 
-void print(const string& s, const vector<string>& vv) {
-	cout << s;
-	for (string x : vv) cout << x << '\t';
-	cout << "\n\n";
 }
 
-void fibonacci(int x, int y, vector<int>& vect, int n) {
-	for (int i = 0; i < n; ++i) {
-		if (i == 0) vect.push_back(x);
-		else if (i == 1) vect.push_back(y);
-		else vect.push_back(vect[i - 1] + vect[i - 2]);
+
+void names_and_ages(vector<string>& names, vector <double>& ages, const int sz) {
+	cout << "Enter names separated by whitespace or newline (you can enter x to stop at any time): \n";
+	string input;
+	// while (names.size() < sz && cin >> input && input != "x") {  <---- constant number of names
+	while (cin >> input && input != "x" ) {
+		names.push_back(input);
+	}
+	for (string name : names) {
+		cout << "Enter age of " << name << ": ";
+		double age;
+		cin >> age;
+		ages.push_back(age);
 	}
 }
 
-void reverse_1(const vector<string>& source, vector<string>& result) {
-	for (int i = source.size() - 1; i >= 0; --i) { 
-		result.push_back(source[i]); 
+void sort_names(vector<string>& names, vector <double>& ages) {
+	cout << "\nSorting names..\n";
+	// making copies:
+	vector <string> copys;
+	vector <double> copyd;
+	for (string name : names) copys.push_back(name);
+	for (double age : ages) copyd.push_back(age);
+	
+	sort(names.begin(), names.end());
+	for (int i = 0; i < copys.size(); ++i) {
+		for (int j = 0; j < copys.size(); ++j) {
+			if (names[i] == copys[j]) {
+				ages[i] = copyd[j];
+			}
+		}
 	}
 }
 
-void reverse_2(vector<string>& source) {
-	int ss = source.size() - 1;
-	for (int i = 0; i < ss ; ++i) {
-		swap(source[i], source[ss]);
-		--ss;
-	}
-}
 
 int main() {
-	print(label, words);
-	reverse_1(words, reversed);
-	print(label_r, reversed);
-
-	reverse_2(reversed);
-	print(label, reversed);
+	names_and_ages(name, age, sz);
+	print(name, age);
+	sort_names(name, age);
+	print(name, age);
 }
 
