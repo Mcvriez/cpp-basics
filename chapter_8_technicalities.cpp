@@ -2,33 +2,33 @@
 
 /*
 
-Write a function that given two vector<double>s price and weight com-
-putes a value (an “index”) that is the sum of all price[i]*weight[i]. 
-Make sure to have weight.size()==price.size()
+Write a function maxv() that returns the largest element of a vector
+argument.
 
 */
 
+vector <double> ints = { 12, 32, 54, 324, 6556, 12 };
 vector <double> price = {2.13, 4.31, 324.24, 54.64, 566.55, 1235.6};
-vector <double> weight = {0.88, 0.5, 3.5, 5.0, 12.34, 20.1};
+vector <double> weight = {0.88, 123.123, 0.5, 3.5, 5.0, 12.34, 20.1};
+vector <string> words = { "shit", "piss", "fuck", "cunt", "cocksucker", "motherfucker",  "tits" };
 
+void sortd(vector<double> to_sort) {
+	sort(to_sort.begin(), to_sort.end());
+	cout << "Largest element is: " << to_sort[to_sort.size() - 1] << endl;
+}
 
-double compute(const vector<double>& prices, const vector <double>& weights) {
-	if (weights.size() != prices.size()) {
-		cout << "Prices and weights don't match\n";
-		return 0;
-	}
-	double sum = 0;
-	for (int i = 0; i < prices.size(); i++) {
-		sum += prices[i] * weights[i];
-	}
-	return sum;
-
+void sorts(vector<string> to_sort) {
+	sort(to_sort.begin(), to_sort.end());
+	cout << "Largest element is: " << to_sort[to_sort.size() - 1] << endl;
 }
 
 
 
 int main() {
-	double result = compute(price, weight);
-	if (result) cout << "Index is: " << result << endl;
+	sortd(ints);
+	sortd(price);
+	sortd(weight);
+	sorts(words);
+
 }
 
