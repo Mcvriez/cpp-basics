@@ -2,71 +2,33 @@
 
 /*
 
-1) Read five names into a vector<string> name, 
-2) then prompt the user for the ages of the people named and store the ages in a vector<double> age.
-3) Then print out the five ( name[i] , age[i] ) pairs.
-
-4) Sort the names ( sort(name.begin(),name.end()) ) and print out the ( name[i] , age[i] ) pairs. 
-
-The tricky part here is to get the age vector in the correct order to match the sorted
-name vector. 
-Hint: Before sorting name , take a copy and use that to make a copy of age in the right order after sorting name.
-
-Then, do that exercise again but allowing an arbitrary number of names.
+Write a function that given two vector<double>s price and weight com-
+putes a value (an “index”) that is the sum of all price[i]*weight[i]. 
+Make sure to have weight.size()==price.size()
 
 */
 
-vector <string> name;
-vector <double> age;
-const int sz = 5;
+vector <double> price = {2.13, 4.31, 324.24, 54.64, 566.55, 1235.6};
+vector <double> weight = {0.88, 0.5, 3.5, 5.0, 12.34, 20.1};
 
-void print(const vector<string>& names, const vector <double>& ages) {
-	cout << endl;
-	for (int i = 0; i < names.size(); i++) {
-		cout << names[i] << " is age of " << ages[i] << endl;
+
+double compute(const vector<double>& prices, const vector <double>& weights) {
+	if (weights.size() != prices.size()) {
+		cout << "Prices and weights don't match\n";
+		return 0;
 	}
+	double sum = 0;
+	for (int i = 0; i < prices.size(); i++) {
+		sum += prices[i] * weights[i];
+	}
+	return sum;
 
 }
 
-
-void names_and_ages(vector<string>& names, vector <double>& ages, const int sz) {
-	cout << "Enter names separated by whitespace or newline (you can enter x to stop at any time): \n";
-	string input;
-	// while (names.size() < sz && cin >> input && input != "x") {  <---- constant number of names
-	while (cin >> input && input != "x" ) {
-		names.push_back(input);
-	}
-	for (string name : names) {
-		cout << "Enter age of " << name << ": ";
-		double age;
-		cin >> age;
-		ages.push_back(age);
-	}
-}
-
-void sort_names(vector<string>& names, vector <double>& ages) {
-	cout << "\nSorting names..\n";
-	// making copies:
-	vector <string> copys;
-	vector <double> copyd;
-	for (string name : names) copys.push_back(name);
-	for (double age : ages) copyd.push_back(age);
-	
-	sort(names.begin(), names.end());
-	for (int i = 0; i < copys.size(); ++i) {
-		for (int j = 0; j < copys.size(); ++j) {
-			if (names[i] == copys[j]) {
-				ages[i] = copyd[j];
-			}
-		}
-	}
-}
 
 
 int main() {
-	names_and_ages(name, age, sz);
-	print(name, age);
-	sort_names(name, age);
-	print(name, age);
+	double result = compute(price, weight);
+	if (result) cout << "Index is: " << result << endl;
 }
 
