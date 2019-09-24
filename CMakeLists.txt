@@ -4,4 +4,4 @@ project (cppbasics)
 
 include_directories(include)
 
-add_executable(app chapter_8_technicalities.cpp)
+add_executable(app chapter_9_technicalities.cpp)
