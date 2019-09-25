@@ -18,12 +18,19 @@ Test each version with at least one invalid date (e.g., 2004, 13, –5).
 
 */
 
-// 1. The version from §9.4.1 page 309
+// 2. The version from §9.4.2 page 310-312
 
 struct Date {
-	int y; // year
-	int m; // month in year
-	int d; // day of month
+	int y, m, d; // year, month, day
+	Date (int yy, int mm, int dd) {
+		if (yy > 2200 || yy < 1800) error("Wrong date format - year", yy);
+		if (mm > 12 || mm < 1) error("Wrong date format - month", mm);
+		if (dd > 31 || dd < 1) error("Wrong date format - day", dd);
+		y = yy;
+		m = mm;
+		d = dd;
+	}
+	void add_day(int n); // increase the Date by n days
 };
 
 ostream& operator<<(ostream& os, const Date& d)
@@ -33,27 +40,18 @@ ostream& operator<<(ostream& os, const Date& d)
 		<< ',' << d.d << ')' << endl;
 }
 
-void init_day(Date& dd, int y, int m, int d)
-{
-	if (y > 2200 || y < 1800) error("Wrong date format - year", y);
-	if (m > 12 || m < 1) error("Wrong date format - month", m);
-	if (d > 31 || d < 1) error("Wrong date format - day", d);
-	dd.y = y;
-	dd.m = m;
-	dd.d = d;
-}
 
-void add_day(Date& dd, int n)
+void Date::add_day(int n)
 {
 	if (n > 31 || n < 1) error("You can't add more than 31 day");
-	dd.d += n;
-	if (dd.d > 31) {
-		++dd.m;
-		dd.d = dd.d - 31;
+	d += n;
+	if (d > 31) {
+		++m;
+		d = d - 31;
 	}
-	if (dd.m > 12) {
-		++dd.y;
-		dd.m = 1;
+	if (m > 12) {
+		++y;
+		m = 1;
 	}
 }
 
@@ -64,14 +62,12 @@ void simple_print(const Date& today) {
 
 int main() {
 	try {
-		Date today;
-		init_day(today, 1978, 6, 25); // 1
+		Date today (1978, 6, 25); // 1 C++98 style
 		cout << today;
 		Date tomorrow = today;
-		add_day(tomorrow, 1);
+		tomorrow.add_day(1);      // 2
 		cout << tomorrow;
-		Date inval;
-		init_day(inval, 2004, 13, -5);
+		Date inval{ 2004, 13, -5 };
 		cout << inval;
 		return 0;
 	}
