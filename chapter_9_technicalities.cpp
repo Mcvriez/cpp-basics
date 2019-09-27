@@ -18,22 +18,28 @@ Test each version with at least one invalid date (e.g., 2004, 13, –5).
 
 */
 
-// 3. The version from §9.4.3 p 313
+// 3. The version from §9.7.1 p 324
 
-class Date {
-	int y, m, d; // year, month, day
-public:
-	Date(int y, int m, int d); // check for valid date and initialize
-	void add_day(int n); // increase the Date by n days
-	int month() const { return m; } // doesn't compile w\o const
-	int day() const { return d; }
-	int year() const { return y; }
+enum class Month {
+	jan = 1, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec
 };
 
 
-Date::Date(int yy, int mm, int dd) {
+
+class Date {
+	int y, d;
+	Month m;
+public:
+	Date(int y, Month m, int d); // check for valid date and initialize
+	int month() const { return int(m); } // doesn't compile w\o const
+	int day() const { return d; }
+	int year() const { return y; }
+	void add_day(int n); // increase the Date by n days
+};
+
+
+Date::Date(int yy, Month mm, int dd) {
 	if (yy > 2200 || yy < 1800) error("Wrong date format - year", yy);
-	if (mm > 12 || mm < 1) error("Wrong date format - month", mm);
 	if (dd > 31 || dd < 1) error("Wrong date format - day", dd);
 	y = yy;
 	m = mm;
@@ -49,28 +55,29 @@ ostream& operator << (ostream& os, const Date& d) //
 
 void Date::add_day(int n)
 {
+	int month = int(m);
 	if (n > 31 || n < 1) error("You can't add more than 31 day");
 	d += n;
 	if (d > 31) {
-		++m;
+		++month;
 		d = d - 31;
 	}
-	if (m > 12) {
+	if (month > 12) {
 		++y;
-		m = 1;
+		m = Month::jan;
 	}
 }
 
 
 int main() {
 	try {
-		Date today (1978, 6, 25); // 1 C++98 style
+		Date today (1978, Month::jun, 25); // 1 C++98 style
 		cout << today;
 		Date tomorrow = today;
 		tomorrow.add_day(1);      // 2
 		cout << tomorrow;
 		
-		Date inval{ 2004, 13, -5 };
+		Date inval{ 2004, Month::dec, -5 };
 		cout << inval;
 
 		return 0;
