@@ -18,32 +18,44 @@ Test each version with at least one invalid date (e.g., 2004, 13, –5).
 
 */
 
-// 3. The version from §9.7.1 p 324
+// 4. The version from §9.7.1 p 324
 
 enum class Month {
 	jan = 1, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec
 };
 
-
+class Year { // year in [min:max) range
+	static const int min = 1800;
+	static const int max = 2200;
+	static const int default = 1970;
+public:
+	class Invalid { };
+	Year(int x) : y{ x } { if (x < min || max <= x) throw Invalid{}; }
+	int year() const { return y; }
+	Year() : y{ default } {}
+private:
+	int y;
+};
 
 class Date {
-	int y, d;
+	int d;
 	Month m;
+	Year y;
 public:
-	Date(int y, Month m, int d); // check for valid date and initialize
+	Date(Year y, Month m, int d); // check for valid date and initialize
 	int month() const { return int(m); } // doesn't compile w\o const
 	int day() const { return d; }
-	int year() const { return y; }
+	int year() const { return y.year(); }
 	void add_day(int n); // increase the Date by n days
+
 };
 
 
-Date::Date(int yy, Month mm, int dd) {
-	if (yy > 2200 || yy < 1800) error("Wrong date format - year", yy);
-	if (dd > 31 || dd < 1) error("Wrong date format - day", dd);
+Date::Date(Year yy, Month mm, int dd) {
 	y = yy;
 	m = mm;
 	d = dd;
+	if (m<Month::jan || m>Month::dec || d < 1 || d>31) error("invalid date");
 }
 
 ostream& operator << (ostream& os, const Date& d) // 
@@ -56,6 +68,7 @@ ostream& operator << (ostream& os, const Date& d) //
 void Date::add_day(int n)
 {
 	int month = int(m);
+	int year = y.year();
 	if (n > 31 || n < 1) error("You can't add more than 31 day");
 	d += n;
 	if (d > 31) {
@@ -63,7 +76,7 @@ void Date::add_day(int n)
 		d = d - 31;
 	}
 	if (month > 12) {
-		++y;
+		y = Year{ year + 1 };
 		m = Month::jan;
 	}
 }
@@ -71,7 +84,9 @@ void Date::add_day(int n)
 
 int main() {
 	try {
-		Date today (1978, Month::jun, 25); // 1 C++98 style
+		Year my_year;
+		cout << my_year.year() << endl;
+		Date today(1999, Month::jun, 25); // 1 C++98 style
 		cout << today;
 		Date tomorrow = today;
 		tomorrow.add_day(1);      // 2
