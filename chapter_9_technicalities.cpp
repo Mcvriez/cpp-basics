@@ -18,7 +18,7 @@ Test each version with at least one invalid date (e.g., 2004, 13, –5).
 
 */
 
-// 4. The version from §9.7.1 p 324
+// 5. The version from §9.7.4 same as previous because I have to use const member functions to make ostream& operator << work
 
 enum class Month {
 	jan = 1, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec
@@ -74,6 +74,7 @@ void Date::add_day(int n)
 	if (d > 31) {
 		++month;
 		d = d - 31;
+		m = Month(month);
 	}
 	if (month > 12) {
 		y = Year{ year + 1 };
@@ -86,7 +87,7 @@ int main() {
 	try {
 		Year my_year;
 		cout << my_year.year() << endl;
-		Date today(1999, Month::jun, 25); // 1 C++98 style
+		Date today(1969, Month::jun, 31); // 1 C++98 style
 		cout << today;
 		Date tomorrow = today;
 		tomorrow.add_day(1);      // 2
