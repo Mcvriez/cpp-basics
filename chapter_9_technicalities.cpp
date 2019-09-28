@@ -24,15 +24,16 @@ Implement all “operations” as member functions. Test the class (of course: test 
 class Name_pairs
 {
 	public:
-		Name_pairs(istream& input, ostream& output, int ms) : is{ input }, os{ output }, max_size { ms } {};
+		Name_pairs(istream& input, ostream& output, const int ms) : is{ input }, os{ output }, max_size { ms } {};
 		void read_names();
 		void read_ages();
-		void print();
 		void sort();
+		vector <string> get_names() const { return names; }
+		vector <double> get_ages() const { return ages; }
+		const int max_size;
 	private:
 		istream& is; 
 		ostream& os;
-		int max_size;
 		vector <string> names;
 		vector <double> ages;
 };
@@ -63,18 +64,29 @@ void Name_pairs::read_ages() {
 	}
 };
 
-void Name_pairs::print() {
+void operator << (ostream&os, const Name_pairs&np) {
 	os << endl << "names and ages:" << endl;
-	if (!names.size() || !ages.size() || ages.size() != names.size()) {
-		os << "Namepairs object is empty or corrupted." << endl;
-		return;
-	}
-		for (int i = 0; i < names.size(); ++i) {
+	vector <string> names = np.get_names();
+	vector <double> ages = np.get_ages();
+	for (int i = 0; i < names.size(); ++i) {
 		os << names[i] << ": " << ages[i] << '\t';
 	}
 	os << endl;
 }
 
+
+bool operator == (const Name_pairs& np, const Name_pairs& np2) {
+	vector <string> names = np.get_names();
+	vector <double> ages = np.get_ages();
+	vector <string> names2 = np2.get_names();
+	vector <double> ages2 = np2.get_ages();
+	if (names == names2 && ages == ages2) return true;
+	return false;
+}
+
+bool operator != (const Name_pairs& np, const Name_pairs& np2) {
+	return !(np == np2);
+}
 
 void Name_pairs::sort() {
 	os << "\nsorting names.." << endl;
@@ -98,23 +110,24 @@ void Name_pairs::sort() {
 }
 
 
-int routine (Name_pairs np) {
+int routine (Name_pairs np, ostream& out) {
 	np.read_names();
 	np.read_ages();
-	np.print();
+	out << np;
 	np.sort();
-	np.print();
+	out << np;
 	return 0;
 }
 
-const int big_size = 2;
+const int big_size = 3; 
 
 int main() {
 	try {
 		Name_pairs np(cin, cout, big_size);
-		routine(np);
+		routine(np, cout);
 		Name_pairs np2(cin, cout, big_size);
-		routine(np2);
+		routine(np2, cout);
+		cout << "First object is equal to second: " << (np == np2) << endl;
 	}
 	catch (exception& e) {
 		cerr << "Error: " << e.what() << endl;
