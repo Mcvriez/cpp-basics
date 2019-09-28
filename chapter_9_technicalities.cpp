@@ -28,8 +28,8 @@ class Name_pairs
 		void read_names();
 		void read_ages();
 		void sort();
-		vector <string> get_names() const { return names; }
-		vector <double> get_ages() const { return ages; }
+		const vector <string> get_names() const { return names; }
+		const vector <double> get_ages() const { return ages; }
 		const int max_size;
 	private:
 		istream& is; 
@@ -64,7 +64,7 @@ void Name_pairs::read_ages() {
 	}
 };
 
-void operator << (ostream&os, const Name_pairs&np) {
+ostream& operator << (ostream&os, const Name_pairs&np) {
 	os << endl << "names and ages:" << endl;
 	vector <string> names = np.get_names();
 	vector <double> ages = np.get_ages();
