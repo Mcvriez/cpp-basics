@@ -2,23 +2,10 @@
 
 /*
 
- This exercise and the next few require you to design and implement a
-Book class, such as you can imagine as part of software for a library.
-
-Book should have members for the :
-
-ISBN, 
-title, 
-author, 
-copyright date. 
-
-Also store data on whether or not the book is checked out. 
-Create functions for returning those data values. 
-
-Create functions for checking a book in and out. 
-Do simple validation of data entered into a Book ; for example, 
-accept ISBNs only of the form n-n-n-x where n is an integer and x is a digit or a letter.
-Store an ISBN as a string
+Add operators for the Book class. 
+Have the == operator check whether the ISBN numbers are the same for two books.
+Have != also compare the ISBN numbers. 
+Have a << print out the title, author, and ISBN on separate lines.
 
 */
 
@@ -37,7 +24,7 @@ namespace Bookstore {
 			s{ ss },
 			id{ "" }
 		{
-			cout << "creating ISBN" << endl;
+			// cout << "creating ISBN" << endl;
 			id = to_string(n0) + "-" + to_string(n1) + "-" + to_string(n2) + s;
 		};
 	};
@@ -76,17 +63,27 @@ namespace Bookstore {
 		isbn{ isbn.id },
 		title{ title },
 		checked{ false }
-	{cout << "creating book" << endl; };
+	{
+		//cout << "creating book" << endl; 
+	};
 
-	void list_book(Book& b) {
-		cout << "is_checked: "<< b.is_checked() << endl;
-		cout << "get_author: " << b.get_author() << endl;
-		cout << "get_copyright: " << b.get_copyright() << endl;
-		cout << "get_isbn: " << b.get_isbn() << endl;
-		cout << "checking book.." << endl;
-		b.check();
-		cout << "is_checked: " << b.is_checked() << endl;
-	}
+
+}
+
+bool operator == (const Bookstore::Book& b1, const Bookstore::Book& b2) {
+	return b1.get_isbn() == b2.get_isbn();
+}
+bool operator != (const Bookstore::Book& b1, const Bookstore::Book& b2) {
+	return b1.get_isbn() != b2.get_isbn();
+}
+
+ostream& operator << (ostream& os, Bookstore::Book& b) {
+	cout << "Author: " << b.get_author() << endl;
+	cout << "Title: " << b.get_title() << endl;
+	cout << "Copyright: " << b.get_copyright() << endl;
+	cout << "ISBN: " << b.get_isbn() << endl;
+	cout << "Book is checked: " << b.is_checked() << endl;
+	return os;
 }
 
 
@@ -94,9 +91,12 @@ namespace Bookstore {
 int main() {
 	try {
 		Bookstore::ISBN book_id = Bookstore::ISBN(123, 4, 321, "kek");
-		Bookstore::Book new_book = Bookstore::Book("Stephen King", "No License 2019", book_id, "The Stand");
-		Bookstore::list_book(new_book);
-
+		Bookstore::Book book = Bookstore::Book("Stephen King", "No License 2019", book_id, "The Stand");
+		Bookstore::ISBN book_id1 = Bookstore::ISBN(1223, 4, 321, "kek");
+		Bookstore::Book book1 = Bookstore::Book("Stephen King", "No License 2019", book_id1, "The Stand");
+		cout << book;
+		if (book1 == book) { cout << "Equal " << endl; }
+		if (book1 != book) { cout << "Not equal " << endl; }
 	}
 	catch (exception& e) {
 		cerr << "Error: " << e.what() << endl;
