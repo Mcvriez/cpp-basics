@@ -283,20 +283,6 @@ namespace TheLibrary {
 		return os;
 	}
 	
-	/*
-
-
-	and check out books.
-	Whenever a user checks out a book, have the library make sure that both the user and the book are in the library.
-	If they aren’t, report an error.
-	
-	Then check to make sure that the user owes no fees. If the user does, report an error.
-
-	If not, create a Transaction, and place it in the vector of Transactions.
-
-	Also write a function that will return a vector that contains the names of all Patrons who owe fees.
-
-	*/
 	 
 	class Library
 	{
@@ -304,17 +290,17 @@ namespace TheLibrary {
 		Library() : books{}, users{}, transactions{} {};
 		class Invalid { };
 		
-		const Book& add_book(const Book book) {
+		void add_book(const Book book) {
 			books.push_back(book);
-			cout << "Book " + book.get_title() + " was added to the library" << endl;
-			return books[books.size() - 1];
-		};   // need to check this one
+			// cout << "Book " + book.get_title() + " was added to the library" << endl;
+			return;
+		}; 
 		
-		const Patron& add_patron(const Patron p) {
+		void add_patron(const Patron p) {
 			users.push_back(p);
-			cout << "User " + p.get_username() + " was added to the library" << endl;
-			return users[users.size() - 1];
-		};   // need to check this one
+			//cout << "User " + p.get_username() + " was added to the library" << endl;
+			return;
+		};
 		
 		const bool book_exists(string b) const {
 			for (Book book : books)
@@ -331,7 +317,6 @@ namespace TheLibrary {
 		vector <Patron> get_debitors() const;
 		
 		void check_out(const string isbn, const int user_id, const Chrono::Date& d);
-
 
 	private:
 		vector <Book> books;
@@ -352,7 +337,7 @@ namespace TheLibrary {
 	};
 
 	struct Library::Transaction {
-			Transaction(const Book& b, const Patron& p, Chrono::Date d) : book{ b }, user{ p }, date{ d }{};
+			Transaction(Book b, Patron p, Chrono::Date d) : book{ b }, user{ p }, date{ d }{};
 			Book book;
 			Patron user;
 			Chrono::Date date;
@@ -363,7 +348,7 @@ namespace TheLibrary {
 		for (Patron u : users) {
 			if (u.get_fee()) {
 				debitors.push_back(u);
-				cout << "Username " + u.get_username() + " is in debitors list" << endl;
+				// cout << "Username " + u.get_username() + " is in debitors list" << endl;
 			}
 		}
 		return debitors;
@@ -376,19 +361,19 @@ namespace TheLibrary {
 			throw Invalid{};
 		}
 		if (!user_exists(user_id)) {
-			cout << "Check-out of user " << isbn << " had failed. User is not found." << endl;
+			cout << "Check-out of user " << user_id << " had failed. User is not found." << endl;
 			throw Invalid{};
 		}
 		Book b = find_book_link(isbn);
 		Patron u = find_user_link(user_id);
 		if (!(b.is_checked())) cout << "Warning. Book was unchecked for some reason." << endl;
 		if (u.get_fee()) {
-			cout << "User can't be checked - he owes money: " << u.get_fee() << endl;
+			cout << "User " + u.get_username() + " can't be checked - he owes money: " << u.get_fee() << endl;
 			throw Invalid{};
 		}
 		Transaction tran = Transaction(b, u, d);
 		transactions.push_back(tran);
-		cout << "Transaction was added." << endl;
+		cout << "User " + u.get_username() + " successfully checked out with the book: " + b.get_title() << endl;
 	}
 }
 
@@ -398,6 +383,8 @@ int main() {
 		using namespace TheLibrary;
 
 		Library lib = Library();
+
+		Chrono::Date date = Chrono::Date();
 
 		ISBN book_id = ISBN(123, 4, 321, "kek");
 		ISBN book_id1 = ISBN(1223, 4, 321, "kek");
@@ -418,12 +405,28 @@ int main() {
 		Patron user4 = Patron("Pisikak", 1312);
 		
 		user.set_fee(30);
-		user4.set_fee(320);
+		user3.set_fee(320);
 		
-		lib.add_book(book); lib.add_book(book1); lib.add_book(book2); lib.add_book(book3); lib.add_book(book4);
-		lib.add_patron(user); lib.add_patron(user1); lib.add_patron(user2); lib.add_patron(user3); lib.add_patron(user4);
+		// book.uncheck();
 
-		vector <Patron> elpartons = lib.get_debitors();
+		lib.add_book(book); lib.add_book(book1); lib.add_book(book2); lib.add_book(book3); // lib.add_book(book4);
+		lib.add_patron(user); lib.add_patron(user1); lib.add_patron(user2); lib.add_patron(user3); // lib.add_patron(user4);
+
+		// tests
+
+		// vector <Patron> el_patrons = lib.get_debitors();
+		// cout << lib.book_exists(book.get_isbn());
+		
+		// successfull
+		lib.check_out(book2.get_isbn(), user1.get_number(), date);
+		
+		// check fails:
+		// lib.check_out(book4.get_isbn(), user1.get_number(), date);
+		// lib.check_out(book2.get_isbn(), user4.get_number(), date);
+
+		// heavy staff
+		lib.add_book(book4);
+
 		
 	}
 	catch (exception& e) {
