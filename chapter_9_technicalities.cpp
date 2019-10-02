@@ -2,20 +2,7 @@
 
 /*
 
-Create a Library class. 
-Include vectors of Books and Patrons. 
-
-Include a struct called Transaction. 
-Have it include a Book, a Patron, and a Date from the chapter. 
-Make a vector of Transactions. 
-
-Create functions to add books to the library, add patrons to the library, and check out books. 
-Whenever a user checks out a book, have the library make sure that both the user and the book are in the library. 
-If they aren’t, report an error. 
-Then check to make sure that the user owes no fees. If the user does, report an error. 
-If not, create a Transaction, and place it in the vector of Transactions.
-
-Also write a function that will return a vector that contains the names of all Patrons who owe fees.
+Implement leapyear() from §9.8.
 
 */
 
@@ -102,7 +89,10 @@ namespace Chrono {
 	}
 	bool leapyear(int y)
 	{
-		return false;
+		if (y % 4) return false;
+		else if (y % 100) return true;
+		else if (y % 400) return false;
+		return true;
 	}
 	bool operator==(const Date& a, const Date& b)
 	{
@@ -406,9 +396,7 @@ int main() {
 		
 		user.set_fee(30);
 		user3.set_fee(320);
-		
-		// book.uncheck();
-
+	
 		lib.add_book(book); lib.add_book(book1); lib.add_book(book2); lib.add_book(book3); // lib.add_book(book4);
 		lib.add_patron(user); lib.add_patron(user1); lib.add_patron(user2); lib.add_patron(user3); // lib.add_patron(user4);
 
@@ -419,13 +407,16 @@ int main() {
 		
 		// successfull
 		lib.check_out(book2.get_isbn(), user1.get_number(), date);
-		
-		// check fails:
-		// lib.check_out(book4.get_isbn(), user1.get_number(), date);
-		// lib.check_out(book2.get_isbn(), user4.get_number(), date);
 
-		// heavy staff
-		lib.add_book(book4);
+		//test leap year
+		cout << Chrono::leapyear(1600) << endl;
+		cout << Chrono::leapyear(1700) << endl;
+		cout << Chrono::leapyear(1800) << endl;
+		cout << Chrono::leapyear(1900) << endl;
+		cout << Chrono::leapyear(2000) << endl;
+		cout << Chrono::leapyear(2001) << endl;
+		cout << Chrono::leapyear(2002) << endl;
+		cout << Chrono::leapyear(2004) << endl;
 
 		
 	}
