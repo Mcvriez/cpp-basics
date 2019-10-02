@@ -2,7 +2,10 @@
 
 /*
 
-Implement leapyear() from §9.8.
+Design and implement a set of useful helper functions for the Date class with functions such as 
+
+- next_workday() (assume that any day that is not a Saturday or a Sunday is a workday)  
+- week_of_year() (assume that week 1 is the week with January 1 in it and that the first day of a week is a Sunday).
 
 */
 
@@ -55,7 +58,31 @@ namespace Chrono {
 	}
 	void Date::add_day(int n)
 	{
-		// . . .
+		int month = int(m);
+		int year = y;
+		if (n > 25 || n < 0) error("You can't add more than 25 days at once");
+		d += n;
+		if (d > 28 && month == 2 && !leapyear(year)) {
+			m = Month::mar;
+			d = d - 28;
+		}
+		else if (d > 29 && month == 2 && leapyear(year)) {
+			m = Month::mar;
+			d = d - 29;
+		}
+		else if ((month == 4 || month == 6 || month == 9 || month == 11) && d > 30)
+		{
+			m = Month(++month);
+			d = d - 30;
+		}
+		else if (d > 31) {
+			m = Month(++month);
+			d = d - 31;
+		}
+		if (month > 12) {
+			y = year + 1;
+			m = Month::jan;
+		}
 	}
 	void Date::add_month(int n)
 	{
@@ -69,6 +96,7 @@ namespace Chrono {
 		}
 		y += n;
 	}
+	
 	// helper functions:
 	bool is_date(int y, Month m, int d)
 	{
@@ -94,6 +122,7 @@ namespace Chrono {
 		else if (y % 400) return false;
 		return true;
 	}
+
 	bool operator==(const Date& a, const Date& b)
 	{
 		return a.year() == b.year()
@@ -126,6 +155,50 @@ namespace Chrono {
 	enum class Day {
 		sunday, monday, tuesday, wednesday, thursday, friday, saturday
 	};
+
+	Day day_of_week(const Date& dt)
+	{
+		int y = dt.year();
+		int m = int(dt.month());
+		int d = dt.day();
+		static int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+		y -= m < 3;
+		int result = (y + y / 4 - y / 100 + y / 400 + t[m - 1] + d) % 7;
+		return Day(result);
+	}
+
+	Date next_workday(const Date& d) {
+		Day weekday = day_of_week(d);
+		Date nw = Date(d.year(), d.month(), d.day());
+		int adder = 1;
+		switch (weekday) {
+		case Day::friday:
+			adder += 2; break;
+		case Day::saturday:
+			adder += 1; break;
+		default:
+			break;
+		}
+		nw.add_day(adder);
+		return nw;
+	}
+
+	int week_of_year(const Date& dt) {
+		
+		int week_counter = 1;
+		int year = dt.year();
+		
+		Date first = Date(year, Month::jan, 1);
+		
+		while (first != dt) {
+			first.add_day(1);
+			if (day_of_week(first) == Day::sunday) { 
+				++week_counter; 
+			}
+			// cout << week_counter << ":" << first << endl;
+		}
+		return week_counter;
+	}
 
 } // Chrono
 
@@ -370,6 +443,7 @@ namespace TheLibrary {
 
 int main() {
 	try {
+
 		using namespace TheLibrary;
 
 		Library lib = Library();
@@ -406,17 +480,43 @@ int main() {
 		// cout << lib.book_exists(book.get_isbn());
 		
 		// successfull
-		lib.check_out(book2.get_isbn(), user1.get_number(), date);
+		// lib.check_out(book2.get_isbn(), user1.get_number(), date);
+		
+		// tests next_workday
+		
+		using namespace Chrono;
+/*
+		date = Date(2019, Month::oct, 1);
+		cout << date << endl;
+		Date date1 = next_workday(date);
+		cout << date1 << endl;
+		Date date2 = next_workday(date1);
+		cout << date2 << endl;
+		Date date3 = next_workday(date2);
+		date3.add_day(1);
+		cout << date3 << endl;
 
-		//test leap year
-		cout << Chrono::leapyear(1600) << endl;
-		cout << Chrono::leapyear(1700) << endl;
-		cout << Chrono::leapyear(1800) << endl;
-		cout << Chrono::leapyear(1900) << endl;
-		cout << Chrono::leapyear(2000) << endl;
-		cout << Chrono::leapyear(2001) << endl;
-		cout << Chrono::leapyear(2002) << endl;
-		cout << Chrono::leapyear(2004) << endl;
+		Date date4 = next_workday(date3);
+		cout << date4 << endl;
+		
+		// tests week_of_month
+
+*/
+		Date xdate = Date(2019, Month::jan, 10); // 2
+		Date xdate1 = Date(2019, Month::jan, 25); // 4
+		Date xdate2 = Date(2019, Month::feb, 1);   // 5
+		Date xdate3 = Date(2019, Month::may, 25); // 21
+		Date xdate4 = Date(2019, Month::oct, 29); // 44
+		Date xdate5 = Date(2019, Month::nov, 30); // 48
+		Date xdate6 = Date(2019, Month::dec, 15); // 51
+
+		cout << week_of_year(xdate) << endl;
+		cout << week_of_year(xdate1) << endl;
+		cout << week_of_year(xdate2) << endl;
+		cout << week_of_year(xdate3) << endl;
+		cout << week_of_year(xdate4) << endl;
+		cout << week_of_year(xdate5) << endl;
+		cout << week_of_year(xdate6) << endl;
 
 		
 	}
