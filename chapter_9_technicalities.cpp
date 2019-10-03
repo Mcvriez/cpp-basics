@@ -2,10 +2,9 @@
 
 /*
 
-Design and implement a set of useful helper functions for the Date class with functions such as 
-
-- next_workday() (assume that any day that is not a Saturday or a Sunday is a workday)  
-- week_of_year() (assume that week 1 is the week with January 1 in it and that the first day of a week is a Sunday).
+Change the representation of a Date to be the number of days since January 1, 1970 (known as day 0), represented as a
+long int, and re-implement the functions from §9.8. Be sure to reject dates outside the range we can represent that way
+(feel free to reject days before day 0, i.e., no negative days).
 
 */
 
@@ -25,6 +24,7 @@ namespace Chrono {
 		Month month() const { return m; }
 		int year() const { return y; }
 		// modifying operations:
+		long int epoch_days() const;
 		void add_day(int n);
 		void add_month(int n);
 		void add_year(int n);
@@ -56,6 +56,22 @@ namespace Chrono {
 		d{ default_date().day() }
 	{
 	}
+	
+	long int Date::epoch_days() const {
+		Date start = Date(1970, Month::jan, 1);
+		const Date current = Date(y, m, d);
+		if (y < 1970) {
+			cout << "Date could not be represented in unix format" <<endl;
+			return 0;
+		}
+		long int time = 0;
+		while (current != start) {
+			++time;
+			start.add_day(1);
+		}
+		return time;
+	}
+	
 	void Date::add_day(int n)
 	{
 		int month = int(m);
@@ -501,7 +517,7 @@ int main() {
 		
 		// tests week_of_month
 
-*/
+
 		Date xdate = Date(2019, Month::jan, 10); // 2
 		Date xdate1 = Date(2019, Month::jan, 25); // 4
 		Date xdate2 = Date(2019, Month::feb, 1);   // 5
@@ -517,8 +533,9 @@ int main() {
 		cout << week_of_year(xdate4) << endl;
 		cout << week_of_year(xdate5) << endl;
 		cout << week_of_year(xdate6) << endl;
-
-		
+*/
+		Date xdate = Date(1972, Month::jan, 10);
+		cout << xdate.epoch_days();
 	}
 	catch (exception& e) {
 		cerr << "Error: " << e.what() << endl;
