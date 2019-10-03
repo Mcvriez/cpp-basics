@@ -2,85 +2,53 @@
 
 /*
 
-Design and implement a rational number class, Rational. A rational number has two parts: a numerator and a
-denominator, for example, 5/6 (five-sixths, also known as approximately .83333). Look up the definition if you need to.
-Provide 
-
-assignment, 
-addition, 
-subtraction, 
-multiplication, 
-division 
-equality 
-Also, provide a conversion to double. 
-
-Why would people want to use a Rational class?
+Design and implement a Money class for calculations involving dollars and cents where arithmetic has to be accurate
+to the last cent using the 4/5 rounding rule (.5 of a cent rounds up; anything less than .5 rounds down). Represent a
+monetary amount as a number of cents in a long int, but input and output as dollars and cents, e.g., $123.45. Do not
+worry about amounts that don’t fit into a long int
 
 */
 
-class Rational
+class Money
 {
 public:
-	Rational(int num, int den) : numerator{ num }, denominator{ den } {
-		if (den == 0) error("denominator can't be zero");
-		int del = 2;
-		while (del < num&& del < den) {
-			if (numerator % del == 0 && denominator % del == 0) {
-				numerator /= del;
-				denominator /= del;
-			}
-			++del;
-		}
-	};
-	int get_numenator() const { return numerator; }
-	int get_denominator() const { return denominator; }
-	double to_double() const { return double(numerator) / double(denominator); }
-
+	Money(string amount);
+	int amount() const { return cents; }
 private:
-	int numerator;
-	int denominator;
+	long int cents;
 };
 
-ostream& operator << (ostream& os, Rational& ra) {
-	os << "Rational(" << ra.get_numenator() << "/" << ra.get_denominator() << ")" << endl;
+Money::Money(string amount)
+{
+	if (amount.front() != '$' ||  amount.size() < 2) error("wrong input format");
+	string substr = amount.substr(1, amount.size() - 1);
+	double dollars = stod(substr);
+	long int c = dollars * 1000;
+	if (c % 10 > 4) cents = c / 10 + 1;
+	else if (c % 10 < -4) cents = c / 10 - 1;
+	else cents = c / 10;
+}
+
+ostream& operator << (ostream& os, Money m) {
+	string prefix = "$ ";
+	string del = ".";
+	long int am = m.amount();
+	int cents = am % 100;
+	if (cents < 0 || am < 0) {
+		cents *= -1; am *= -1; prefix += "-";
+	}
+	if (cents < 10) del += "0";
+	os << prefix << am / 100 << del << cents << endl;
 	return os;
 }
 
-Rational operator + (const Rational& ra, const Rational& ra2) {
-	int den = ra.get_denominator() * ra2.get_denominator();
-	int num = (ra.get_numenator() * ra2.get_denominator()) + (ra2.get_numenator() * ra.get_denominator());
-	return Rational(num, den);
-}
-
-Rational operator - (const Rational& ra, const Rational& ra2) {
-	int den = ra.get_denominator() * ra2.get_denominator();
-	int num = (ra.get_numenator() * ra2.get_denominator()) - (ra2.get_numenator() * ra.get_denominator());
-	return Rational(num, den);
-}
-
-Rational operator * (const Rational& ra, const Rational& ra2) {
-	int den = ra.get_denominator() * ra2.get_denominator();
-	int num = ra.get_numenator() * ra2.get_numenator();
-	return Rational(num, den);
-}
-
-Rational operator / (const Rational& ra, const Rational& ra2) {
-	int den = ra.get_denominator() * ra2.get_numenator();
-	int num = ra.get_numenator() * ra2.get_denominator();
-	return Rational(num, den);
-}
-
-bool operator == (const Rational& ra, const Rational& ra2) {
-	return ra.get_numenator() == ra2.get_numenator() && ra.get_denominator() == ra2.get_denominator();
-}
-
-
 int main() {
 	try {
-		Rational ra = Rational(4, 6);
-		Rational ra2 = Rational(1, 3);
-		cout << ra << ra2;
-		cout << ra.to_double();
+		Money v = Money("$0");
+		Money v1 = Money("$-0.01");
+		Money v2 = Money("$-10");
+		Money v3 = Money("$-0.03");
+		cout << v << v1 << v2 << v3;
 	}
 	catch (exception& e) {
 		cerr << "Error: " << e.what() << endl;
