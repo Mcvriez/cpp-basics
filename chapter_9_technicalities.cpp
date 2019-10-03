@@ -22,6 +22,7 @@ class Rational
 {
 public:
 	Rational(int num, int den) : numerator{ num }, denominator{ den } {
+		if (den == 0) error("denominator can't be zero");
 		int del = 2;
 		while (del < num&& del < den) {
 			if (numerator % del == 0 && denominator % del == 0) {
