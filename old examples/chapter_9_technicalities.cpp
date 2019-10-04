@@ -120,7 +120,7 @@ int main() {
 		Money v3 = Money("DKK", -23.03, 0.15);
 		Money x;
 		cin >> x; 
-		
+
 	}
 	catch (exception& e) {
 		cerr << "Error: " << e.what() << endl;
