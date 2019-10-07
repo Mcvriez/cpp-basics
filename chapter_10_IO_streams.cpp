@@ -2,7 +2,7 @@
 
 /*
 
- Print the data elements from both vectors.
+ Compare the two vectors and print Something's wrong! if the number of elements or the values of elements differ.
 
 */
 
@@ -18,6 +18,14 @@ public:
 	double x;
 };
 
+
+bool operator == (const Point& s, const Point& t) {
+	return s.x == t.x && s.y == t.y;
+}
+
+bool operator != (const Point& s, const Point& t) {
+	return !(s == t);
+}
 
 istream& operator >> (istream& ifs, Point& p) {
 	double x, y;
@@ -76,12 +84,23 @@ void print_points(vector<Point>& p) {
 	cout << endl;
 }
 
+bool equal(const vector <Point>& s, const vector <Point>& t) {
+	if (s.size() != t.size()) return false;
+	for (int i = 0; i < s.size(); ++i ) {
+		if (s[i] != t[i])
+			return false;
+		return true;
+	}
+}
+
 int main() {
 	try {
 		vector <Point> original_points = write_points_to_file(output);
 		vector <Point> processed_points = read_points_from_file(output);
 		print_points(original_points);
 		print_points(processed_points);
+		if (!equal(original_points, processed_points)) cout << "Something's wrong!" << endl;
+		else cout << "Vectors are equal" << endl;
 
 	}
 	catch (exception& e) {
