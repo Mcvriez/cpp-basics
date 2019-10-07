@@ -2,9 +2,12 @@
 
 /*
 
- Start a program to work with points, discussed in §10.4. Begin by defining the data type Point that has two coordinate
+Using the code and discussion in §10.4, prompt the user to input seven (x,y) pairs. As the data is entered, store it in a
+vector of Points called original_points.
 
 */
+
+const int max_points_size = 7;
 
 class Point
 {
@@ -16,7 +19,7 @@ public:
 };
 
 
-ifstream& operator >> (ifstream& ifs, Point& p) {
+istream& operator >> (istream& ifs, Point& p) {
 	double x, y;
 	char ch;
 	ifs >> x >> ch >> y;
@@ -30,34 +33,25 @@ ifstream& operator >> (ifstream& ifs, Point& p) {
 }
 
 
-ofstream& operator << (ofstream& ofs, Point& p) {
-	ofs << "Point contains (" << p.x << " : " << p.y <<  ")" << endl;
+ostream& operator << (ostream& ofs, Point& p) {
+	ofs << "Point contains (" << p.x << ":" << p.y <<  ")" << endl;
 	return ofs;
 }
 
-void points() {
-	cout << "Please enter input file name: ";
-	string iname;
-	cin >> iname;
-
-	ifstream ist{ iname }; // ist is an input stream for the file named name
-	
-	if (!ist) error("can't open input file ", iname);
-	vector<Point> points;
-	for (Point p; ist >> p; )
-		points.push_back(p);
-	cout << "Please enter name of output file: ";
-	string oname;
-	cin >> oname;
-	ofstream ost{ oname }; // ost is an output stream for a file named oname
-	if (!ost) error("can't open output file ", oname);
-	for (Point p : points)
-		ost << '(' << p.x << ',' << p.y << ")\n";
+void original_points() {
+	cout << "Please enter " << max_points_size << " points:\n";
+	vector<Point> original_points;
+	for (Point p; cin >> p; ) {
+		original_points.push_back(p);
+		if (original_points.size() >= max_points_size) break;
+	}
+	for (Point p : original_points)
+		cout << '(' << p.x << ", " << p.y << ")\n";
 }
 
 int main() {
 	try {
-		points();
+		original_points();
 	}
 	catch (exception& e) {
 		cerr << "Error: " << e.what() << endl;
