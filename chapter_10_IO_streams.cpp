@@ -2,8 +2,7 @@
 
 /*
 
-Close the ofstream and then open an ifstream for mydata.txt. Read the data from mydata.txt and store it in a new
-vector called processed_points.
+ Print the data elements from both vectors.
 
 */
 
@@ -34,17 +33,23 @@ istream& operator >> (istream& ifs, Point& p) {
 	return ifs;
 }
 
+ostream& operator << (ostream& ofs, Point& p) {
+	ofs << "Point contains (" << p.x << ":" << p.y << ")" << endl;
+	return ofs;
+}
 
-void dump_to_file(string output, vector <Point>& points) {
-	ofstream ost{ output };
-	if (!ost) error("can't open output file ", output);
+
+void dump_to_file(string out, vector <Point>& points) {
+	ofstream ost{ out };
+	if (!ost) error("can't open output file ", out);
 	for (Point p : points)
 		ost << p.x << ";" << p.y << "\n";
 }
 
-vector <Point> read_file (string input) {
-	ifstream ist{ input };
-	if (!ist) error("can't open input file ", input);
+
+vector <Point> read_points_from_file(string file) {
+	ifstream ist{ file };
+	if (!ist) error("can't open input file ", file);
 	vector <Point> result;
 	for (Point p; ist >> p; ) {
 		result.push_back(p);
@@ -52,27 +57,32 @@ vector <Point> read_file (string input) {
 	return result;
 }
 
-ostream& operator << (ostream& ofs, Point& p) {
-	ofs << "Point contains (" << p.x << ":" << p.y <<  ")" << endl;
-	return ofs;
-}
 
-void original_points() {
+vector <Point> write_points_to_file(string file) {
 	cout << "Please enter " << max_points_size << " points:\n";
 	vector<Point> original_points;
 	for (Point p; cin >> p; ) {
 		original_points.push_back(p);
 		if (original_points.size() >= max_points_size) break;
 	}
-	dump_to_file(output, original_points);
+	dump_to_file(file, original_points);
+	return original_points;
+}
+
+void print_points(vector<Point>& p) {
+	cout << "Vector contains:" << endl;
+	for (Point pp : p)
+		cout << pp;
+	cout << endl;
 }
 
 int main() {
 	try {
-		// original_points();
-		vector <Point> processed_points = read_file(output);
-		for (Point pp : processed_points)
-			cout << pp;
+		vector <Point> original_points = write_points_to_file(output);
+		vector <Point> processed_points = read_points_from_file(output);
+		print_points(original_points);
+		print_points(processed_points);
+
 	}
 	catch (exception& e) {
 		cerr << "Error: " << e.what() << endl;
