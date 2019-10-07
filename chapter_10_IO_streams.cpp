@@ -2,12 +2,13 @@
 
 /*
 
-Using the code and discussion in §10.4, prompt the user to input seven (x,y) pairs. As the data is entered, store it in a
-vector of Points called original_points.
+Open an ofstream and output each point to a file named mydata.txt. On Windows, we suggest the .txt suffix to make
+it easier to look at the data with an ordinary text editor (such as WordPad).
 
 */
 
-const int max_points_size = 7;
+const int max_points_size = 2;
+const string output = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\mydata.txt";
 
 class Point
 {
@@ -45,8 +46,10 @@ void original_points() {
 		original_points.push_back(p);
 		if (original_points.size() >= max_points_size) break;
 	}
+	ofstream ost{ output }; 
+	if (!ost) error("can't open output file ", output);
 	for (Point p : original_points)
-		cout << '(' << p.x << ", " << p.y << ")\n";
+		ost << '(' << p.x << ", " << p.y << ")\n";
 }
 
 int main() {
