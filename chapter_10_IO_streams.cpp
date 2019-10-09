@@ -2,179 +2,89 @@
 
 /*
 
-Modify the store_temps.cpp program from exercise 2 to include a temperature suffix c for Celsius or f for Fahrenheit
-temperatures. Then modify the temp_stats.cpp program to test each temperature, converting the Celsius readings to
-Fahrenheit before putting them into the vector.
+Write the function print_year() mentioned in §10.11.2
 
 */
 
-const string raw_input = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\raw_input.txt";
-const string structured_temps = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\structured_temps.txt";
 
-struct Reading {
-	Reading() : hour{ -1 }, temperature{ -1000000000 }, type{ 'C' }{};
-	Reading(int h, double t, char cf) : hour{ h }, temperature{ t }, type{ cf } {};
-	int hour;
-	double temperature; 
-	char type;
-};
+const int not_a_reading = -7777;    // less than absolute zero
+const int not_a_month = -1;
 
-struct RawReading {
-	RawReading() : hour{ -1 }, temperature{ -1000000000 }, type {'C'}{};
-	RawReading(int h, double t, char cf) : hour{ h }, temperature{ t }, type{ cf } {
-		if ((cf != 'C' && cf != 'F') || hour < 0 || hour > 23 || temperature < -500 || temperature > 1000) {
-			hour = -1; // indicates corrupted reading
-		}
-	};
-	int hour;
-	double temperature; 
-	char type;
+
+struct Day {
+	vector<double> hour{ vector<double>(24,not_a_reading) };
 };
 
 
-ostream& operator << (ostream& ofs, Reading& r) {
-	ofs << r.hour << " -> " << r.temperature << " -> '" << r.type << "'\n";
-	return ofs;
-}
+struct Month {        // a month of temperature readings
+	int month;        // [0:11] January is 0
+	vector<Day> day;  // [1:31] one vector of readings per day
+	Month()           // at most 31 days in a month (day[0] wasted)
+		:month(not_a_month), day(32) { }
+};
 
-ofstream& operator << (ofstream& ofs, RawReading& r) {
-	// {6: 4.43: 'F'},
-	ofs << "{" << r.hour << ": " << r.temperature << ": '" << r.type << "'}," << endl;
-	return ofs;
-}
 
-ostream& operator << (ostream& ofs, RawReading& r) {
-	// {6: 4.43: 'F'},
-	ofs << "{" << r.hour << ": " << r.temperature << ": '" << r.type << "'},\n";
-	return ofs;
-}
+struct Year {             // a year of temperature readings, organized by month
+	int year;             // positive == A.D.
+	vector<Month> month;  // [0:11] January is 0
+	Year() :month(12) { } // 12 months in a year
+};
 
-ifstream& operator >> (ifstream& ifs, Reading& r){
-	// {5: 3.26 : 'F'},   <- line example
-	int i; double j; char cf;
-	char ch1, ch2, ch3, ch4, ch5, ch6, ch7;
-	ifs >> ch1 >> i >> ch2 >> j >> ch3 >> ch4 >> cf >> ch5 >> ch6 >> ch7;
-	if (!ifs || ch1 != '{' || ch2 != ':' || ch3 != ':' || ch4 != '\'' || ch5 != '\'' || ch6 != '}' || ch7 != ',') {
-		if (ifs.eof()) return ifs;
-		else {
-			ifs.clear();
-			string bad;
-			char ch;
-			while (ifs.get(ch) && ch != '\n') { bad += ch; }
-			cout << "Reading error: " << bad << endl;
-			return ifs;
-		}
+
+void print_day(ostream& ost, const Day& day) {
+	for (int i = 0; i < day.hour.size(); ++i) {
+		if (day.hour[i] != not_a_reading)
+			ost << "\t\t " << "day "<< i <<": " << day.hour[i] << endl;
 	}
-	else { r.hour = i;  r.temperature = j; r.type = cf; }
-	return ifs;
-}
-
-ifstream& operator >> (ifstream& ifs, RawReading& r) {
-	int i; double j; char cf;
-	ifs >> i >> j >> cf;
-	if (!ifs) {
-		if (ifs.eof()) return ifs;
-		else {
-			ifs.unget();
-			ifs.clear();
-			string bad;
-			char ch;
-			while (ifs.get(ch) && ch != '\n') { bad += ch; }
-			cout << "Reading error: " << bad << endl;
-			return ifs;
-		}
-	}
-	else { r.hour = i;  r.temperature = j; r.type = cf; }
-	return ifs;
 }
 
 
-
-
-void print_v(const vector<Reading>& v) {
-	for (Reading r : v) {
-		cout << '[' << r.hour << "->" << r.temperature << "], ";
+void print_month(ostream& ost, const Month& month) {
+	if (month.month != not_a_month) {
+		ost << "\tmonth: " << month.month << endl;
+		for (Day day : month.day)
+			print_day(ost, day);
 	}
-	cout << endl;
 }
 
-double mean(const vector<Reading>& v) {
-	if (v.size() < 1) {
-		cout << "Empty array" << endl;
-		return 0;
+void print_year(ostream& ost, const Year& y)
+{
+	ost << y.year << " contains following data:" << endl;
+	for (Month m : y.month) {
+		print_month(ost, m);
 	}
-	int sum = 0;
-	for (Reading r : v) {
-		sum += r.temperature;
-	}
-	return sum / v.size();
-}
-
-double median(const vector<Reading>& v) {
-	vector <double> temps;
-	for (Reading r : v) {
-		temps.push_back(r.temperature);
-	}
-	sort(temps);
-	if (temps.size() < 1) {
-		cout << "Empty array" << endl; 
-		return 0;
-	}
-	if (temps.size() == 1) {
-		return temps[0];
-	}
-	if (temps.size() % 2) return temps[temps.size() / 2];
-	double res = (temps[temps.size() / 2] + temps[temps.size() / 2 - 1]) / 2;
-	return res;
-}
-
-void store_temps(const string rawinput, const string output) {
-	
-	ifstream ist{ rawinput };
-	if (!ist) error("can't open input file", rawinput);
-	ist.exceptions(ist.exceptions() | ios_base::badbit);
-	vector <RawReading> results;
-	while (true) {
-		RawReading r{};
-		if (!(ist >> r)) break;
-		if (r.hour != -1) results.push_back(r);
-	}
-
-	ofstream ost{ output };
-	if (!ost) error("can't open output file ", output);
-	for (RawReading r : results)
-		ost << r;
-	return;
-}
-
-void temp_stats(const string structured_input) {
-	ifstream ist{ structured_input };
-	if (!ist) error("can't open input file", structured_input);
-	ist.exceptions(ist.exceptions() | ios_base::badbit);
-	vector <Reading> results;
-	while (true) {
-		Reading r{};
-		if (!(ist >> r)) break;
-		if (r.type != 'F') {
-			double t = r.temperature * 9 / 5 + 32;
-			r.temperature = t;
-			r.type = 'F';
-		}
-		// cout << r;
-		results.push_back(r);
-	}
-	cout << "Fahrenheit temperature mean: " << mean(results) << endl;
-	cout << "Fahrenheit temperature median: " << median(results) << endl;
-	return;
 }
 
 
-int main() {
-	try {
-		store_temps(raw_input, structured_temps);
-		temp_stats(structured_temps);
+int main()
+	try
+	{
+	Year y2000;
+	Month feb; Month dec;
+	Day feb_d1; Day feb_d2; Day dec_d15; Day dec_d14;
+	feb_d1.hour[1] = 68;
+	feb_d1.hour[0] = 67.2;
+	feb_d2.hour[3] = 66.66;
+	dec_d15.hour[15] = -9.2;
+	dec_d15.hour[14] = -8.8;
+	dec_d14.hour[0] = -2;
+	feb.month = 1;
+	dec.month = 11;
+	feb.day[1] = feb_d1;
+	feb.day[2] = feb_d2;
+	dec.day[14] = dec_d14;
+	dec.day[15] = dec_d15;
+	y2000.year = 2000;
+	y2000.month[1] = feb;
+	y2000.month[11] = dec;
+
+	print_year(cout, y2000);
 	}
 	catch (exception& e) {
-		cerr << "Error: " << e.what() << endl;
+		cerr << "error: " << e.what() << '\n';
+		return 1;
 	}
-}
+	catch (...) {
+		cerr << "Oops: unknown exception!\n";
+		return 2;
+	}
