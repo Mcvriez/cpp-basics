@@ -2,83 +2,97 @@
 
 /*
 
-Write the function print_year() mentioned in §10.11.2
+Define a Roman_int class for holding Roman numerals (as ints) with a << and >>. 
+Provide Roman_int with an as_int() member that returns the int value, so that if r is a Roman_int, we can write cout << "Roman" << r << "
+equals " << r.as_int() << '\n';.
 
 */
 
 
-const int not_a_reading = -7777;    // less than absolute zero
-const int not_a_month = -1;
-
-
-struct Day {
-	vector<double> hour{ vector<double>(24,not_a_reading) };
-};
-
-
-struct Month {        // a month of temperature readings
-	int month;        // [0:11] January is 0
-	vector<Day> day;  // [1:31] one vector of readings per day
-	Month()           // at most 31 days in a month (day[0] wasted)
-		:month(not_a_month), day(32) { }
-};
-
-
-struct Year {             // a year of temperature readings, organized by month
-	int year;             // positive == A.D.
-	vector<Month> month;  // [0:11] January is 0
-	Year() :month(12) { } // 12 months in a year
-};
-
-
-void print_day(ostream& ost, const Day& day) {
-	for (int i = 0; i < day.hour.size(); ++i) {
-		if (day.hour[i] != not_a_reading)
-			ost << "\t\t " << "day "<< i <<": " << day.hour[i] << endl;
-	}
-}
-
-
-void print_month(ostream& ost, const Month& month) {
-	if (month.month != not_a_month) {
-		ost << "\tmonth: " << month.month << endl;
-		for (Day day : month.day)
-			print_day(ost, day);
-	}
-}
-
-void print_year(ostream& ost, const Year& y)
+class Roman_int
 {
-	ost << y.year << " contains following data:" << endl;
-	for (Month m : y.month) {
-		print_month(ost, m);
-	}
+public:
+	Roman_int() :value{ 0 }, reprez{"N"}{};
+	Roman_int(int x) :value{} {
+		if (x < max && x > 0) {
+			value = x;
+		}
+		else cout << "Roman int can't be less than zero or more than 5000";
+		/*
+		Symbol	I	V	X	L	C	D	M
+		Value	1	5	10	50	100	500	1000
+		*/
+		int M = x / 1000;
+		int h = M * 1000;
+		int CM = (x - h) / 900;
+		int D = (x - h) / 500;
+		h += D * 500;
+		int CD = (x - h) / 400;
+		int C = (x - h) / 100;
+		h += C * 100;
+		int XC = (x - h) / 90;
+		int L = (x - h) / 50;
+		h += L * 50;
+		int XL = (x - h) / 40;
+		int X = (x - h) / 10;
+		h += X * 10;
+		int IX = (x - h) / 9;
+		int V = (x - h) / 5;
+		h += V * 5;
+		int IV = (x - h) / 4;
+		string rep;
+		for (int i = 0; i < M; i++)
+			rep += 'M';
+		if (CM) rep += "CM";
+		else {
+			if (D) rep += 'D';
+			if (CD) rep += "CD";
+			else {
+				for (int i = 0; i < C; i++)
+					rep += 'C';
+			}
+		}
+		
+		if (XC) rep += "XC";
+		else {
+			if (L) rep += 'L';
+			if (XL) rep += "XL";
+			else {
+				for (int i = 0; i < X; i++)
+					rep += 'X';
+			}
+		}
+		if (IX) rep += "IX";
+		else {
+			if (V) rep += 'V';
+			if (IV) rep += "IV";
+			else
+				for (int i = 0; i < x - h; i++)
+					rep += 'I';
+		}
+		reprez = rep;
+	};
+	int as_int() const { return value; }
+	string repr() const { return reprez; }
+private:
+	int value;
+	string reprez;
+	static const int max = 5000;
+};
+
+ostream& operator << (ostream& os, const Roman_int& r) {
+	os << r.repr();
+	return os;
 }
 
 
 int main()
 	try
 	{
-	Year y2000;
-	Month feb; Month dec;
-	Day feb_d1; Day feb_d2; Day dec_d15; Day dec_d14;
-	feb_d1.hour[1] = 68;
-	feb_d1.hour[0] = 67.2;
-	feb_d2.hour[3] = 66.66;
-	dec_d15.hour[15] = -9.2;
-	dec_d15.hour[14] = -8.8;
-	dec_d14.hour[0] = -2;
-	feb.month = 1;
-	dec.month = 11;
-	feb.day[1] = feb_d1;
-	feb.day[2] = feb_d2;
-	dec.day[14] = dec_d14;
-	dec.day[15] = dec_d15;
-	y2000.year = 2000;
-	y2000.month[1] = feb;
-	y2000.month[11] = dec;
-
-	print_year(cout, y2000);
+	for (int i = 50; i < 1100; i += 49) {
+		Roman_int r = Roman_int(i);
+		cout << r.as_int() << " -> " << r << ",\t";
+	}
 	}
 	catch (exception& e) {
 		cerr << "error: " << e.what() << '\n';
