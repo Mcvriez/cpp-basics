@@ -26,19 +26,28 @@ struct Token {
 };
 
 class Token_stream {
-	bool full;
+	int full;
 	Token buffer;
+	Token extrabuffer;
 public:
 	istream& input;
-	Token_stream() :full(false), buffer(0), input(std::cin) { }
+	Token_stream() :full(0), buffer(0), extrabuffer(0), input(std::cin) { }
+	Token_stream(istream& stream) :full(0), buffer(0), extrabuffer(0), input(stream) { }
 	Token get();
-	void unget(Token t) { buffer = t; full = true; }
+	void unget(Token t) {
+		if (full == 1) {
+			extrabuffer = buffer;
+		}
+		buffer = t;
+		++full;
+	}
 	void ignore(char);
 };
 
 Token Token_stream::get()
 {
-	if (full) { full = false; return buffer; }
+	if (full == 2) { full = 1; Token b = buffer; buffer = extrabuffer;  return b; }
+	if (full == 1) { full = 0; return buffer; }
 	char ch;
 	input.get(ch);
 	while (isspace(ch)) {
@@ -93,12 +102,11 @@ Token Token_stream::get()
 
 void Token_stream::ignore(char c)       // reads till the specified character, needed to clear incorrect input statement
 {
-	if (full && c == buffer.kind) {
-		full = false;
+	if (full>0 && c == buffer.kind) {
+		full = 0;
 		return;
 	}
-	full = false;
-
+	full = 0;
 	char ch;
 	while (input.get(ch))
 		if (ch == c || ch == '\n') return;
@@ -156,17 +164,16 @@ bool Symbol_table::is_declared(string s)
 	return false;
 }
 
-Token_stream ts;
 Symbol_table st;
-double expression(); // we define it here because otherwise primary() won't compile
+double expression(Token_stream& ts); // we define it here because otherwise primary() won't compile
 
-double primary()
+double primary(Token_stream& ts)
 {
 	Token t = ts.get();
 	switch (t.kind) {
 	case '(':
 	{
-		double d = expression();
+		double d = expression(ts);
 		t = ts.get();
 		if (t.kind != ')') {
 			ts.unget(t); // to make cleaner work
@@ -175,7 +182,7 @@ double primary()
 		return d;    // error was here
 	}
 	case '-':
-		return -primary();
+		return -primary(ts);
 	case number:
 		return t.value;
 	case name: {
@@ -186,7 +193,7 @@ double primary()
 		t = ts.get();
 		if (t.kind != '(') error("'(' expected");
 		ts.unget(t);
-		double d = expression();
+		double d = expression(ts);
 		if (d < 0) {
 			error("You can't get square root of the negative number");
 		}
@@ -197,7 +204,7 @@ double primary()
 		t = ts.get();
 		if (t.kind != '(') error("'(' expected");
 		ts.unget(t);
-		double d = expression();
+		double d = expression(ts);
 		if (d < 0) {
 			return d *= -1;
 		}
@@ -209,13 +216,13 @@ double primary()
 			ts.unget(t);
 			error("'(' expected");
 		}
-		double d = expression();
+		double d = expression(ts);
 		t = ts.get();
 		if (t.kind != ',') {
 			ts.unget(t);
 			error("',' expected in the power statement");
 		}
-		double i = expression();
+		double i = expression(ts);
 		t = ts.get();
 		if (t.kind != ')') {
 			ts.unget(t);
@@ -228,17 +235,17 @@ double primary()
 	}
 }
 
-double term()
+double term(Token_stream& ts)
 {
-	double left = primary();
+	double left = primary(ts);
 	while (true) {
 		Token t = ts.get();
 		switch (t.kind) {
 		case '*':
-			left *= primary();
+			left *= primary(ts);
 			break;
 		case '/':
-		{	double d = primary();
+		{	double d = primary(ts);
 		if (d == 0) error("divide by zero");
 		left /= d;
 		break;
@@ -250,17 +257,17 @@ double term()
 	}
 }
 
-double expression()
+double expression(Token_stream& ts)
 {
-	double left = term();
+	double left = term(ts);
 	while (true) {
 		Token t = ts.get();
 		switch (t.kind) {
 		case '+':
-			left += term();
+			left += term(ts);
 			break;
 		case '-':
-			left -= term();
+			left -= term(ts);
 			break;
 		default:
 			ts.unget(t);
@@ -269,7 +276,7 @@ double expression()
 	}
 }
 
-double declaration(bool cons)
+double declaration(Token_stream& ts, bool cons)
 {
 	Token t = ts.get();
 	if (t.kind != name) error("name expected in declaration");
@@ -277,12 +284,12 @@ double declaration(bool cons)
 	if (st.is_declared(name)) error(name, " declared twice");
 	Token t2 = ts.get();
 	if (t2.kind != '=') error("= missing in declaration of ", name);
-	double d = expression();
+	double d = expression(ts);
 	st.define_name(name, d, cons);
 	return d;
 }
 
-double assignment() {
+double assignment(Token_stream& ts) {
 	Token t = ts.get();
 	string tname = t.name;
 	double tvalue = t.value;
@@ -292,33 +299,33 @@ double assignment() {
 	Token t2 = ts.get();
 	if (t2.kind == '=')
 	{
-		double d = expression();
+		double d = expression(ts);
 		st.set_value(tname, d);
 		return d;
 	}
-	cin.unget();
+	ts.unget(t2);
 	ts.unget(t);
-	return expression();
+	return expression(ts);
 }
 
-double statement()
+double statement(Token_stream& ts)
 {
 	Token t = ts.get();
 	switch (t.kind) {
 	case let:
-		return declaration(false);
+		return declaration(ts, false);
 	case constant:
-		return declaration(true);
+		return declaration(ts, true);
 	case name:
 		ts.unget(t);
-		return assignment();
+		return assignment(ts);
 	default:
 		ts.unget(t);
-		return expression();
+		return expression(ts);
 	}
 }
 
-void clean_up_mess()
+void clean_up_mess(Token_stream& ts)
 {
 	ts.ignore(print);
 }
@@ -328,6 +335,7 @@ const string result = "= ";
 
 void calculate()
 {
+	Token_stream ts(std::cin);
 	while (true) try {
 		cout << prompt;
 		Token t = ts.get();
@@ -338,19 +346,19 @@ void calculate()
 		else {
 			if (t.kind == quit) return;
 			ts.unget(t);
-			cout << result << statement() << endl;
+			cout << result << statement(ts) << endl;
 		}
 	}
 	catch (runtime_error& e) {
 		cerr << e.what() << endl;
-		clean_up_mess();
+		clean_up_mess(ts);
 	}
 }
 
 int main() {
-	st.define_name("k", 1000, true);
+	
 	try {
-		calculate();
+		calculate(ts);
 		return 0;
 	}
 	catch (exception& e) {
