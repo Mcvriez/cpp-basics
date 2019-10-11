@@ -2,8 +2,7 @@
 
 /*
 
-Write a program that accepts two file names and produces a new file that is the contents of the first file followed by the
-contents of the second; that is, the program concatenates the two files.
+Write a program that takes two files containing sorted whitespace-separated words and merges them, preserving order.
 
 */
 
@@ -26,13 +25,9 @@ vector <string> read_file(const string fname) {
 		if (!ist) {
 			if (ist.eof()) break;
 		}
-		if (ch != '\n' && ch != ' ') buf += ch;
-		else {
-			f.push_back(buf);
-			f.push_back(string(1, ch));
-			cout << buf;
-			buf = "";
-		}
+		buf += ch;
+		if (ch == '\n' || ch == ' ') { f.push_back(buf); buf = ""; }
+		cout << buf << ' ';
 	}
 	return f;
 }
@@ -53,6 +48,7 @@ int main() {
 		vector <string> f2 = read_file(file1);
 		vector <string> f1 = read_file(file2);
 		f1.insert(f1.end(), f2.begin(), f2.end());
+		sort(f1.begin(), f1.end());
 		output(out, f1);
 	}
 	catch (exception& e) {
