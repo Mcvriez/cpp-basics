@@ -1,5 +1,15 @@
 #include "std_lib_facilities.h"
 
+/*
+
+10. Add a command from x to the calculator from Chapter 7 that makes it take input from a file x. Add a command to y to
+the calculator that makes it write its output (both standard output and error output) to file y. Write a collection of test
+cases based on ideas from §7.3 and use that to test the calculator. Discuss how you would use these commands for
+testing.
+
+*/
+
+const string helper = "\nCalculation application\n\nSupports all arithmetic operations including parenthesis, pow(x, y), mod(x) and sqrt(x) functions\nuse #x = y notation to define a variable\nuse x = y notation to redefine it\nuse const x = y to define a constant(can't be redefined)\nEnter 'from' to load data from file C:\\Users\\arcady\\source\\repos\\cpp-basics\\calc_in.txt\nEnter 'to'  to redirect stram to the file C:\\Users\\arcady\\source\\repos\\cpp-basics\\calc_out.txt\nEnter 'help' to receive this this message\nEnter 'quit' for quit\n";
 const char let = 'L';
 const char quit = 'Q';
 const char print = ';';
@@ -12,6 +22,7 @@ const char constant = 'C';
 const char help = 'H';
 const char from = 'F';
 const char to = 'T';
+const char stream_end = 'X';
 
 
 
@@ -22,7 +33,7 @@ struct Token {
 	// initialization:
 	Token(char ch) :kind(ch), value(0) { }                       // with only char, operations 
 	Token(char ch, double val) :kind(ch), value(val) { }         // numbers
-	Token(char ch, string n) :kind(ch), name(n) { }              // names (error was here)
+	Token(char ch, string n) :kind(ch), name(n) { }              // names 
 };
 
 class Token_stream {
@@ -50,10 +61,13 @@ Token Token_stream::get()
 	if (full == 1) { full = 0; return buffer; }
 	char ch;
 	input.get(ch);
+	
+	if (!input) return Token(stream_end);
 	while (isspace(ch)) {
 		if (ch == '\n') return Token(print); // if newline detected, return print Token
 		input.get(ch);
 	}
+	// cout << ch << endl;
 	switch (ch)
 	{
 	case '(':
@@ -102,14 +116,18 @@ Token Token_stream::get()
 
 void Token_stream::ignore(char c)       // reads till the specified character, needed to clear incorrect input statement
 {
-	if (full>0 && c == buffer.kind) {
+	// cout << "cleaning up" << endl;
+	if (full > 0 && c == buffer.kind) {
 		full = 0;
+		// cout << "clearing token buffer" << endl;
 		return;
 	}
 	full = 0;
 	char ch;
 	while (input.get(ch))
-		if (ch == c || ch == '\n') return;
+		if (ch == c || ch == '\n') {
+			// cout << "returning";
+			return;}
 }
 
 struct Variable {
@@ -332,45 +350,80 @@ void clean_up_mess(Token_stream& ts)
 
 const string prompt = "> ";
 const string result = "= ";
+const string source = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\calc_in.txt";
+const string output = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\calc_out.txt";
 
-void calculate()
+
+
+
+void calculate(ostream& out, istream& in)
 {
-	Token_stream ts(std::cin);
-	while (true) try {
-		cout << prompt;
-		Token t = ts.get();
-		while (t.kind == print) t = ts.get();
-		if (t.kind == help) {
-			cout << "\nCalculation application\n\nSupports all arithmetic operations including parenthesis, pow(x,y), mod(x) and sqrt(x) functions\nuse #x = y notation to define a variable\nuse x = y notation to redefine it\nuse const x = y to define a constant (can't be redefined)\n\nEnter 'help' to receive this this message\nEnter 'quit' for quit\n";
+	while (true) {
+		Token_stream ts_from_console(in);
+		ostream& out_to_console = std::cout;
+		try
+		{
+			out_to_console << prompt;
+			out << prompt;
+			Token t = ts_from_console.get();
+			if (t.kind == stream_end) {
+				in.clear();
+				calculate(out, std::cin);
+			}
+			while (t.kind == print) { t = ts_from_console.get(); }
+			if (t.kind == quit)
+				throw;
+			if (t.kind == help) {
+				out_to_console << helper;
+			}
+			else if (t.kind == to) {
+				ofstream ost{ output };
+				if (!ost) error("can't open output file ", output);
+				calculate(ost, in);
+			}
+			else if (t.kind == from) {
+				ifstream ist{ source };
+				if (!ist) error("can't open input file ", source);
+				ist.exceptions(ist.exceptions() | ios_base::badbit);
+				calculate(out, ist);
+			}
+			else {
+				ts_from_console.unget(t);
+				double state = statement(ts_from_console);
+				out_to_console << result << state << endl;
+				out << state << endl;
+			}
 		}
-		else {
-			if (t.kind == quit) return;
-			ts.unget(t);
-			cout << result << statement(ts) << endl;
+		catch (runtime_error& e) {
+			cerr << e.what() << endl;
+			out << e.what() << endl;
+			clean_up_mess(ts_from_console);
+			in.clear();
+			out_to_console.clear();
 		}
-	}
-	catch (runtime_error& e) {
-		cerr << e.what() << endl;
-		clean_up_mess(ts);
 	}
 }
 
+
 int main() {
 	
+	std::ostream null_output(0);
+	istream& standard_input = std::cin;
+
 	try {
-		calculate(ts);
+		calculate(null_output, standard_input);
 		return 0;
 	}
 	catch (exception& e) {
 		cerr << "exception: " << e.what() << endl;
 		char c;
-		while (cin >> c && c != ';');
+		while (standard_input >> c && c != ';');
 		return 1;
 	}
 	catch (...) {
 		cerr << "exception\n";
 		char c;
-		while (cin >> c && c != ';');
+		while (standard_input >> c && c != ';');
 		return 2;
 	}
 }
