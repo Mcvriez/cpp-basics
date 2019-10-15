@@ -1,34 +1,36 @@
 #include "std_lib_facilities.h"
 /*
 
-2. Write a program that given a file name and a word outputs each line that contains that word together with the line
-number. Hint: getline().
+3. Write a program that removes all vowels from a file (“disemvowels”). For example, Once upon a time! becomes nc
+pn tm!. Surprisingly often, the result is still readable; try it on your friends
 
 */
 
 
 const string source = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\source.log";
-const string search_word = "'USDZAR'";
+const string target = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\target.log";
+const vector <char> vowels = { 'a', 'e', 'i', 'o', 'u', 'y' };
 
 int main() {
 
 	try {
 		ifstream input { source };
-		int line_counter = 0;
-		int appearence_counter = 0;
-		while (input) {
-			string line;
-			getline(input, line);
-			++line_counter;
-			stringstream ss{ line };
-			for (string chunk; ss >> chunk;) {
-				if (chunk == search_word) {
-					cout << "Line number: " << setw(5) << line_counter << " > " << line << endl;
-					++appearence_counter;
+		if (!input) error("can't open input file", source);
+		ofstream output{ target };
+		if (!output) error("can't open output file", target);
+
+		char ch;
+		while (input.get(ch)) {
+			bool vowel = false;
+			for (char c : vowels) {
+				if (tolower(ch) == c) {
+					vowel = true; 
+					break;
 				}
 			}
+			if (!vowel) output << ch;
 		}
-		cout << "Total appearences of word " << search_word << " is " << appearence_counter << endl;
+		
 
 	}
 	catch (exception& e) {
