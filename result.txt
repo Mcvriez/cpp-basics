@@ -1,3 +1,11 @@
-6  Write a program that replaces punctuation with whitespace  Consider    dot      semicolon      comma      question
-mark      dash      single quote  punctuation characters  Don t modify characters within a pair of double quotes  " lol ,, !! ><>"    For
-example  "- don't use  ,,, the as-if rule."  becomes " don t use ,,, the as if rule "  
+6  write a program that replaces punctuation with whitespace  consider    dot      semicolon      comma      question
+mark      dash      single quote  punctuation characters  do not modify characters within a pair of double quotes  " lol ,, !! ><>"   for
+example  "  do not use  ,,, the as-if rule." becomes " don t use ,,, the as if rule " 
+7  modify the program from the previous exercise so that it 
+   replaces do not with do not  cannot with cannot  etc  should not could not must not have not  
+   leaves hyphens within words intact  so that we get " do not use the as-if rule "   
+   and converts all characters to lower case 
+
+
+ do  not " not"
+ ca  not "nnot"

@@ -1,9 +1,10 @@
 #include "std_lib_facilities.h"
 /*
 
-6. Write a program that replaces punctuation with whitespace. Consider . (dot), ; (semicolon), , (comma), ? (question
-mark), - (dash), ' (single quote) punctuation characters. Don’t modify characters within a pair of double quotes ("). For
-example, “- don't use the as-if rule.” becomes “ don t use the as if rule ”.
+7. Modify the program from the previous exercise so that it 
+ - replaces don't with do not, can't with cannot, etc.; 
+ - leaves hyphens within words intact (so that we get “ do not use the as-if rule ”); 
+ - and converts all characters to lower case.
 
 */
 
@@ -18,17 +19,37 @@ int main() {
 		ofstream output{ out };
 		if (!output) cout << "Can't open file " << out << endl;
 
-		char ch;
-		string result;
+		bool mode = true;
+		char ch, ch1, ch2, last_char;
+		char single = '\'';
+
 		while (input.get(ch)) {
-			if (ch == '"') {
-				output << ch;
-				while (input.get(ch) && ch != '"') // skipping
-					output << ch;
-				output << ch;
+			ch = tolower(ch);
+			cout << ch;
+			if (ch == '-') {
+				input.get(ch);
+				if (isalpha(last_char) && isalpha(ch)) {
+					output << '-';
+				}
+				else output << ' ';
 			}
-			if (!ispunct(ch)) { output << ch; }
-			else output << ' ';
+
+			if (ch == 'n') {
+				input.get(ch1);
+				input.get(ch2);
+				if (ch1 == single && ch2 == 't') { 
+					if (last_char != 'a') output << " not";
+					else output << "nnot";
+					input.get(ch); 
+				}
+				else { input.putback(ch2); input.putback(ch1); }
+			}
+			
+			if (!ispunct(ch) || ch =='"') { output << (ch); }
+			else if (mode) output << ' ';
+			else output << (ch);
+			if (ch == '"') mode = !mode;
+			last_char = ch;
 		}
 	}
 		
