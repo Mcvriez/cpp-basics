@@ -1,77 +1,46 @@
 #include "std_lib_facilities.h"
 /*
 
-8. Use the program from the previous exercise to make a dictionary (as an alternative to the approach in §11.7). Run the
-result on a multi-page text file, look at the result, and see if you can improve the program to make a better dictionary.
+9. Split the binary I/O program from §11.3.2 into two: one program that converts an ordinary text file into binary and one
+program that reads binary and converts it to text. Test these programs by comparing a text file with what you get by
+converting it to binary and back.
 
 */
 
-string in = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\source.log";
-string out = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\result.txt";
-string outdict = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\dictionary.txt";
+string source = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\source.log";
+string outbin = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\binary.txt";
+string frombin = "C:\\Users\\arcady\\source\\repos\\cpp-basics\\frombinary.txt";
 
-void raw_input() {
-	ifstream input{ in };
-	if (!input) cout << "Can't open file " << in << endl;
-	ofstream output{ out };
-	if (!output) cout << "Can't open file " << out << endl;
+void to_binary() {
+	ifstream input{ source, ios_base::binary };
+	if (!input) cout << "Can't open file " << source << endl;
+	ofstream output{ outbin, ios_base::binary };
+	if (!output) cout << "Can't open file " << outbin << endl;
 
-	bool mode = true;
-	char ch, ch1, ch2, last_char;
-	char single = '\'';
-
-	while (input.get(ch)) {
-		ch = tolower(ch);
-		// cout << ch;
-		if (ch == '-') {
-			input.get(ch);
-			if (isalpha(last_char) && isalpha(ch)) {
-				output << '-';
-			}
-			else output << ' ';
-		}
-
-		if (ch == 'n') {
-			input.get(ch1);
-			input.get(ch2);
-			if (ch1 == single && ch2 == 't') {
-				if (last_char != 'a') output << " not";
-				else output << "nnot";
-				input.get(ch);
-			}
-			else { input.putback(ch2); input.putback(ch1); }
-		}
-
-		if (!ispunct(ch)) { output << (ch); }
-		else output << ' ';
-		last_char = ch;
+	for (char x; input.read(as_bytes(x), sizeof(char)); ) {// note: reading bytes
+		output.write(as_bytes(y), sizeof(char));
 	}
 }
 
-void dictionary() {
-	ifstream newinput{ out };
-	if (!newinput) cout << "Can't open file " << out << endl;
-	ofstream doutput{ outdict };
-	if (!doutput) cout << "Can't open file " << outdict << endl;
-	vector <string> dict;
-	string word;
-	string last_word;
 
-	while (newinput >> word) {
-		dict.push_back(word);
-	}
-	sort(dict);
-	for (string w : dict) {
-		if (w != last_word) doutput << w << endl;
-		last_word = w;
-	}
+void from_binary() {
+
+	ifstream input{ outbin };
+	if (!input) cout << "Can't open file " << outbin << endl;
+
+	ofstream from_bin{ frombin, ios_base::binary };
+	if (!from_bin) cout << "Can't open file " << frombin << endl;
+
+	for (char x; input.read(as_bytes(x), sizeof(char));) {
+		from_bin.write(as_bytes(x), sizeof(char));
+	} 
 }
 
 int main() {
 
 	try {
-		raw_input();
-		dictionary();		
+		to_binary();
+		from_binary();
 	}
 		
 	catch (exception& e) {
