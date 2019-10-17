@@ -1,8 +1,9 @@
 #include "std_lib_facilities.h"
 /*
 
-12. Reverse the order of characters in a text file. For example, asdfghjkl becomes lkjhgfdsa. Warning: There is no really
-good, portable, and efficient way of reading a file backward.
+13. Reverse the order of words (defined as whitespace-separated strings) in a file. For example, Norwegian Blue parrot
+becomes parrot Blue Norwegian. You are allowed to assume that all the strings from the file will fit into memory at
+once.
 
 */
 
@@ -19,14 +20,14 @@ int main() {
 		ofstream ost{ reversed };
 		if (!ost) cout << "Can't open file";
 
-		char c;
-		vector <char> v;
+		string word;
+		vector <string> v;
 
-		while (ist.get(c)) {
-			v.push_back(c);
+		while (ist >> word) {
+			v.push_back(word);
 		}
 		for (int x = v.size(); x > 0; --x) {
-			ost << v[x - 1];
+			ost << v[x - 1] << ' ';
 		}
 	}
 		
