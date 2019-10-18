@@ -4,4 +4,4 @@ project (cppbasics)
 
 include_directories(include)
 
-add_executable(app chapter_11_customizing_IO.cpp)
+add_executable(app chapter_12_display_model.cpp)
