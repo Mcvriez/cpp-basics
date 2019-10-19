@@ -3,39 +3,39 @@
 
 void routine() {
 
-	Point tl{ 100,100 }; // top left corner of our window
-	Simple_window win{ tl,600,400,"Canvas" };
+	Point tl{ 100, 100 }; // top left corner of our window
+	Simple_window win{ tl, 1000, 500, "Canvas" };
 	win.wait_for_button(); // display
 
-	Axis xa{ Axis::x, Point{20,300}, 280, 10, "x axis" }; // make an Axis
+	Axis xa{ Axis::x, Point{20, 400}, 800, 3, "stages" }; // make an Axis
 	win.attach(xa); // attach xa to the window, win
 	win.set_label("Canvas #2"); // relabel the window
 	win.wait_for_button(); // display!
 
-	Axis ya{ Axis::y, Point{20,300}, 280, 10, "y axis" };
-	ya.set_color(Color::cyan); // choose a color
-	ya.label.set_color(Color::dark_red); // choose a color for the text
+	Axis ya{ Axis::y, Point{20, 400}, 300, 10, "profit" };
+	ya.set_color(Color::dark_magenta); // choose a color
+	ya.label.set_color(Color::dark_magenta); // choose a color for the text
 	win.attach(ya);
 	win.set_label("Canvas #3");
 	win.wait_for_button(); // display!
 
-	Function sine{ sin,0,100,Point{20,150},1000,50,50 }; // sine curve
+	Function sine{ sin, 0, 16, Point{ 20, 300 }, 1000, 50, 50 }; // sine curve
 	win.attach(sine);
 	win.set_label("Canvas #4");
 	win.wait_for_button();
 
-	sine.set_color(Color::blue); // we changed our mind about sine’s color
+	sine.set_color(Color::dark_blue); // we changed our mind about sine’s color
 	Graph_lib::Polygon poly; // a polygon; a Polygon is a kind of Shape
 	poly.add(Point{ 300,200 }); // three points make a triangle
 	poly.add(Point{ 350,100 });
 	poly.add(Point{ 400,200 });
-	poly.set_color(Color::red);
+	poly.set_color(Color::white);
 	poly.set_style(Line_style::dash);
 	win.attach(poly);
 	win.set_label("Canvas #5");
 	win.wait_for_button();
 
-	Graph_lib::Rectangle r{ Point{200,200}, 100, 50 }; // top left corner, width, height
+	Graph_lib::Rectangle r{ Point{150,130}, 50, 150 }; // top left corner, width, height
 	win.attach(r);
 	win.set_label("Canvas #6");
 	win.wait_for_button();
@@ -53,13 +53,13 @@ void routine() {
 	win.set_label("Canvas #7");
 	win.wait_for_button();
 
-	Text t{ Point{150,150}, "Hello, graphical world!" };
+	Text t{ Point{150,150}, "Could be better" };
 	win.attach(t);
 	win.set_label("Canvas #8");
 	win.wait_for_button();
 
-	t.set_font(Font::times_bold);
-	t.set_font_size(20);
+	t.set_font(Font::helvetica_bold);
+	t.set_font_size(202);
 	win.set_label("Canvas #9");
 	win.wait_for_button();
 
@@ -68,7 +68,7 @@ void routine() {
 	win.set_label("Canvas #10");
 	win.wait_for_button();
 
-	ii.move(100, 200);
+	ii.move(200, 300);
 	win.set_label("Canvas #11");
 	win.wait_for_button();
 
