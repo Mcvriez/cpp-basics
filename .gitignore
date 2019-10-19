@@ -28,3 +28,5 @@ cpp-basics/Simple_window.h
 cpp-basics/Point.h
 cpp-basics/Window.cpp
 cpp-basics/std_lib_facilities.h
+cpp-basics/x64
+cpp-basics/x64/Debug/
