@@ -15,3 +15,16 @@ Makefile
 /cpp-basics/Debug
 /Release
 /cpp-basics.sln
+cpp-basics/Window.h
+cpp-basics/cpp-basics.vcxproj
+cpp-basics/cpp-basics.vcxproj.filters
+cpp-basics/cpp-basics.vcxproj.user
+cpp-basics/fltk.h
+cpp-basics/Graph.cpp
+cpp-basics/Graph.h
+cpp-basics/GUI.h
+cpp-basics/GUI.cpp
+cpp-basics/Simple_window.h
+cpp-basics/Point.h
+cpp-basics/Window.cpp
+cpp-basics/std_lib_facilities.h
