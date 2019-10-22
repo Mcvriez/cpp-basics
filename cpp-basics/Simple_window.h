@@ -21,7 +21,7 @@ struct Simple_window : Window {
 		while (!button_pushed) Fl::wait();
 		button_pushed = false;
 		Fl::redraw();
-	}
+		}
 
 	Button next_button;
 private:
