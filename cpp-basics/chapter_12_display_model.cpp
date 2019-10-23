@@ -5,10 +5,20 @@
 
 /* 
 
-11. Draw a series of regular polygons, one inside the other. 
-The innermost should be an equilateral triangle, enclosed by a square, enclosed by a pentagon, etc.
-For the mathematically adept only : let all the points of each N - polygon touch sides of the(N + 1) - polygon.
-Hint : The trigonometric functions are found in <cmath>(§24.8, §B.9.2).
+12. A superellipse is a two-dimensional shape defined by the equation
+Look up superellipse on the web to get a better idea of what such shapes look like. 
+
+Write a program that draws “starlike” patterns by connecting points on a superellipse. 
+
+- Take a, b, m, n, and N as arguments. Select N points on the superellipse defined by a, b, m, and n. 
+
+- Make the points equally spaced for some definition of “equal.” 
+
+- Connect each of those N points to one or more other points (if you like you can make the number of points to which to connect a point another
+argument or just use N–1, i.e., all the other points).
+
+13. Find a way to add color to the lines from the previous exercise. Make some lines one color and other lines another color
+or other colors.
 
 */
 
@@ -16,190 +26,66 @@ Hint : The trigonometric functions are found in <cmath>(§24.8, §B.9.2).
 int main()
 {
 	Simple_window win{ Point { 100, 100 }, 800, 640, "Canvas" };
-	int n;
-	int x = 400;
-	int y = 320;
-	int r;
+	int x0 = 400;
+	int y0 = 320;
+
+	double a;
+	double b;
+	double m;
+	double n;
+	int N;
+	int y2, y1, x;
+
 	vector <Point> points;
+	vector <int> xvector{ -125, -100, -75, -50, 0 , 50, 75, 100, 125 };
 
 	// -------------------- POLIGON -------------------- //
 
-	r = 30;
-	n = 3;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n) )});
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
+	a = b = 150;
+	n = m = 0.5;
+	for (int x : xvector) {
+		y1 = b * pow(abs(1 - pow(abs((x / a)), n)), 1.0 / m);
+		y2 = y1 * -1;
+		points.push_back(Point{ x + x0, y1 + y0 });
+		points.push_back(Point{ x + x0, y2 + y0 });
+				
 	}
-	Graph_lib::Polygon triangle;
-	triangle.add(points[0]);
-	triangle.add(points[1]);
-	triangle.add(points[2]);
-	points = {};
-	win.attach(triangle);
 
-	// -------------------- POLIGON -------------------- //
+	
+	Graph_lib::Polygon poly;
+	poly.add(points[0]);
+	poly.add(points[1]);
+	poly.add(points[2]);
+	poly.add(points[3]);
+	poly.set_color(Color::dark_green);
+	poly.set_style(Line_style(Line_style::dash, 3));
 
-	r = 43;
-	n = 4;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol;
-	pol.add(points[0]);
-	pol.add(points[1]);
-	pol.add(points[2]);
-	pol.add(points[3]);
-	points = {};
-	win.attach(pol);
+	Graph_lib::Polygon poly1;
+	poly1.add(points[4]);
+	poly1.add(points[5]);
+	poly1.add(points[6]);
+	poly1.add(points[7]);
+	poly1.set_color(Color::dark_red);
+	poly1.set_style(Line_style(Line_style::dot, 4));
+	
+	Graph_lib::Polygon poly2;
+	poly2.add(points[8]);
+	poly2.add(points[9]);
+	poly2.add(points[10]);
+	poly2.add(points[11]);
+	poly2.set_color(Color::dark_cyan);
+	poly2.set_style(Line_style(Line_style::dash, 3));
+	
+	Graph_lib::Polygon poly3;
+	poly3.add(points[12]);
+	poly3.add(points[13]);
+	poly3.add(points[14]);
+	poly3.add(points[15]);
+	poly3.set_style(Line_style(Line_style::dashdot, 2));
 
-	// -------------------- POLIGON -------------------- //
-
-	r = 60;
-	n = 5;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol1;
-	pol1.add(points[0]);
-	pol1.add(points[1]);
-	pol1.add(points[2]);
-	pol1.add(points[3]);
-	pol1.add(points[4]);
-
-	points = {};
-	win.attach(pol1);
-
-
-	// -------------------- POLIGON -------------------- //
-
-	r = 70;
-	n = 6;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol2;
-	pol2.add(points[0]);
-	pol2.add(points[1]);
-	pol2.add(points[2]);
-	pol2.add(points[3]);
-	pol2.add(points[4]);
-	pol2.add(points[5]);
-
-	points = {};
-	win.attach(pol2);
-
-	// -------------------- POLIGON -------------------- //
-
-	r = 80;
-	n = 7;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol3;
-	pol3.add(points[0]);
-	pol3.add(points[1]);
-	pol3.add(points[2]);
-	pol3.add(points[3]);
-	pol3.add(points[4]);
-	pol3.add(points[5]);
-	pol3.add(points[6]);
-
-	points = {};
-	win.attach(pol3);
-
-	// -------------------- POLIGON -------------------- //
-
-	r = 87;
-	n = 8;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol4;
-	pol4.add(points[0]);
-	pol4.add(points[1]);
-	pol4.add(points[2]);
-	pol4.add(points[3]);
-	pol4.add(points[4]);
-	pol4.add(points[5]);
-	pol4.add(points[6]);
-	pol4.add(points[7]);
-
-	points = {};
-	win.attach(pol4);
-
-	// -------------------- POLIGON -------------------- //
-
-	r = 95;
-	n = 9;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol5;
-	pol5.add(points[0]);
-	pol5.add(points[1]);
-	pol5.add(points[2]);
-	pol5.add(points[3]);
-	pol5.add(points[4]);
-	pol5.add(points[5]);
-	pol5.add(points[6]);
-	pol5.add(points[7]);
-	pol5.add(points[8]);
-
-	points = {};
-	win.attach(pol5);
-
-	// -------------------- POLIGON -------------------- //
-
-	r = 100;
-	n = 10;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol6;
-	pol6.add(points[0]);
-	pol6.add(points[1]);
-	pol6.add(points[2]);
-	pol6.add(points[3]);
-	pol6.add(points[4]);
-	pol6.add(points[5]);
-	pol6.add(points[6]);
-	pol6.add(points[7]);
-	pol6.add(points[8]);
-	pol6.add(points[9]);
-
-	points = {};
-	win.attach(pol6);
-
-	// -------------------- POLIGON -------------------- //
-
-	r = 105;
-	n = 11;
-	for (int i = 0; i < n; i++) {
-		points.push_back(Point{ int(x + r * cos(2 * M_PI * i / n)), int(y + r * sin(2 * M_PI * i / n)) });
-		printf("%f %f\n", x + r * cos(2 * M_PI * i / n), y + r * sin(2 * M_PI * i / n));
-	}
-	Graph_lib::Polygon pol7;
-	pol7.add(points[0]);
-	pol7.add(points[1]);
-	pol7.add(points[2]);
-	pol7.add(points[3]);
-	pol7.add(points[4]);
-	pol7.add(points[5]);
-	pol7.add(points[6]);
-	pol7.add(points[7]);
-	pol7.add(points[8]);
-	pol7.add(points[9]);
-	pol7.add(points[10]);
-
-	points = {};
-	win.attach(pol7);
-
+	win.attach(poly);
+	win.attach(poly1);
+	win.attach(poly2);
+	win.attach(poly3);
 	win.wait_for_button();
 }
