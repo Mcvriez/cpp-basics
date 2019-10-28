@@ -374,6 +374,33 @@ namespace Graph_lib {
 		Fl_Image* p;
 		Text fn;
 	};
+	struct Arc : Shape {
+		Arc(Point p, int ww, int hh, int start_angle, int end_angle)	// center, min, and max distance from center
+			:w{ ww }, h{ hh }, angle1{ start_angle }, angle2{ end_angle }{
+			add(Point{ p.x - ww, p.y - hh });
+		}
+		Point center() const { return{ point(0).x + w, point(0).y + h }; }
+		Point focus2() const { return{ center().x - int(sqrt(double(w * w - h * h))), center().y }; }
+		
+		void draw_lines() const;
+		void set_major(int ww) { w = ww; }
+		int major() const { return w; }
+		void set_minor(int hh) { h = hh; }
+		int minor() const { return h; }
+		void set_start_angle(int start_angle) { angle1 = start_angle; }
+		int start_angle() const { return angle1;}
+		void end_angle(int end_angle) { angle2 = end_angle; }
+		int end_angle() const { return angle2; }
+
+	private:
+		int w;
+		int h;
+		int angle1;
+		int angle2;
+	};
+
+
+
 
 }
 #endif
