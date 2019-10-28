@@ -4,7 +4,7 @@
 /*
 
 For each “define a class” exercise, display a couple of objects of the class to demonstrate that they work.
-2. Draw a box with rounded corners. Define a class Box, consisting of four lines and four arcs.
+3. Define a class Arrow, which draws a line with an arrowhead.	
 
 */
 
@@ -12,31 +12,56 @@ For each “define a class” exercise, display a couple of objects of the class to 
 
 int main()
 try {
+	Point start = { 300, 300 };
 	Simple_window win{ Point { 100, 100 }, 800, 640, "Canvas" };
+	int size = 30;
+	int delta = 10;
 
-	Point p1{ 500, 300 };
-	
-	int aa{ 330 }; 
-	int bb{ 200 };
-	int angle = 20;
-	
-	Box box{ p1, aa, bb, angle };
-	box.set_style(Line_style(Line_style::dash, 3));
-	box.set_color(Color::dark_red);
-	box.set_fill_color(Color::dark_cyan);
-	win.attach(box);
-	
-	Point p2{ 600, 500 };
 
-	aa = { 140 };
-	bb = { 200 };
-	angle = 15;
-
-	Box box1{ p2, aa, bb, angle };
-	box1.set_style(Line_style(Line_style::dot, 2));
-	box1.set_color(Color::black);
-	win.attach(box1);
+	Arrow arr{ start, Point {start.x + 200, start.y}, size, delta};
+	arr.set_color(Color::black);
+	arr.set_style(Line_style(Line_style::dash, 3));
+	arr.set_color(Color::magenta);
+	win.attach(arr);
 	
+	Arrow arr1{ start, Point {start.x, start.y + 200}, size, delta};
+	arr1.set_color(Color::black);
+	arr1.set_style(Line_style(Line_style::solid, 4));
+	win.attach(arr1);
+
+	Arrow arr2{ start, Point {start.x + 200, start.y + 200}, size, delta};
+	arr2.set_color(Color::black);
+	win.attach(arr2);
+
+	Arrow arr3{ start, Point {start.x - 200, start.y}, size, delta};
+	arr3.set_color(Color::black);
+	win.attach(arr3);
+
+	Arrow arr4{ start, Point {start.x, start.y - 200}, size, delta};
+	arr4.set_color(Color::black);
+	win.attach(arr4);
+
+	Arrow arr5{ start, Point {start.x - 200, start.y + 200}, size, delta};
+	arr5.set_color(Color::black);
+	win.attach(arr5);
+
+	Arrow arr6{ start, Point {start.x, start.y + 200}, size, delta};
+	arr6.set_color(Color::black);
+	win.attach(arr6);
+
+	Arrow arr7{ start, Point {start.x - 200, start.y - 200}, size, delta};
+	arr7.set_color(Color::black);
+	win.attach(arr7);
+
+	Arrow arr8{ start, Point {start.x + 400, start.y - 300}, size, delta};
+	arr8.set_style(Line_style(Line_style::dot, 3));
+	arr8.set_color(Color::black);
+	win.attach(arr8);
+
+	Arrow arr9{ start, Point {start.x + 400, start.y + 300}, size, delta};
+	arr9.set_color(Color::black);
+	win.attach(arr9);
+
 	win.wait_for_button();
 }
 

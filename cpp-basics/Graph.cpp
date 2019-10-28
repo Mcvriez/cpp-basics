@@ -312,8 +312,6 @@ namespace Graph_lib {
 			fl_color(color().as_int());	// reset color
 		}
 
-
-
 		if (color().visibility()) {
 			fl_color(color().as_int());
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle0 - delta , angle0 + delta);
@@ -429,5 +427,20 @@ namespace Graph_lib {
 		else
 			p->draw(point(0).x, point(0).y);
 	}
+	
+	void Arrow::draw_lines() const
+	{
+		fl_color(color().as_int());
+		fl_line(p0.x, p0.y, point(0).x, point(0).y);
+		fl_color(color().as_int());
 
+		fl_line_style(0);
+		Closed_polyline::draw_lines();
+		fl_begin_complex_polygon();
+		for (int i = 0; i < number_of_points(); ++i) {
+			fl_vertex(point(i).x, point(i).y);
+		}
+		fl_end_complex_polygon();
+		fl_color(color().as_int());	// reset color
+	}
 } // Graph

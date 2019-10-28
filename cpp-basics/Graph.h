@@ -9,6 +9,7 @@
 //#include<cmath>
 #include "fltk.h"
 //#include "std_lib_facilities.h"
+#define PI 3.14159265
 
 namespace Graph_lib {
 	// defense against ill-behaved Linux macros:
@@ -418,6 +419,46 @@ namespace Graph_lib {
 		int delta;
 	};
 
+	struct Arrow : Closed_polyline {	// open sequence of lines
+		Arrow(Point ending, Point pointer, int arrow_size, int delta_angle):
+			p1{ pointer }, p0{ ending }, size{ arrow_size }, delta{ delta_angle }{
+			Point pa1; Point pa2; Point pa0;
+			
+			double tan_alpha;
+			double x = p1.x - p0.x;
+			double y = p0.y - p1.y;
+			
+			tan_alpha =  x / y;
+			double alpha = atan(tan_alpha) * 180 / PI;
+
+			int theta = 90;
+			if (y < 0) theta = 270;
+
+			pa0.x = p1.x - cos((alpha - theta) * PI / 180) * size * coef + 0.5;
+			pa0.y = p1.y - sin((alpha - theta) * PI / 180) * size * coef + 0.5;
+
+			pa1.x = p1.x - cos((alpha - delta - theta) * PI / 180) * size;
+			pa2.x = p1.x - cos((alpha + delta - theta) * PI / 180) * size;
+			pa1.y = p1.y - sin((alpha - delta - theta) * PI / 180) * size;
+			pa2.y = p1.y - sin((alpha + delta - theta) * PI / 180) * size;
+			add(pa0);  add(pa1); add(p1); add(pa2);
+		}
+		void draw_lines() const;
+		void set_ending(Point p) { p0 = p; }
+		Point ending() const { return p0; }
+		void set_pointer(Point p) { p1 = p; }
+		Point pointer() const { return p1; }
+	private:
+		void add(Point p) { Shape::add(p); }
+		Point p0;   // start
+		Point p1;   // end
+		Point pa0;  // arrow middle bottom
+		Point pa1;  // arrow left
+		Point pa2;  // arrow right
+		int size;
+		int delta;
+		const double coef = 0.7;
+	};
 
 
 
