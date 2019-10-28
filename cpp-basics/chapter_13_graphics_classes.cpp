@@ -12,7 +12,7 @@ For each “define a class” exercise, display a couple of objects of the class to 
 
 int main()
 try {
-	Simple_window win{ Point { 100, 100 }, 1800, 640, "Canvas" };
+	Simple_window win{ Point { 100, 100 }, 800, 640, "Canvas" };
 
 	Point p1{ 500, 300 };
 	
@@ -29,7 +29,7 @@ try {
 	Point p2{ 600, 500 };
 
 	aa = { 140 };
-	bb = 300;
+	bb = { 200 };
 	angle = 15;
 
 	Box box1{ p2, aa, bb, angle };

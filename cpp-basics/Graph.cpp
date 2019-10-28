@@ -276,10 +276,58 @@ namespace Graph_lib {
 			x2 = w * cos(angle2 * PI / 180);
 			y2 = -h * sin(angle2 * PI / 180);
 
-			cout << x1 << '|' << y1 << '|' << x2 << '|' << y2 << '|' << cos(angle1 * PI / 180) << '|' << sin(angle1 * PI / 180);
-
 			fl_line(center().x , center().y, center().x + x1, center().y + y1);
 			fl_line(center().x , center().y , center().x  + x2, center().y  + y2);
+
+		}
+	}
+
+	void Box::draw_lines() const
+	{
+		int angle0 = 45;
+		int angle1 = 135;
+		int angle2 = 225;
+		int angle3 = 315;
+
+		if (fill_color().visibility()) {	// fill
+			fl_color(fill_color().as_int());
+
+			fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle0 - delta, angle0 + delta);
+			fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle1 - delta, angle1 + delta);
+			fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle2 - delta, angle2 + delta);
+			fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle3 - delta, angle3 + delta);
+			
+			fl_rectf(center().x + w * cos((angle1 + delta) * PI / 180), 
+					 center().y - h * sin((angle1 + delta) * PI / 180), 
+					 w * cos((angle0 - delta) * PI / 180) * 2, 
+					 h * sin((angle0 - delta) * PI / 180) * 2
+			);
+
+			fl_rectf(center().x + w * cos((angle1 - delta) * PI / 180), 
+					 center().y - h * sin((angle1 - delta) * PI / 180),
+					 - w * cos((angle1 - delta) * PI / 180) * 2,
+					 h * sin((angle1 - delta) * PI / 180) * 2
+			);
+
+			fl_color(color().as_int());	// reset color
+		}
+
+
+
+		if (color().visibility()) {
+			fl_color(color().as_int());
+			fl_arc(point(0).x, point(0).y, w + w, h + h, angle0 - delta , angle0 + delta);
+			fl_arc(point(0).x, point(0).y, w + w, h + h, angle1 - delta, angle1 + delta);
+			fl_arc(point(0).x, point(0).y, w + w, h + h, angle2 - delta, angle2 + delta);
+			fl_arc(point(0).x, point(0).y, w + w, h + h, angle3 - delta, angle3 + delta);
+
+			w * cos((angle0 + delta) * PI / 180);
+			-h * sin((angle0 + delta) * PI / 180);
+
+			fl_line(center().x + w * cos((angle0 + delta) * PI / 180), center().y - h * sin((angle0 + delta) * PI / 180), center().x + w * cos((angle1 - delta) * PI / 180), center().y - h * sin((angle1 - delta) * PI / 180));
+			fl_line(center().x + w * cos((angle1 + delta) * PI / 180), center().y - h * sin((angle1 + delta) * PI / 180), center().x + w * cos((angle2 - delta) * PI / 180), center().y - h * sin((angle2 - delta) * PI / 180));
+			fl_line(center().x + w * cos((angle2 + delta) * PI / 180), center().y - h * sin((angle2 + delta) * PI / 180), center().x + w * cos((angle3 - delta) * PI / 180), center().y - h * sin((angle3 - delta) * PI / 180));
+			fl_line(center().x + w * cos((angle3 + delta) * PI / 180), center().y - h * sin((angle3 + delta) * PI / 180), center().x + w * cos((angle0 - delta) * PI / 180), center().y - h * sin((angle0 - delta) * PI / 180));
 
 		}
 	}

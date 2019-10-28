@@ -399,6 +399,25 @@ namespace Graph_lib {
 		int angle2;
 	};
 
+	struct Box : Shape {
+		Box(Point p, int ww, int hh, int delta_angle)	// center, min, and max distance from center
+			:w{ ww / 2 }, h{ hh / 2 }, delta{ delta_angle }{
+			add(Point{ p.x - ww, p.y - hh });
+		}
+		Point center() const { return{ point(0).x + w, point(0).y + h }; }
+
+		void draw_lines() const;
+		void set_major(int ww) { w = ww; }
+		int major() const { return w; }
+		void set_minor(int hh) { h = hh; }
+		int minor() const { return h; }
+
+	private:
+		int w;
+		int h;
+		int delta;
+	};
+
 
 
 
