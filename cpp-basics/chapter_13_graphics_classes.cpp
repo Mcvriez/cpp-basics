@@ -4,46 +4,76 @@
 /*
 
 For each “define a class” exercise, display a couple of objects of the class to demonstrate that they work.
-4. Define functions n(), s(), e(), w(), center(), ne(), se(), sw(), and nw(). Each takes a Rectangle argument and returns
-a Point. These functions define “connection points” on and in the rectangle. For example, nw(r) is the northwest (top
-left) corner of a Rectangle called r.
+5. Define the functions from exercise 4 for a Circle and an Ellipse. Place the connection points on or outside the shape but
+not outside the bounding rectangle.
 
 */
 
-Point n(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x + rec.width() / 2, rec.start_point().y };
+Point n(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x , rec.center().y - rec.radius() };
 }
-Point s(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x + rec.width() / 2, rec.start_point().y + rec.height() };
+Point s(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x , rec.center().y + rec.radius() };
 }
-Point e(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x + rec.width() , rec.start_point().y + rec.height() / 2 };
+Point e(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x + rec.radius() , rec.center().y };
 }
-Point w(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x , rec.start_point().y + rec.height() / 2 };
+Point w(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x - rec.radius() , rec.center().y };
 }
-Point center(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x + rec.width() / 2 , rec.start_point().y + rec.height() / 2 };
+Point center(Graph_lib::Circle& rec) {
+	return rec.center();
 }
-Point ne(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x + rec.width(), rec.start_point().y};
+Point ne(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x + rec.radius(), rec.center().y - rec.radius() };
 }
-Point se(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x + rec.width(), rec.start_point().y + rec.height() };
+Point se(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x + rec.radius(), rec.center().y + rec.radius() };
 }
-Point sw(Graph_lib::Rectangle& rec) {
-	return Point{ rec.start_point().x, rec.start_point().y + rec.height() };
+Point sw(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x - rec.radius(), rec.center().y + rec.radius() };
 }
-Point nw(Graph_lib::Rectangle& rec) { return rec.start_point(); }
+Point nw(Graph_lib::Circle& rec) {
+	return Point{ rec.center().x - rec.radius(), rec.center().y - rec.radius() };
+}
+
+
+Point n(Graph_lib::Ellipse& rec) {
+	return Point{ rec.center().x , rec.center().y - rec.minor() };
+}
+Point s(Graph_lib::Ellipse& rec) {
+	return Point{ rec.center().x , rec.center().y + rec.minor() };
+}
+Point e(Graph_lib::Ellipse& rec) {
+	return Point{ rec.center().x + rec.major() , rec.center().y };
+}
+Point w(Graph_lib::Ellipse& rec) {
+	return Point{ rec.center().x - rec.major() , rec.center().y };
+}
+Point center(Graph_lib::Ellipse& rec) {
+	return rec.center();
+}
+Point ne(Graph_lib::Ellipse& rec) {
+	return Point{ rec.center().x + rec.major(), rec.center().y - rec.minor() };
+}
+Point se(Graph_lib::Ellipse& rec) {
+	return Point{ rec.center().x + rec.major(), rec.center().y + rec.minor() };
+}
+Point sw(Graph_lib::Ellipse& rec) {
+	return Point{ rec.center().x - rec.major(), rec.center().y + rec.minor() };
+}
+Point nw(Graph_lib::Ellipse& rec) {return Point { rec.center().x - rec.major(), rec.center().y - rec.minor() }; 
+}
 
 
 
 
 int main()
 try {
-	Point start = { 0, 0 };
+	Point start = { 300, 300 };
 	Simple_window win{ Point { 100, 100 }, 800, 640, "Canvas" };
-	Graph_lib::Rectangle rec{ start, 200, 120 };
+	Graph_lib::Circle rec{ start,  120 };
+	
 	rec.set_style(Line_style(Line_style::dash, 3));
 	rec.set_color(Color::black);
 	win.attach(rec);
@@ -57,6 +87,19 @@ try {
 	cout << sw(rec).x << ':' << sw(rec).y << endl;
 	cout << nw(rec).x << ':' << nw(rec).y << endl;
 
+	Graph_lib::Ellipse ell{ start,  200, 100 };
+	ell.set_style(Line_style(Line_style::dash, 3));
+	ell.set_color(Color::black);
+	win.attach(ell);
+	cout << n(ell).x << ':' << n(ell).y << endl;
+	cout << s(ell).x << ':' << s(ell).y << endl;
+	cout << e(ell).x << ':' << e(ell).y << endl;
+	cout << w(ell).x << ':' << w(ell).y << endl;
+	cout << center(ell).x << ':' << center(ell).y << endl;
+	cout << ne(ell).x << ':' << ne(ell).y << endl;
+	cout << se(ell).x << ':' << se(ell).y << endl;
+	cout << sw(ell).x << ':' << sw(ell).y << endl;
+	cout << nw(ell).x << ':' << nw(ell).y << endl;
 
 	win.wait_for_button();
 }

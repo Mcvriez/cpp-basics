@@ -309,7 +309,7 @@ namespace Graph_lib {
 		Point center() const { return{ point(0).x + w, point(0).y + h }; }
 		Point focus1() const { return{ center().x + int(sqrt(double(w * w - h * h))), center().y }; }
 		Point focus2() const { return{ center().x - int(sqrt(double(w * w - h * h))), center().y }; }
-
+		
 		void set_major(int ww) { w = ww; }
 		int major() const { return w; }
 		void set_minor(int hh) { h = hh; }
