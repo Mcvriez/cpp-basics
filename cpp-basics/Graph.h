@@ -189,7 +189,7 @@ namespace Graph_lib {
 
 	struct Rectangle : Shape {
 
-		Rectangle(Point xy, int ww, int hh) :w{ ww }, h{ hh }
+		Rectangle(Point xy, int ww, int hh) :w{ ww }, h{ hh }, sp{ xy }
 		{
 			if (h <= 0 || w <= 0) error("Bad rectangle: non-positive side");
 			add(xy);
@@ -206,9 +206,11 @@ namespace Graph_lib {
 
 		int height() const { return h; }
 		int width() const { return w; }
+		Point start_point() const { return sp; }
 	private:
 		int h;			// height
 		int w;			// width
+		Point sp;
 	//	Color fcolor;	// fill color; 0 means "no fill"
 	};
 
