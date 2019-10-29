@@ -404,9 +404,18 @@ namespace Graph_lib {
 
 	struct Box : Shape {
 		Box(Point p, int ww, int hh, int delta_angle)	// center, min, and max distance from center
-			:w{ ww / 2 }, h{ hh / 2 }, delta{ delta_angle }{
+			:w{ ww / 2 }, h{ hh / 2 }, delta{ delta_angle }, label{ "empty" }{
 			add(Point{ p.x - ww, p.y - hh });
 		}
+		Box(Point p, int ww, int hh)	// center, min, and max distance from center
+			:w{ ww / 2 }, h{ hh / 2 }, delta{ 5 }, label{ "empty" }{
+			add(Point{ p.x - ww, p.y - hh });
+		}
+		Box(Point p, string lab)	// center, min, and max distance from center
+			:w{ int(lab.size() * 7) }, h{ 20 }, delta{ 7 }, label{ lab }{
+			add(Point{ p.x - int(lab.size() * 7), p.y - 15 });
+		}
+
 		Point center() const { return{ point(0).x + w, point(0).y + h }; }
 
 		void draw_lines() const;
@@ -419,6 +428,7 @@ namespace Graph_lib {
 		int w;
 		int h;
 		int delta;
+		const string label;
 	};
 
 	struct Arrow : Closed_polyline {	// open sequence of lines
