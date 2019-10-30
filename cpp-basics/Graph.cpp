@@ -113,6 +113,7 @@ namespace Graph_lib {
 		if (color().visibility())	// draw closing line:
 			fl_line(point(number_of_points() - 1).x, point(number_of_points() - 1).y, point(0).x, point(0).y);
 	}
+
 	void Shape::move(int dx, int dy)
 	{
 		for (unsigned int i = 0; i < points.size(); ++i) {

@@ -212,8 +212,9 @@ namespace Graph_lib {
 		int h;			// height
 		int w;			// width
 		Point sp;
-		Color lcolor{ Color::invisible };
+		Color lcolor{ Color::black };
 	};
+
 
 	bool intersect(Point p1, Point p2, Point p3, Point p4);
 
@@ -473,7 +474,24 @@ namespace Graph_lib {
 		const double coef = 0.7;
 	};
 
+	struct Regular_hexagon : Polygon {
 
+		Regular_hexagon(Point centerp, int ra) :centr{ centerp }, rad{ ra }
+		{
+			if (rad <= 0) error("Bad rectangle: non-positive side");
+			for (int i = 0; i < 6; ++i) {
+				double angle = PI / 180 * (60 * i - 30);
+				add(Point{ int(centr.x + rad * cos(angle)), int(centr.y + rad * sin(angle)) });
+			}
+
+		}
+		int radius() const { return rad; }
+		Point center() const { return centr; }
+	private:
+		int rad;
+		Point centr;
+
+	};
 
 }
 #endif

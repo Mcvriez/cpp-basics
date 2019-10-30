@@ -4,7 +4,8 @@
 /*
 
 For each “define a class” exercise, display a couple of objects of the class to demonstrate that they work.
-7. Make an RGB color chart (e.g., search the web for “RGB color chart”)
+8. Define a class Regular_hexagon (a regular hexagon is a six-sided polygon with all sides of equal length). Use the
+center and the distance from the center to a corner point as constructor arguments.
 
 */
 
@@ -15,13 +16,13 @@ int main()
 try {
 	
 	Simple_window win{ Point { 100, 100 }, 800, 640, "Canvas" };
-	Vector_ref<Graph_lib::Rectangle> vr;
-	for (int r = 0; r < 256; ++r)
-		for (int g = 0; g < 256; ++g) {
-			vr.push_back(new Graph_lib::Rectangle{ Point{r * 5, g *5 },5,5 });
-			vr[vr.size()-1].set_fill_color(Color{ uchar(r),uchar(g),uchar(sqrt(10000 - g*r)) });
-			win.attach(vr[vr.size() - 1]);
-		}
+	Point start{ 200, 200 };
+	int rad = 50;
+	// Vector_ref<Graph_lib::Rectangle> vr;
+
+
+	Regular_hexagon rex{ start, rad };
+	win.attach(rex);
 
 	win.wait_for_button();
 }
