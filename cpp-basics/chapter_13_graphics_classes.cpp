@@ -4,8 +4,7 @@
 /*
 
 For each “define a class” exercise, display a couple of objects of the class to demonstrate that they work.
-8. Define a class Regular_hexagon (a regular hexagon is a six-sided polygon with all sides of equal length). Use the
-center and the distance from the center to a corner point as constructor arguments.
+9. Tile a part of a window with Regular_hexagons (use at least eight hexagons)
 
 */
 
@@ -15,15 +14,22 @@ center and the distance from the center to a corner point as constructor argumen
 int main()
 try {
 	
-	Simple_window win{ Point { 100, 100 }, 800, 640, "Canvas" };
-	Point start{ 200, 200 };
+	Simple_window win{ Point { 100, 100 }, 1000, 900, "Canvas" };
 	int rad = 50;
-	// Vector_ref<Graph_lib::Rectangle> vr;
 
+	Vector_ref<Graph_lib::Regular_hexagon> vr;
+	
+	int base_x = 100;
+	int base_y = 100;
+	for (int i = 0; i < 9; ++i) 
+		for (int j = 0; j < 8; ++j){
+			if (j % 2 > 0 || j == 1) { base_x = 143; }
+		vr.push_back(new Regular_hexagon(Point{ base_x + i * 87, base_y + 75 * j }, rad));
+		vr[vr.size() - 1].set_fill_color(rand() % 256);
+		win.attach(vr[vr.size() - 1]);
+		base_x = 100;
 
-	Regular_hexagon rex{ start, rad };
-	win.attach(rex);
-
+	}
 	win.wait_for_button();
 }
 
