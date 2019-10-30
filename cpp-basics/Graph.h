@@ -30,6 +30,7 @@ namespace Graph_lib {
 		Color(Color_type cc, Transparency vv) :c(Fl_Color(cc)), v(vv) { }
 		Color(int cc) :c(Fl_Color(cc)), v(visible) { }
 		Color(Transparency vv) :c(Fl_Color()), v(vv) { }
+		Color (uchar r, uchar g, uchar b) :c (fl_rgb_color(r, g, b)), v(visible) { }
 
 		int as_int() const { return c; }
 		char visibility() const { return v; }
@@ -211,7 +212,7 @@ namespace Graph_lib {
 		int h;			// height
 		int w;			// width
 		Point sp;
-	//	Color fcolor;	// fill color; 0 means "no fill"
+		Color lcolor{ Color::invisible };
 	};
 
 	bool intersect(Point p1, Point p2, Point p3, Point p4);
