@@ -12,19 +12,24 @@ int main()
 try {
 
 	Simple_window win{ Point { 100, 100 }, 1000, 900, "Canvas" };
-	Point start{ 100, 100 };
-	int rad = 50;
-
+	Point start{ 400, 300 };
+	int rad = 150;
+	Point M;
 	Circle c{ start, rad };
-	c.set_fill_color(140);
+	//x2 + y2 = r2
 
 	while (true) {
-		int x = (rand() % 10);
-		int y = (rand() % 10);
-		cout << x << '|' << y << endl;
-		c.move(x, y);
-		c.set_fill_color(rand() % 255);
+		int sign = rand() % 2 - 1;
+		if (sign == 0) sign = 1;
+		int sign2 = rand() % 2 - 1;
+		if (sign2 == 0) sign2 = 1;
+		int x = sign * (rand() % rad);
+		int y = sign2 * sqrt(pow(rad, 2) - pow(x, 2));
+		M = { x + start.x, y + start.y };
+		Mark mm (M, 'X');
+
 		win.attach(c);
+		win.attach(mm);
 		win.wait_for_button();
 	}
 }
