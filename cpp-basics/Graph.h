@@ -478,7 +478,7 @@ namespace Graph_lib {
 
 		Regular_hexagon(Point centerp, int ra) :centr{ centerp }, rad{ ra }
 		{
-			if (rad <= 0) error("Bad rectangle: non-positive side");
+			if (rad <= 0) error("Bad polygon: non-positive radius");
 			for (int i = 0; i < 6; ++i) {
 				double angle = PI / 180 * (60 * i - 30);
 				add(Point{ int(centr.x + rad * cos(angle)), int(centr.y + rad * sin(angle)) });
@@ -489,6 +489,26 @@ namespace Graph_lib {
 		Point center() const { return centr; }
 	private:
 		int rad;
+		Point centr;
+
+	};
+
+	struct Regular_polygon : Polygon {
+
+		Regular_polygon(Point centerp, int nsides, int ra) :centr{ centerp }, rad{ ra }, sides {nsides}
+		{
+			if (rad <= 0 || sides < 3) error("Bad polygon");
+			for (int i = 0; i < sides; ++i) {
+				double angle = PI / 180 * (360 / sides * i);
+				add(Point{ int(centr.x + rad * cos(angle)), int(centr.y + rad * sin(angle)) });
+			}
+
+		}
+		int radius() const { return rad; }
+		Point center() const { return centr; }
+	private:
+		int rad;
+		int sides;
 		Point centr;
 
 	};
