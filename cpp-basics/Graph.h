@@ -212,7 +212,7 @@ namespace Graph_lib {
 		int h;			// height
 		int w;			// width
 		Point sp;
-		Color lcolor{ Color::black };
+		Color lcolor{ Color::invisible };
 	};
 
 
