@@ -216,6 +216,7 @@ namespace Graph_lib {
 	};
 
 
+
 	bool intersect(Point p1, Point p2, Point p3, Point p4);
 
 
@@ -244,6 +245,26 @@ namespace Graph_lib {
 		Lines(initializer_list<Point> lst) : Shape{ lst } { if (lst.size() % 2) error("odd number of points for Lines"); }
 		void draw_lines() const;
 		void add(Point p1, Point p2) { Shape::add(p1); Shape::add(p2); }
+	};
+
+	struct Right_triangle : Closed_polyline {
+		Right_triangle(Point xy, int ww, int hh, int angle) :w{ ww }, h{ hh }, sp{ xy }
+		{
+			if (h <= 0 || w <= 0) error("Bad rectangle: non-positive side");
+			add(xy);
+			int x1 = w * cos(angle * PI / 180) + sp.x;
+			int y1 = -h * sin(angle * PI / 180) + sp.y;
+			int x2 = w * cos((angle + 90) * PI / 180) + sp.x;
+			int y2 = -h * sin((angle + 90) * PI / 180) + sp.y;
+			add(Point(x1, y1));
+			add(Point(x2, y2));
+		}
+		Point start_point() const { return sp; }
+		// void draw_lines() const;
+	private:
+		int h;			// height
+		int w;			// width
+		Point sp;
 	};
 
 	struct Text : Shape {
@@ -512,6 +533,7 @@ namespace Graph_lib {
 		Point centr;
 
 	};
+
 
 }
 #endif
