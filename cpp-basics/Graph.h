@@ -240,6 +240,17 @@ namespace Graph_lib {
 		void draw_lines() const;
 	};
 
+	struct Poly : Polygon {	// closed sequence of non-intersecting lines
+		Poly(initializer_list<Point> lst)  {
+			if(lst.size() < 3) error("Polygon should contain at least 3 points");
+			for (Point p : lst) {
+				cout << p.x << '|' << p.y << endl;
+				add(p);
+			}
+		}
+
+	};
+
 	struct Lines : Shape {	// indepentdent lines
 		Lines() {}
 		Lines(initializer_list<Point> lst) : Shape{ lst } { if (lst.size() % 2) error("odd number of points for Lines"); }

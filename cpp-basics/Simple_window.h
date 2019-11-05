@@ -19,6 +19,7 @@ struct Simple_window : Window {
 		// this allows graphics without control inversion
 	{
 		while (!button_pushed) Fl::wait();
+		cout << "button loop" << endl;
 		button_pushed = false;
 		Fl::redraw();
 		}
