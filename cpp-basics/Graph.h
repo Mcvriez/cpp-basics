@@ -546,5 +546,36 @@ namespace Graph_lib {
 	};
 
 
+	struct Star : Closed_polyline {
+
+		Star(Point centerp, int nsides, int rb, int rs) :centr{ centerp }, big_rad{ rb }, small_rad{ rs }, sides{ nsides }
+		{
+			if (small_rad <= 0 || big_rad <= 0 || big_rad <= small_rad || sides < 5) error("Bad star");
+			
+			for (int i = 0; i < sides; ++i) {
+				double angle = PI / 180 * (360 / sides * i);
+				double dangle = PI / 180 * (360 / sides * i + 360 / (2 * sides));
+				Point big_circle_point = Point{ int(centr.x + big_rad * cos(angle)), int(centr.y + big_rad * sin(angle)) };
+				Point small_circle_point = Point{ int(centr.x + small_rad * cos(dangle)), int(centr.y + small_rad * sin(dangle)) };
+
+				add(big_circle_point);
+				add(small_circle_point);
+
+				cout << big_circle_point.x << '|' << big_circle_point.y << endl;
+				cout << small_circle_point.x << '|' << small_circle_point.y << endl;
+			}
+
+		}
+		int radius() const { return big_rad; }
+		Point center() const { return centr; }
+	private:
+		int small_rad;
+		int big_rad;
+		int sides;
+		Point centr;
+
+	};
+
+
 }
 #endif
