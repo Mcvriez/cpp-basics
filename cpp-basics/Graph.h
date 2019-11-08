@@ -327,7 +327,7 @@ namespace Graph_lib {
 
 		void set_radius(int rr) { r = rr; }
 		int radius() const { return r; }
-	private:
+	protected:
 		int r;
 	};
 

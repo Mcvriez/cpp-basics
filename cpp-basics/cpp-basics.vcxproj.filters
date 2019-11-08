@@ -24,7 +24,7 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="chapter_13_graphics_classes.cpp">
+    <ClCompile Include="chapter_14_graphics_class_design.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
