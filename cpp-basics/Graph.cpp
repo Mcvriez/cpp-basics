@@ -160,7 +160,8 @@ namespace Graph_lib {
 			fl_rectf(point(0).x, point(0).y, w, h);
 			fl_color(color().as_int());	// reset color
 		}
-		if (lcolor.as_int()) {	// edge on top of fill
+
+		if (color().visibility()) {	// edge on top of fill
 			fl_color(color().as_int());
 			fl_rect(point(0).x, point(0).y, w, h);
 		}
