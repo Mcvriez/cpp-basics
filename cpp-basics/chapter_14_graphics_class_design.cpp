@@ -4,20 +4,17 @@
 
 /*
 
-2. Try to copy a Shape. What happens?
-
-Error	C2280	 'Graph_lib::Circle::Circle(const Graph_lib::Circle &)': attempting to reference a deleted function
-
-
-3. Define an abstract class and try to define an object of that type. What happens?
-
-Error	C2259	 'Abstract': cannot instantiate abstract class
+4. Define a class Immobile_Circle, which is just like Circle but can’t be moved.
 
 */
 
-class Abstract {
+class Immobile_Circle: public Circle {
+	using Circle::Circle;
 public:
-	virtual void f() = 0;
+	void move(int dx, int dy) {
+		cout << "This is immobile circle. What exactly did you expect?" << endl;
+	}
+
 };
 
 
@@ -25,12 +22,13 @@ int main()
 try {
 	Point start{ 300, 300 };
 	Simple_window win{ Point { 100, 100 }, 1000, 900, "Canvas" };
-	Circle c { start , 100 };
+	Immobile_Circle c { start , 100 };
 	win.attach(c);
 	win.wait_for_button();
+	
+	c.move(200, 200);
+	win.wait_for_button();
 
-	//Circle d = c;
-	//Abstract aa;
 
 }
 
