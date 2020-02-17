@@ -319,8 +319,8 @@ namespace Graph_lib {
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle1 - delta, angle1 + delta);
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle2 - delta, angle2 + delta);
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle3 - delta, angle3 + delta);
-			w * cos((angle0 + delta) * PI / 180);
-			-h * sin((angle0 + delta) * PI / 180);
+			//w * cos((angle0 + delta) * PI / 180);
+			// -h * sin((angle0 + delta) * PI / 180);
 			fl_line(center().x + w * cos((angle0 + delta) * PI / 180), center().y - h * sin((angle0 + delta) * PI / 180), center().x + w * cos((angle1 - delta) * PI / 180), center().y - h * sin((angle1 - delta) * PI / 180));
 			fl_line(center().x + w * cos((angle1 + delta) * PI / 180), center().y - h * sin((angle1 + delta) * PI / 180), center().x + w * cos((angle2 - delta) * PI / 180), center().y - h * sin((angle2 - delta) * PI / 180));
 			fl_line(center().x + w * cos((angle2 + delta) * PI / 180), center().y - h * sin((angle2 + delta) * PI / 180), center().x + w * cos((angle3 - delta) * PI / 180), center().y - h * sin((angle3 - delta) * PI / 180));
@@ -394,7 +394,7 @@ namespace Graph_lib {
 
 	// somewhat overelaborate constructor
 	// because errors related to image files can be such a pain to debug
-	Image::Image(Point xy, string s, Suffix::Encoding e)
+	/*Image::Image(Point xy, string s, Suffix::Encoding e)
 		:w(0), h(0), fn(xy, "")
 	{
 		add(xy);
@@ -432,7 +432,7 @@ namespace Graph_lib {
 		else
 			p->draw(point(0).x, point(0).y);
 	}
-	
+	*/
 	void Arrow::draw_lines() const
 	{
 		fl_color(color().as_int());
