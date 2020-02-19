@@ -1,4 +1,3 @@
-
 #ifndef GRAPH_GUARD
 #define GRAPH_GUARD 1
 
@@ -134,7 +133,7 @@ namespace Graph_lib {
     public:
         virtual void move(int dx, int dy);	// move the shape +=dx and +=dy
 
-        void set_color(Color col) { lcolor = col; }
+        virtual void set_color(Color col) { lcolor = col; }
         Color color() const { return lcolor; }
 
         void set_style(Line_style sty) { ls = sty; }
@@ -213,10 +212,7 @@ namespace Graph_lib {
         //	Color fcolor;	// fill color; 0 means "no fill"
     };
 
-
-
     bool intersect(Point p1, Point p2, Point p3, Point p4);
-
 
     struct Open_polyline : Shape {	// open sequence of lines
         using Shape::Shape;
@@ -231,7 +227,6 @@ namespace Graph_lib {
 
         //	void add(Point p) { Shape::add(p); }
     };
-
 
     struct Polygon : Closed_polyline {	// closed sequence of non-intersecting lines
         using Closed_polyline::Closed_polyline;
@@ -297,7 +292,6 @@ namespace Graph_lib {
         int fnt_sz{ (14 < fl_size()) ? fl_size() : 14 };	// at least 14 point
     };
 
-
     struct Axis : Shape {
         // representation left public
         enum Orientation { x, y, z };
@@ -330,7 +324,6 @@ namespace Graph_lib {
         int r;
     };
 
-
     struct Ellipse : Shape {
         Ellipse(Point p, int ww, int hh)	// center, min, and max distance from center
                 :w{ ww }, h{ hh } {
@@ -351,13 +344,6 @@ namespace Graph_lib {
         int w;
         int h;
     };
-    /*
-    struct Mark : Text {
-        static const int dw = 4;
-        static const int dh = 4;
-        Mark(Point xy, char c) : Text(Point(xy.x-dw, xy.y+dh),string(1,c)) {}
-    };
-    */
 
     struct Marked_polyline : Open_polyline {
         Marked_polyline(const string& m) :mark(m) { }
@@ -377,16 +363,6 @@ namespace Graph_lib {
         Mark(Point xy, char c) : Marks(string(1, c)) { add(xy); }
     };
 
-    /*
-    struct Marks : Shape {
-        Marks(char m) : mark(string(1,m)) { }
-        void add(Point p) { Shape::add(p); }
-        void draw_lines() const;
-    private:
-        string mark;
-    };
-    */
-
     struct Bad_image : Fl_Image {
         Bad_image(int h, int w) : Fl_Image(h, w, 0) { }
         void draw(int x, int y, int, int, int, int) { draw_empty(x, y); }
@@ -397,7 +373,7 @@ namespace Graph_lib {
     };
 
     Suffix::Encoding get_encoding(const string& s);
-/*
+
     struct Image : Shape {
         Image(Point xy, string s, Suffix::Encoding e = Suffix::none);
         ~Image() { delete p; }
@@ -409,7 +385,7 @@ namespace Graph_lib {
         Fl_Image* p;
         Text fn;
     };
-*/
+
     struct Arc : Shape {
         Arc(Point p, int ww, int hh, int start_angle, int end_angle)	// center, min, and max distance from center
                 :w{ ww }, h{ hh }, angle1{ start_angle }, angle2{ end_angle }{
@@ -521,7 +497,6 @@ namespace Graph_lib {
     private:
         int rad;
         Point centr;
-
     };
 
     struct Regular_polygon : Polygon {
@@ -544,6 +519,24 @@ namespace Graph_lib {
 
     };
 
+    struct Regular_octagon : Shape {
+
+        Regular_octagon(Point centerp, int ra) :centr{ centerp }, rad{ ra }
+        {
+            if (rad <= 0) error("Bad polygon: non-positive radius");
+            for (int i = 0; i < 8; ++i) {
+                double angle = PI / 180 * (45 * i - 22);
+                add(Point{ int(centr.x + rad * cos(angle)), int(centr.y + rad * sin(angle)) });
+            }
+
+        }
+        void draw_lines() const;
+        int radius() const { return rad; }
+        Point center() const { return centr; }
+    private:
+        int rad;
+        Point centr;
+    };
 
     struct Star : Closed_polyline {
 

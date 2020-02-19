@@ -82,7 +82,6 @@ namespace Graph_lib {
 		Closed_polyline::add(p);
 	}
 
-
 	void Polygon::draw_lines() const
 	{
 		if (number_of_points() < 3) error("less than 3 points in a Polygon");
@@ -104,7 +103,6 @@ namespace Graph_lib {
 		if (color().visibility())
 			Shape::draw_lines();
 	}
-
 
 	void Closed_polyline::draw_lines() const
 	{
@@ -215,7 +213,6 @@ namespace Graph_lib {
 		label.draw();	// the label may have a different color from the line
 	}
 
-
 	void Axis::set_color(Color c)
 	{
 		Shape::set_color(c);
@@ -244,7 +241,6 @@ namespace Graph_lib {
 		}
 	}
 
-
 	void Ellipse::draw_lines() const
 	{
 		if (fill_color().visibility()) {	// fill
@@ -258,6 +254,7 @@ namespace Graph_lib {
 			fl_arc(point(0).x, point(0).y, w + w, h + h, 0, 360);
 		}
 	}
+
 	void Arc::draw_lines() const
 	{
 		if (fill_color().visibility()) {	// fill
@@ -348,14 +345,6 @@ namespace Graph_lib {
 		for (int i = 0; i < number_of_points(); ++i)
 			draw_mark(point(i), mark[i % mark.size()]);
 	}
-	/*
-	void Marks::draw_lines() const
-	{
-		for (int i=0; i<number_of_points(); ++i)
-			fl_draw(mark.c_str(),point(i).x-4,point(i).y+4);
-	}
-	*/
-
 
 	std::map<string, Suffix::Encoding> suffix_map;
 
@@ -448,4 +437,24 @@ namespace Graph_lib {
 		fl_end_complex_polygon();
 		fl_color(color().as_int());	// reset color
 	}
+
+    void Regular_octagon::draw_lines() const
+    {
+        if (fill_color().visibility()) {
+            fl_color(fill_color().as_int());
+            fl_begin_complex_polygon();
+            for (int i = 0; i < number_of_points(); ++i) {
+                fl_vertex(point(i).x, point(i).y);
+            }
+            fl_end_complex_polygon();
+            fl_color(color().as_int());	// reset color
+        }
+
+        if (color().visibility())
+            Shape::draw_lines();
+
+        if (color().visibility())	// draw closing line:
+            fl_line(point(number_of_points() - 1).x, point(number_of_points() - 1).y, point(0).x, point(0).y);
+    }
+
 } // Graph

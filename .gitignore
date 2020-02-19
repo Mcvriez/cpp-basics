@@ -30,3 +30,5 @@ cpp-basics/Window.cpp
 cpp-basics/std_lib_facilities.h
 cpp-basics/x64
 cpp-basics/x64/Debug/
+/cpp-basics/cmake-build-debug/
+/cpp-basics/Release/

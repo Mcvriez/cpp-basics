@@ -11,9 +11,9 @@ add_executable(cpp-basics
         Window.cpp)
 
 set(FLTK_SKIP_FLUID true)
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl -lpthread")
 
 
-find_package(FLTK REQUIRED)
+find_package(FLTK REQUIRED NO_MODULE)
 include_directories(${FLTK_INCLUDE_DIR})
-target_link_libraries(cpp-basics ${FLTK_BASE_LIBRARY} ${FLTK_PLATFORM_DEPENDENT_LIBS} )
-#target_link_libraries(${PROJECT_NAME} fltk fltk_images)
+target_link_libraries(cpp-basics ${FLTK_BASE_LIBRARY} ${FLTK_PLATFORM_DEPENDENT_LIBS} fltk)

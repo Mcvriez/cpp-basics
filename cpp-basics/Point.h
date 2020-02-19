@@ -1,6 +1,7 @@
 
 #ifndef POINT_GUARD
 #define POINT_GUARD
+#include "std_lib_facilities.h"
 
 typedef void (*Callback)(void*,void*);
 
@@ -13,6 +14,8 @@ namespace Graph_lib {
 
 		Point& operator+=(Point d) { x+=d.x; y+=d.y; return *this; }
 	};
+
+
 
 	inline bool operator==(Point a, Point b) { return a.x == b.x && a.y == b.y; }
 
