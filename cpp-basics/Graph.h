@@ -568,6 +568,34 @@ namespace Graph_lib {
 
     };
 
+    struct Group {
+    //void add_shape (Shape& sh){ items.push_back(sh); }
+    void add_shape (Shape sha){ items.push_back(sha); }
+    int size() const { return int(items.size()); }
 
+    void move(int dx, int dy) {
+        for (int i = 0; i < size(); ++i) {
+            items[i].move(dx, dy);
+        }
+    }
+    void set_color(Color col) {
+        for (int i = 0; i < size(); ++i) {
+            items[i].set_color(col);
+        }
+    }
+    void set_style(Line_style sty) {
+        for (int i = 0; i < size(); ++i) {
+            items[i].set_style(sty);
+        }
+    }
+    void set_fill_color(Color col) {
+        for (int i = 0; i < size(); ++i) {
+            items[i].set_fill_color(col);
+        }
+    }
+
+    private:
+        Vector_ref <Shape> items;
+    };
 }
 #endif
