@@ -4,22 +4,36 @@
 
 /*
 
-10. Define a class Pseudo_window that looks as much like a Window as you can make it without heroic efforts.
-It should have rounded corners, a label, and control icons.
-Maybe you could add some fake “contents,” such as an image. It need not actually do anything.
-It is acceptable (and indeed recommended) to have it appear within a Simple_window.
+11. Define a Binary_tree class derived from Shape.
+Give the number of levels as a parameter
+ (levels==0 means no nodes,
+ levels==1 means one node,
+ levels==2 means one top node with two sub-nodes,
+ levels==3 means one top node with two sub-nodes each with two sub-nodes, etc.).
+
+Let a node be represented by a small circle.
+Connect the nodes by lines (as is conventional).
+P.S. In computer science, trees grow downward from a top node (amusingly, but logically, often called the root).
 
 */
 
 int main()
 try {
-    Point tl(2200,500);
-    Point tl2(2200,900);
+    Point tl(500,500);
+    Point tl2(1200,200);
     Simple_window win(tl,2400,1200,"My window");
-    Pseudo_window ps {tl, 2000, 500, "My pseudo window"};
-    Pseudo_window ps1 {tl2, 600, 500, "My window"};
-    win.attach(ps);
-    win.attach(ps1);
+    Binary_tree bt {tl2, 3, 60};
+    win.attach(bt);
+    win.wait_for_button();
+    win.detach(bt);
+
+    Binary_tree bt1 {tl2, 7, 10};
+    win.attach(bt1);
+    win.wait_for_button();
+    win.detach(bt1);
+
+    Binary_tree bt2 {tl2, 10, 3};
+    win.attach(bt2);
     win.wait_for_button();
 
 }

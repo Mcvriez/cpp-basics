@@ -570,7 +570,6 @@ namespace Graph_lib {
     };
 
     struct Group  {
-    //void add_shape (Shape& sh){ items.push_back(sh); }
     void add_shape (Shape& sha){ items.push_back(sha); }
     int size() const { return int(items.size()); }
 
@@ -605,6 +604,16 @@ namespace Graph_lib {
         };
         void draw_lines() const;
         Vector_ref <Shape> items;
+    };
+
+    struct Binary_tree : Shape {
+        Binary_tree(Point s, int l, int r): root{s}, level {l}, radius {r} {};
+        Binary_tree(Point s, int l): root{s}, level {l}, radius {30} {};
+        void draw_lines() const;
+    private:
+        const int level;
+        const int radius;
+        Point root;
     };
 }
 #endif

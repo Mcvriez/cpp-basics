@@ -514,4 +514,82 @@ namespace Graph_lib {
             fl_font(fl_font(), fl_size());
         }
 	}
+
+    void Binary_tree::draw_lines() const {
+        int height_step = radius * 3;
+        int base_number = pow(2, level);
+        fl_line_style(0, radius / 6);
+
+        Point start = {root.x - (base_number * radius * 2), root.y + height_step * level};
+        Point first = {start.x + radius, start.y};
+
+
+        for (int i = 1; i <= level; ++i){
+            for (int j = 0; j < base_number / 2; ++j){
+                Point second = {first.x + 2 * int(pow(2, i)) * radius, first.y};
+                Point top = {first.x + int(pow(2, i)) * radius, first.y - height_step};
+
+                fl_color(0);
+                fl_line(first.x, first.y, top.x, top.y);
+                fl_line(second.x, second.y, top.x, top.y);
+
+                fl_color(255,99,71);
+                fl_pie(first.x - radius, first.y - radius, radius * 2, radius * 2, 0, 360);
+                fl_pie(second.x - radius, second.y - radius, radius * 2, radius * 2, 0, 360);
+
+                fl_color(0);
+                fl_arc(first.x - radius, first.y - radius, radius * 2, radius * 2, 0, 360);
+                fl_arc(second.x - radius, second.y - radius, radius * 2, radius * 2, 0, 360);
+
+                first.x += 4 * int(pow(2, i)) * radius;
+            }
+            first.y += -height_step;
+            first.x = start.x +  int(pow(2, i + 1) ) * radius - radius;
+            base_number /= 2;
+        }
+        fl_color(255,99,71);
+        fl_pie(root.x - radius * 2, root.y - radius, radius * 2, radius * 2, 0, 360);
+        fl_color(0);
+        fl_arc(root.x - radius * 2, root.y - radius, radius * 2, radius * 2, 0, 360);
+	}
 } // Graph
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
