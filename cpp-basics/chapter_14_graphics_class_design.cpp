@@ -22,8 +22,6 @@ try {
     win.attach(ps1);
     win.wait_for_button();
 
-
-
 }
 catch (exception& e) {
     cerr << "exception: " << e.what() << endl;
