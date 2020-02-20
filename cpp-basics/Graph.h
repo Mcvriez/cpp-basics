@@ -432,12 +432,13 @@ namespace Graph_lib {
         int major() const { return w; }
         void set_minor(int hh) { h = hh; }
         int minor() const { return h; }
+        string label;
 
-    private:
+        protected:
         int w;
         int h;
         int delta;
-        const string label;
+
     };
 
     struct Arrow : Closed_polyline {	// open sequence of lines
@@ -595,6 +596,15 @@ namespace Graph_lib {
     }
 
     Vector_ref <Shape> items;
+    };
+
+    struct Pseudo_window : Box {
+        Pseudo_window(Point p, int ww, int hh, string lab): Box(p, ww, hh, 1) {
+            label = lab;
+            if (ww < 400 || hh < 200) error ("pseudo window is too small");
+        };
+        void draw_lines() const;
+        Vector_ref <Shape> items;
     };
 }
 #endif

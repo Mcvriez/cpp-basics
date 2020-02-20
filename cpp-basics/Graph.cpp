@@ -290,7 +290,7 @@ namespace Graph_lib {
 		if (fill_color().visibility() || label != "empty") {	// fill
 			fl_color(fill_color().as_int());
 			
-			if (label != "empty") { fl_color(Color::dark_yellow); }
+			if (label != "empty") { fl_color(240, 240, 240); }
 
 			fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle0 - delta, angle0 + delta);
 			fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle1 - delta, angle1 + delta);
@@ -309,27 +309,22 @@ namespace Graph_lib {
 			fl_color(color().as_int());	// reset color
 		}
 
-		if (color().visibility() || label != "empty") {
-			fl_color(color().as_int());
-			if (label != "empty") { fl_color(Color::black); }
+		if (color().visibility()) {
+			//fl_color(color().as_int());
+            fl_color(100,100,100);
+			fl_line_style(0, 4);
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle0 - delta , angle0 + delta);
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle1 - delta, angle1 + delta);
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle2 - delta, angle2 + delta);
 			fl_arc(point(0).x, point(0).y, w + w, h + h, angle3 - delta, angle3 + delta);
-			//w * cos((angle0 + delta) * PI / 180);
-			// -h * sin((angle0 + delta) * PI / 180);
+
 			fl_line(center().x + w * cos((angle0 + delta) * PI / 180), center().y - h * sin((angle0 + delta) * PI / 180), center().x + w * cos((angle1 - delta) * PI / 180), center().y - h * sin((angle1 - delta) * PI / 180));
 			fl_line(center().x + w * cos((angle1 + delta) * PI / 180), center().y - h * sin((angle1 + delta) * PI / 180), center().x + w * cos((angle2 - delta) * PI / 180), center().y - h * sin((angle2 - delta) * PI / 180));
 			fl_line(center().x + w * cos((angle2 + delta) * PI / 180), center().y - h * sin((angle2 + delta) * PI / 180), center().x + w * cos((angle3 - delta) * PI / 180), center().y - h * sin((angle3 - delta) * PI / 180));
 			fl_line(center().x + w * cos((angle3 + delta) * PI / 180), center().y - h * sin((angle3 + delta) * PI / 180), center().x + w * cos((angle0 - delta) * PI / 180), center().y - h * sin((angle0 - delta) * PI / 180));
 
 		}
-		if (label != "empty") {
-			fl_color(Color::black);
-			fl_font(Font::Font_type::helvetica, 18);
-			fl_draw(label.c_str(), point(0).x + label.size() * 2 + 2, point(0).y + 27);
-			fl_font(fl_font(), fl_size());
-		}
+
 	}
 	void draw_mark(Point xy, char c)
 	{
@@ -457,4 +452,66 @@ namespace Graph_lib {
             fl_line(point(number_of_points() - 1).x, point(number_of_points() - 1).y, point(0).x, point(0).y);
     }
 
+    void Pseudo_window::draw_lines() const {
+        Box::draw_lines();
+        const int header = 50;
+        if (color().visibility()) {
+            int angle0 = 45;
+            int angle1 = 135;
+            int angle2 = 225;
+            int angle3 = 315;
+            { fl_color(240, 240, 240); }
+
+            fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle0 - delta, angle0 + delta);
+            fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle1 - delta, angle1 + delta);
+
+            fl_color(210, 210, 210);
+
+            fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle2 - delta, angle2 + delta);
+            fl_pie(point(0).x, point(0).y, w + w - 1, h + h - 1, angle3 - delta, angle3 + delta);
+            fl_rectf(center().x + w * cos((angle1 + delta) * PI / 180),
+                     center().y - h * sin((angle1 + delta) * PI / 180) + header,
+                     w * cos((angle0 - delta) * PI / 180) * 2,
+                     h * sin((angle0 - delta) * PI / 180) * 2 - header
+            );
+            fl_rectf(center().x + w * cos((angle1 - delta) * PI / 180),
+                     center().y - h * sin((angle1 - delta) * PI / 180) + header * 2,
+                     - w * cos((angle1 - delta) * PI / 180) * 2,
+                     h * sin((angle1 - delta) * PI / 180) * 2 - header * 2
+            );
+
+            fl_color(100,100,100);
+            fl_line_style(0, 5);
+
+            fl_arc(point(0).x, point(0).y, w + w, h + h, angle0 - delta , angle0 + delta);
+            fl_arc(point(0).x, point(0).y, w + w, h + h, angle1 - delta, angle1 + delta);
+            fl_arc(point(0).x, point(0).y, w + w, h + h, angle2 - delta, angle2 + delta);
+            fl_arc(point(0).x, point(0).y, w + w, h + h, angle3 - delta, angle3 + delta);
+
+            fl_line(center().x + w * cos((angle0 + delta) * PI / 180), center().y - h * sin((angle0 + delta) * PI / 180), center().x + w * cos((angle1 - delta) * PI / 180), center().y - h * sin((angle1 - delta) * PI / 180));
+            fl_line(center().x + w * cos((angle1 + delta) * PI / 180), center().y - h * sin((angle1 + delta) * PI / 180), center().x + w * cos((angle2 - delta) * PI / 180), center().y - h * sin((angle2 - delta) * PI / 180));
+            fl_line(center().x + w * cos((angle2 + delta) * PI / 180), center().y - h * sin((angle2 + delta) * PI / 180), center().x + w * cos((angle3 - delta) * PI / 180), center().y - h * sin((angle3 - delta) * PI / 180));
+            fl_line(center().x + w * cos((angle3 + delta) * PI / 180), center().y - h * sin((angle3 + delta) * PI / 180), center().x + w * cos((angle0 - delta) * PI / 180), center().y - h * sin((angle0 - delta) * PI / 180));
+
+        }
+
+        int x = center().x + w * cos((225 + delta) * PI / 180) + 10;
+        int y = center().y - h / 2 - header / 1.4;
+        int r = 10;
+        fl_color(255,99,71);
+        fl_pie(x, y, r + r - 1, r + r - 1, 0, 360);
+
+        fl_color(255,215,0);
+        fl_pie(x + header / 1.5, y, r + r - 1, r + r - 1, 0, 360);
+
+        fl_color(100,225,100);
+        fl_pie(x + 2 *(header / 1.5), y, r + r - 1, r + r - 1, 0, 360);
+
+        if (label != "empty") {
+            fl_color(Color::black);
+            fl_font(1, 120);
+            fl_draw(label.c_str(), center().x - label.size() * 5, y + 15);
+            fl_font(fl_font(), fl_size());
+        }
+	}
 } // Graph

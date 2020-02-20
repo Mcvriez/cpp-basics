@@ -4,68 +4,24 @@
 
 /*
 
-9. Define a Group to be a container of Shapes with suitable operations applied to the various members of the Group.
-Hint: Vector_ref.
-Use a Group to define a checkers (draughts) board where pieces can be moved under program control.
+10. Define a class Pseudo_window that looks as much like a Window as you can make it without heroic efforts.
+It should have rounded corners, a label, and control icons.
+Maybe you could add some fake “contents,” such as an image. It need not actually do anything.
+It is acceptable (and indeed recommended) to have it appear within a Simple_window.
 
 */
 
-ostream& operator<<(ostream& out, Point& a) {
-    out << "(" << a.x << "," << a.y << ")" << endl;
-    return out;
-}
-
 int main()
 try {
-    Point tl(200,50);
+    Point tl(2200,500);
+    Point tl2(2200,900);
     Simple_window win(tl,2400,1200,"My window");
-
-    bool color = true;
-
-    Group checkers;
-    Color cc = Color::white;
-    const int square_size = 100;
-    const int board_size = 12;
-
-    for (int i = 0; i<board_size; ++i) {
-        color = !color;
-        for (int j = 0; j<board_size; ++j) {
-            if (color) cc = Color::white;
-            else cc = Color::black;
-            color = !color;
-            checkers.items.push_back(new Rectangle {Point{i * square_size, j * square_size}, square_size, square_size});
-            checkers.items[checkers.size() - 1].set_fill_color(cc);
-            win.attach(checkers.items[checkers.size() - 1]);
-
-        }
-    }
-    //checkers.move(1,0);
+    Pseudo_window ps {tl, 2000, 500, "My pseudo window"};
+    Pseudo_window ps1 {tl2, 600, 500, "My window"};
+    win.attach(ps);
+    win.attach(ps1);
     win.wait_for_button();
 
-
-    Group grp;
-    Regular_octagon oct(Point(600,400),150);
-    win.attach(oct);
-
-    grp.add_shape(oct);
-    win.wait_for_button();
-
-    oct.set_style(Line_style(Line_style::dash, 10));
-    oct.set_fill_color(100);
-
-    Circle hs(Point(150,150),100);
-    win.attach(hs);
-    grp.add_shape(hs);
-    win.wait_for_button();
-
-    grp.move(100,100);
-    win.wait_for_button();
-
-    grp.set_fill_color(Color::dark_cyan);
-    win.wait_for_button();
-
-    grp.set_style(Line_style(Line_style::dashdot, 5));
-    win.wait_for_button();
 
 
 }
