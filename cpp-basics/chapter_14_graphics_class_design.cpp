@@ -20,24 +20,29 @@ try {
     Point tl(200,50);
     Simple_window win(tl,2400,1200,"My window");
 
-    bool color = false;
+    bool color = true;
 
     Group checkers;
-    for (int i = 0; i<8; ++i)
-        for (int j = 0; j<8; ++j) {
-            checkers.add_shape(new Rectangle {Point{i*20,j*20},20,20});
-            if (color) x.set_fill_color(Color::white);
-            else x.set_color(Color::black);
-            color = !color;
-            win.attach(x);
+    Color cc = Color::white;
+    const int square_size = 100;
+    const int board_size = 12;
 
-            ;
+    for (int i = 0; i<board_size; ++i) {
+        color = !color;
+        for (int j = 0; j<board_size; ++j) {
+            if (color) cc = Color::white;
+            else cc = Color::black;
+            color = !color;
+            checkers.items.push_back(new Rectangle {Point{i * square_size, j * square_size}, square_size, square_size});
+            checkers.items[checkers.size() - 1].set_fill_color(cc);
+            win.attach(checkers.items[checkers.size() - 1]);
+
         }
+    }
     //checkers.move(1,0);
     win.wait_for_button();
 
-    win.wait_for_button();
-    /*
+
     Group grp;
     Regular_octagon oct(Point(600,400),150);
     win.attach(oct);
@@ -62,7 +67,7 @@ try {
     grp.set_style(Line_style(Line_style::dashdot, 5));
     win.wait_for_button();
 
-*/
+
 }
 catch (exception& e) {
     cerr << "exception: " << e.what() << endl;

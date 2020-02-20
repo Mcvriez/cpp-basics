@@ -568,9 +568,9 @@ namespace Graph_lib {
 
     };
 
-    struct Group {
+    struct Group  {
     //void add_shape (Shape& sh){ items.push_back(sh); }
-    void add_shape (Shape sha){ items.push_back(sha); }
+    void add_shape (Shape& sha){ items.push_back(sha); }
     int size() const { return int(items.size()); }
 
     void move(int dx, int dy) {
@@ -594,8 +594,7 @@ namespace Graph_lib {
         }
     }
 
-    private:
-        Vector_ref <Shape> items;
+    Vector_ref <Shape> items;
     };
 }
 #endif
