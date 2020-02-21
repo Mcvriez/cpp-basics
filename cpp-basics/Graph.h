@@ -125,8 +125,10 @@ namespace Graph_lib {
         //		ls(0),
         //		fcolor(Color::invisible) { }
 
-        void add(Point p) { points.push_back(p); }
         void set_point(int i, Point p) { points[i] = p; }
+
+        void add(Point p) { points.push_back(p); }
+
     public:
         void draw() const;					// deal with color and draw_lines
     protected:
@@ -219,7 +221,7 @@ namespace Graph_lib {
         using Shape::Shape;
 
         virtual void add(Point p) { Shape::add(p); }
-        void draw_lines() const;
+        void draw_lines() const override;
     };
 
     struct Closed_polyline : Open_polyline {	// closed sequence of lines
@@ -229,7 +231,7 @@ namespace Graph_lib {
         //	void add(Point p) { Shape::add(p); }
     };
 
-    struct Polygon : Closed_polyline {	// closed sequence of non-intersecting lines
+    struct Polygon : Closed_polyline {	// closed sequence of non-i-ntersecting lines
         using Closed_polyline::Closed_polyline;
         void add(Point p);
         void draw_lines() const;
@@ -239,7 +241,7 @@ namespace Graph_lib {
         Poly(initializer_list<Point> lst)  {
             if(lst.size() < 3) error("Polygon should contain at least 3 points");
             for (Point p : lst) {
-                cout << p.x << '|' << p.y << endl;
+                //cout << p.x << '|' << p.y << endl;
                 add(p);
             }
         }
@@ -608,7 +610,7 @@ namespace Graph_lib {
     };
 
     struct Binary_tree : Shape {
-        Binary_tree(Point s, int l, int r, string  at);
+        Binary_tree(Point s, int l, int r, string at);
         void draw_lines() const override;
         void set_fill_color(Color col) override;
         void set_arrow_color(Color col);
@@ -616,12 +618,16 @@ namespace Graph_lib {
         const string arrow_type;
         const int level;
         const int radius;
-        Vector_ref <Shape> shapes;
+        const Point root;
+        Vector_ref <Shape> circles;
+        Vector_ref <Shape> triangles;
         Vector_ref <Shape> arrows;
-        Point root;
-        Color acolor {static_cast<int>(fl_color())};
     };
 
+    struct Binary_tree_triangle : Binary_tree {
+        using Binary_tree::Binary_tree;
+        void draw_lines() const override;
+    };
 
 }
 #endif

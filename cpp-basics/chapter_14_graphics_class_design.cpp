@@ -16,7 +16,7 @@ try {
     Point tl2(1200,200);
     Simple_window win(tl,2400,1500,"My window");
 
-    Binary_tree bt {tl2, 5, 50, "ua"};
+    Binary_tree_triangle bt {tl2, 5, 50, "ua"};
     bt.set_fill_color(Color(135,206,250));
     win.attach(bt);
     win.wait_for_button();
@@ -28,9 +28,9 @@ try {
     win.wait_for_button();
 
     win.detach(bt1);
-    Binary_tree bt2 {tl2, 3, 140, "la"};
+    Binary_tree_triangle bt2 {tl2, 3, 140, "la"};
     bt2.set_fill_color(Color(220,20,60));
-    bt2.set_arrow_color(Color::dark_cyan);
+    bt2.set_arrow_color(Color::dark_magenta);
     win.attach(bt2);
     win.wait_for_button();
 

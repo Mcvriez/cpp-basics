@@ -515,17 +515,14 @@ namespace Graph_lib {
         }
 	}
 
-
     Binary_tree::Binary_tree(Point s, int l, int r, string  at): root{s}, level {l}, radius{r}, arrow_type {std::move(at)}{
 	    int delta_y = radius * 4;
 	    int delta_x = radius / 2;
-
 	    int max = int(pow(2, level)) * radius + delta_x * int(pow(2, level));
 	    int x0 = root.x - max / 2;
-
          for (int i = level; i > 0; --i) {
              for (int j = 0; j < pow(2, i)/2; j++){
-                 int x = x0 + (j + 0.5) * max / (pow(2, i - 1));
+                 int x = int(x0 + (j + 0.5) * max / (pow(2, i - 1)));
                  int y = root.y + delta_y * (i - 1);
                  add(Point{x, y});
              }
@@ -533,7 +530,15 @@ namespace Graph_lib {
         // add shapes to "shapes" (circle), based on points
         int size = number_of_points();
         for (int i = 0; i < size; ++i) {
-            shapes.push_back(new Circle(point(i), radius));
+            //circles - default
+            circles.push_back(new Circle(point(i), radius));
+
+            //triangles
+            int xmod = int(sqrt(3)/2 * radius);
+            Point ftop = {point(i).x, point(i).y - radius};
+            Point fleft = {point(i).x + xmod, point(i).y + radius / 2};
+            Point fright = {point(i).x - xmod, point(i).y + radius / 2};
+            triangles.push_back(new Poly{ftop, fleft, fright});
         }
 
         size -= 1;
@@ -541,14 +546,10 @@ namespace Graph_lib {
         for (int j = 0; j < size; ++j) {
             Point start = {point(j).x, point(j).y};
             Point finish = {point((size + j) / 2 + 1).x, point((size + j) / 2 + 1).y};
-            Point s1;
-            Point f1;
-
+            Point s1; Point f1;
             double alpha = atan(double((start.x - finish.x)) / (start.y - finish.y)) * 180 / PI;
-
             s1.x = int(start.x - sin((alpha) * PI / 180) * radius);
             s1.y = int(start.y - cos((alpha) * PI / 180) * radius);
-
             f1.x = int(finish.x + sin((alpha) * PI / 180) * radius);
             f1.y = int(finish.y + cos((alpha) * PI / 180) * radius);
 
@@ -559,34 +560,39 @@ namespace Graph_lib {
             else
                 arrows.push_back(new Line(s1, f1));
         }
-
-
 	}
-
     void Binary_tree::set_fill_color(Color col) {
         for (int i = 0; i < number_of_points(); ++i) {
-            shapes[i].set_fill_color(col);
-            shapes[i].set_style(Line_style(Line_style::Line_style::solid, radius / 15));
+            circles[i].set_fill_color(col);
+            circles[i].set_style(Line_style(Line_style::Line_style::solid, radius / 15));
+            triangles[i].set_fill_color(col);
+            triangles[i].set_style(Line_style(Line_style::Line_style::solid, radius / 15));
             if (i < number_of_points() - 1)
                 arrows[i].set_style(Line_style(Line_style::Line_style::solid, radius / 15));
         }
     }
-
-    void Binary_tree::draw_lines() const {
-        for (int i = 0; i < shapes.size(); ++i){
-            shapes[i].draw();
-        }
-        for (int i = 0; i < arrows.size(); ++i){
-            arrows[i].draw();
-        }
-	}
     void Binary_tree::set_arrow_color(Color col) {
         for (int i = 0; i < number_of_points() - 1; ++i) {
             arrows[i].set_color(col);
             arrows[i].set_style(Line_style(Line_style::Line_style::dash, radius / 15));
         }
     }
-        // draw all shapes
+    void Binary_tree::draw_lines() const {
+        for (int i = 0; i < circles.size(); ++i){
+            circles[i].draw();
+        }
+        for (int i = 0; i < arrows.size(); ++i){
+            arrows[i].draw();
+        }
+	}
+    void Binary_tree_triangle::draw_lines() const {
+        for (int i = 0; i < triangles.size(); ++i){
+            triangles[i].draw();
+        }
+        for (int i = 0; i < arrows.size(); ++i){
+            arrows[i].draw();
+        }
+	}
 }
 // Graph
 
