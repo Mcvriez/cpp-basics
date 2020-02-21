@@ -4,16 +4,9 @@
 
 /*
 
-11. Define a Binary_tree class derived from Shape.
-Give the number of levels as a parameter
- (levels==0 means no nodes,
- levels==1 means one node,
- levels==2 means one top node with two sub-nodes,
- levels==3 means one top node with two sub-nodes each with two sub-nodes, etc.).
-
-Let a node be represented by a small circle.
-Connect the nodes by lines (as is conventional).
-P.S. In computer science, trees grow downward from a top node (amusingly, but logically, often called the root).
+12. Modify Binary_tree to draw its nodes using a virtual function.
+Then, a new class from Binary_tree that overrides that virtual function to use a different representation for
+a node (e.g., a triangle).
 
 */
 
@@ -22,19 +15,12 @@ try {
     Point tl(500,500);
     Point tl2(1200,200);
     Simple_window win(tl,2400,1200,"My window");
-    Binary_tree bt {tl2, 3, 60};
+    Binary_tree_triangles bt {tl2, 3, 60};
+    bt.set_fill_color(Color(255, 123, 20));
     win.attach(bt);
     win.wait_for_button();
     win.detach(bt);
 
-    Binary_tree bt1 {tl2, 7, 10};
-    win.attach(bt1);
-    win.wait_for_button();
-    win.detach(bt1);
-
-    Binary_tree bt2 {tl2, 10, 3};
-    win.attach(bt2);
-    win.wait_for_button();
 
 }
 catch (exception& e) {

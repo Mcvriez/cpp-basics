@@ -523,21 +523,20 @@ namespace Graph_lib {
         Point start = {root.x - (base_number * radius * 2), root.y + height_step * level};
         Point first = {start.x + radius, start.y};
 
-
         for (int i = 1; i <= level; ++i){
             for (int j = 0; j < base_number / 2; ++j){
                 Point second = {first.x + 2 * int(pow(2, i)) * radius, first.y};
                 Point top = {first.x + int(pow(2, i)) * radius, first.y - height_step};
 
-                fl_color(0);
+                fl_color(color().as_int());
                 fl_line(first.x, first.y, top.x, top.y);
                 fl_line(second.x, second.y, top.x, top.y);
 
-                fl_color(255,99,71);
+                fl_color(fill_color().as_int());
                 fl_pie(first.x - radius, first.y - radius, radius * 2, radius * 2, 0, 360);
                 fl_pie(second.x - radius, second.y - radius, radius * 2, radius * 2, 0, 360);
 
-                fl_color(0);
+                fl_color(color().as_int());
                 fl_arc(first.x - radius, first.y - radius, radius * 2, radius * 2, 0, 360);
                 fl_arc(second.x - radius, second.y - radius, radius * 2, radius * 2, 0, 360);
 
@@ -547,11 +546,80 @@ namespace Graph_lib {
             first.x = start.x +  int(pow(2, i + 1) ) * radius - radius;
             base_number /= 2;
         }
-        fl_color(255,99,71);
+        fl_color(fill_color().as_int());
         fl_pie(root.x - radius * 2, root.y - radius, radius * 2, radius * 2, 0, 360);
-        fl_color(0);
+        fl_color(color().as_int());
         fl_arc(root.x - radius * 2, root.y - radius, radius * 2, radius * 2, 0, 360);
 	}
+
+    void Binary_tree_triangles::draw_lines() const {
+        int height_step = radius * 3;
+        int base_number = pow(2, level);
+        fl_line_style(0, radius / 6);
+
+        Point start = {root.x - (base_number * radius * 2), root.y + height_step * level};
+        Point first = {start.x + radius, start.y};
+        int xmod = sqrt(3)/2 * radius;
+
+        for (int i = 1; i <= level; ++i){
+            for (int j = 0; j < base_number / 2; ++j){
+                Point second = {first.x + 2 * int(pow(2, i)) * radius, first.y};
+                Point top = {first.x + int(pow(2, i)) * radius, first.y - height_step};
+
+                fl_color(color().as_int());
+                fl_line(first.x, first.y, top.x, top.y);
+                fl_line(second.x, second.y, top.x, top.y);
+
+                Point ftop = {first.x, first.y - radius};
+                Point fleft = {first.x + xmod, first.y + radius / 2};
+                Point fright = {first.x - xmod, first.y + radius / 2};
+                Point stop = {second.x, second.y - radius};
+                Point sleft = {second.x + xmod, second.y + radius / 2};
+                Point sright = {second.x - xmod, second.y + radius / 2};
+
+                fl_color(fill_color().as_int());
+                fl_begin_complex_polygon();
+                fl_vertex(ftop.x, ftop.y);
+                fl_vertex(fleft.x, fleft.y);
+                fl_vertex(fright.x, fright.y);
+                fl_end_complex_polygon();
+                fl_begin_complex_polygon();
+                fl_vertex(stop.x, stop.y);
+                fl_vertex(sleft.x, sleft.y);
+                fl_vertex(sright.x, sright.y);
+                fl_end_complex_polygon();
+
+                fl_color(color().as_int());
+
+                fl_line(stop.x, stop.y, sleft.x, sleft.y);
+                fl_line(sleft.x, sleft.y, sright.x, sright.y);
+                fl_line(sright.x, sright.y, stop.x, stop.y);
+
+                fl_line(ftop.x, ftop.y, fleft.x, fleft.y);
+                fl_line(fleft.x, fleft.y, fright.x, fright.y);
+                fl_line(fright.x, fright.y, ftop.x, ftop.y);
+
+                first.x += 4 * int(pow(2, i)) * radius;
+            }
+            first.y += -height_step;
+            first.x = start.x +  int(pow(2, i + 1) ) * radius - radius;
+            base_number /= 2;
+        }
+        Point ftop = {root.x - radius, root.y - radius};
+        Point fleft = {root.x + xmod - radius, root.y + radius / 2};
+        Point fright = {root.x - xmod - radius, root.y + radius / 2};
+        fl_color(fill_color().as_int());
+        fl_begin_complex_polygon();
+        fl_vertex(ftop.x, ftop.y);
+        fl_vertex(fleft.x, fleft.y);
+        fl_vertex(fright.x, fright.y);
+        fl_end_complex_polygon();
+        fl_color(color().as_int());
+        fl_line(ftop.x, ftop.y, fleft.x, fleft.y);
+        fl_line(fleft.x, fleft.y, fright.x, fright.y);
+        fl_line(fright.x, fright.y, ftop.x, ftop.y);
+	}
+
 } // Graph
 
 

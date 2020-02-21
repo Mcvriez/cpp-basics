@@ -2,6 +2,7 @@
 #define GRAPH_GUARD 1
 
 #include "Point.h"
+#include <utility>
 #include<vector>
 #include "std_lib_facilities.h"
 //#include<string>
@@ -117,7 +118,7 @@ namespace Graph_lib {
 
     class Shape {	// deals with color and style, and holds sequence of lines
     protected:
-        Shape() { }
+        Shape() = default;
         Shape(initializer_list<Point> lst);  // add() the Points to this Shape
 
         //	Shape() : lcolor(fl_color()),
@@ -145,7 +146,7 @@ namespace Graph_lib {
         Point point(int i) const { return points[i]; }
         int number_of_points() const { return int(points.size()); }
 
-        virtual ~Shape() { }
+        virtual ~Shape() = default;
         /*
         struct Window* attached;
         Shape(const Shape& a)
@@ -599,21 +600,26 @@ namespace Graph_lib {
 
     struct Pseudo_window : Box {
         Pseudo_window(Point p, int ww, int hh, string lab): Box(p, ww, hh, 1) {
-            label = lab;
+            label = (lab);
             if (ww < 400 || hh < 200) error ("pseudo window is too small");
         };
-        void draw_lines() const;
+        void draw_lines() const override;
         Vector_ref <Shape> items;
     };
 
     struct Binary_tree : Shape {
         Binary_tree(Point s, int l, int r): root{s}, level {l}, radius {r} {};
         Binary_tree(Point s, int l): root{s}, level {l}, radius {30} {};
-        void draw_lines() const;
-    private:
+        void draw_lines() const override;
+    protected:
         const int level;
         const int radius;
         Point root;
+    };
+
+    struct Binary_tree_triangles : Binary_tree{
+        using Binary_tree::Binary_tree;
+        void draw_lines() const override;
     };
 }
 #endif
