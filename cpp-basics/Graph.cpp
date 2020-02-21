@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include<map>
+#include <utility>
 #define PI 3.14159265
 
 
@@ -10,6 +11,7 @@ namespace Graph_lib {
 		if (color().visibility() && 1 < points.size())	// draw sole pixel?
 			for (unsigned int i = 1; i < points.size(); ++i)
 				fl_line(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y);
+		//cout << "Shape draw_lines()" << endl;
 	}
 
 	void Shape::draw() const
@@ -166,7 +168,7 @@ namespace Graph_lib {
 	}
 
 
-	Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
+	Axis::Axis(Orientation d, Point xy, int length, int n, const string& lab)
 		:label(Point(0, 0), lab)
 	{
 		if (length < 0) error("bad axis length");
@@ -374,8 +376,6 @@ namespace Graph_lib {
 		ifstream ff(s.c_str());
 		return bool(ff);
 	}
-
-
 	// somewhat overelaborate constructor
 	// because errors related to image files can be such a pain to debug
 	/*Image::Image(Point xy, string s, Suffix::Encoding e)
@@ -515,139 +515,80 @@ namespace Graph_lib {
         }
 	}
 
+
+    Binary_tree::Binary_tree(Point s, int l, int r, string  at): root{s}, level {l}, radius{r}, arrow_type {std::move(at)}{
+	    int delta_y = radius * 4;
+	    int delta_x = radius / 2;
+
+	    int max = int(pow(2, level)) * radius + delta_x * int(pow(2, level));
+	    int x0 = root.x - max / 2;
+
+         for (int i = level; i > 0; --i) {
+             for (int j = 0; j < pow(2, i)/2; j++){
+                 int x = x0 + (j + 0.5) * max / (pow(2, i - 1));
+                 int y = root.y + delta_y * (i - 1);
+                 add(Point{x, y});
+             }
+         }
+        // add shapes to "shapes" (circle), based on points
+        int size = number_of_points();
+        for (int i = 0; i < size; ++i) {
+            shapes.push_back(new Circle(point(i), radius));
+        }
+
+        size -= 1;
+        // add arrows + lines to "arrows"
+        for (int j = 0; j < size; ++j) {
+            Point start = {point(j).x, point(j).y};
+            Point finish = {point((size + j) / 2 + 1).x, point((size + j) / 2 + 1).y};
+            Point s1;
+            Point f1;
+
+            double alpha = atan(double((start.x - finish.x)) / (start.y - finish.y)) * 180 / PI;
+
+            s1.x = int(start.x - sin((alpha) * PI / 180) * radius);
+            s1.y = int(start.y - cos((alpha) * PI / 180) * radius);
+
+            f1.x = int(finish.x + sin((alpha) * PI / 180) * radius);
+            f1.y = int(finish.y + cos((alpha) * PI / 180) * radius);
+
+            if (arrow_type == "ua")
+                arrows.push_back(new Arrow(s1, f1, radius/2, 25));
+            else if (arrow_type == "la")
+                arrows.push_back(new Arrow(f1, s1, radius/2, 25));
+            else
+                arrows.push_back(new Line(s1, f1));
+        }
+
+
+	}
+
+    void Binary_tree::set_fill_color(Color col) {
+        for (int i = 0; i < number_of_points(); ++i) {
+            shapes[i].set_fill_color(col);
+            shapes[i].set_style(Line_style(Line_style::Line_style::solid, radius / 15));
+            if (i < number_of_points() - 1)
+                arrows[i].set_style(Line_style(Line_style::Line_style::solid, radius / 15));
+        }
+    }
+
     void Binary_tree::draw_lines() const {
-        int height_step = radius * 3;
-        int base_number = pow(2, level);
-        fl_line_style(0, radius / 6);
-
-        Point start = {root.x - (base_number * radius * 2), root.y + height_step * level};
-        Point first = {start.x + radius, start.y};
-
-        for (int i = 1; i <= level; ++i){
-            for (int j = 0; j < base_number / 2; ++j){
-                Point second = {first.x + 2 * int(pow(2, i)) * radius, first.y};
-                Point top = {first.x + int(pow(2, i)) * radius, first.y - height_step};
-
-                fl_color(color().as_int());
-                fl_line(first.x, first.y, top.x, top.y);
-                fl_line(second.x, second.y, top.x, top.y);
-
-                fl_color(fill_color().as_int());
-                fl_pie(first.x - radius, first.y - radius, radius * 2, radius * 2, 0, 360);
-                fl_pie(second.x - radius, second.y - radius, radius * 2, radius * 2, 0, 360);
-
-                fl_color(color().as_int());
-                fl_arc(first.x - radius, first.y - radius, radius * 2, radius * 2, 0, 360);
-                fl_arc(second.x - radius, second.y - radius, radius * 2, radius * 2, 0, 360);
-
-                first.x += 4 * int(pow(2, i)) * radius;
-            }
-            first.y += -height_step;
-            first.x = start.x +  int(pow(2, i + 1) ) * radius - radius;
-            base_number /= 2;
+        for (int i = 0; i < shapes.size(); ++i){
+            shapes[i].draw();
         }
-        fl_color(fill_color().as_int());
-        fl_pie(root.x - radius * 2, root.y - radius, radius * 2, radius * 2, 0, 360);
-        fl_color(color().as_int());
-        fl_arc(root.x - radius * 2, root.y - radius, radius * 2, radius * 2, 0, 360);
-	}
-
-    void Binary_tree_triangles::draw_lines() const {
-        int height_step = radius * 3;
-        int base_number = pow(2, level);
-        fl_line_style(0, radius / 6);
-
-        Point start = {root.x - (base_number * radius * 2), root.y + height_step * level};
-        Point first = {start.x + radius, start.y};
-        int xmod = sqrt(3)/2 * radius;
-
-        for (int i = 1; i <= level; ++i){
-            for (int j = 0; j < base_number / 2; ++j){
-                Point second = {first.x + 2 * int(pow(2, i)) * radius, first.y};
-                Point top = {first.x + int(pow(2, i)) * radius, first.y - height_step};
-
-                fl_color(color().as_int());
-                fl_line(first.x, first.y, top.x, top.y);
-                fl_line(second.x, second.y, top.x, top.y);
-
-                Point ftop = {first.x, first.y - radius};
-                Point fleft = {first.x + xmod, first.y + radius / 2};
-                Point fright = {first.x - xmod, first.y + radius / 2};
-                Point stop = {second.x, second.y - radius};
-                Point sleft = {second.x + xmod, second.y + radius / 2};
-                Point sright = {second.x - xmod, second.y + radius / 2};
-
-                fl_color(fill_color().as_int());
-                fl_begin_complex_polygon();
-                fl_vertex(ftop.x, ftop.y);
-                fl_vertex(fleft.x, fleft.y);
-                fl_vertex(fright.x, fright.y);
-                fl_end_complex_polygon();
-                fl_begin_complex_polygon();
-                fl_vertex(stop.x, stop.y);
-                fl_vertex(sleft.x, sleft.y);
-                fl_vertex(sright.x, sright.y);
-                fl_end_complex_polygon();
-
-                fl_color(color().as_int());
-
-                fl_line(stop.x, stop.y, sleft.x, sleft.y);
-                fl_line(sleft.x, sleft.y, sright.x, sright.y);
-                fl_line(sright.x, sright.y, stop.x, stop.y);
-
-                fl_line(ftop.x, ftop.y, fleft.x, fleft.y);
-                fl_line(fleft.x, fleft.y, fright.x, fright.y);
-                fl_line(fright.x, fright.y, ftop.x, ftop.y);
-
-                first.x += 4 * int(pow(2, i)) * radius;
-            }
-            first.y += -height_step;
-            first.x = start.x +  int(pow(2, i + 1) ) * radius - radius;
-            base_number /= 2;
+        for (int i = 0; i < arrows.size(); ++i){
+            arrows[i].draw();
         }
-        Point ftop = {root.x - radius, root.y - radius};
-        Point fleft = {root.x + xmod - radius, root.y + radius / 2};
-        Point fright = {root.x - xmod - radius, root.y + radius / 2};
-        fl_color(fill_color().as_int());
-        fl_begin_complex_polygon();
-        fl_vertex(ftop.x, ftop.y);
-        fl_vertex(fleft.x, fleft.y);
-        fl_vertex(fright.x, fright.y);
-        fl_end_complex_polygon();
-        fl_color(color().as_int());
-        fl_line(ftop.x, ftop.y, fleft.x, fleft.y);
-        fl_line(fleft.x, fleft.y, fright.x, fright.y);
-        fl_line(fright.x, fright.y, ftop.x, ftop.y);
 	}
-
-} // Graph
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    void Binary_tree::set_arrow_color(Color col) {
+        for (int i = 0; i < number_of_points() - 1; ++i) {
+            arrows[i].set_color(col);
+            arrows[i].set_style(Line_style(Line_style::Line_style::dash, radius / 15));
+        }
+    }
+        // draw all shapes
+}
+// Graph
 
 
 

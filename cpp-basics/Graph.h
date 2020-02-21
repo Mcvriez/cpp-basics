@@ -140,7 +140,7 @@ namespace Graph_lib {
         void set_style(Line_style sty) { ls = sty; }
         Line_style style() const { return ls; }
 
-        void set_fill_color(Color col) { fcolor = col; }
+        virtual void set_fill_color(Color col) { fcolor = col; }
         Color fill_color() const { return fcolor; }
 
         Point point(int i) const { return points[i]; }
@@ -296,7 +296,7 @@ namespace Graph_lib {
     struct Axis : Shape {
         // representation left public
         enum Orientation { x, y, z };
-        Axis(Orientation d, Point xy, int length, int nummber_of_notches = 0, string label = "");
+        Axis(Orientation d, Point xy, int length, int nummber_of_notches = 0, const string& label = "");
 
         void draw_lines() const;
         void move(int dx, int dy);
@@ -608,18 +608,20 @@ namespace Graph_lib {
     };
 
     struct Binary_tree : Shape {
-        Binary_tree(Point s, int l, int r): root{s}, level {l}, radius {r} {};
-        Binary_tree(Point s, int l): root{s}, level {l}, radius {30} {};
+        Binary_tree(Point s, int l, int r, string  at);
         void draw_lines() const override;
+        void set_fill_color(Color col) override;
+        void set_arrow_color(Color col);
     protected:
+        const string arrow_type;
         const int level;
         const int radius;
+        Vector_ref <Shape> shapes;
+        Vector_ref <Shape> arrows;
         Point root;
+        Color acolor {static_cast<int>(fl_color())};
     };
 
-    struct Binary_tree_triangles : Binary_tree{
-        using Binary_tree::Binary_tree;
-        void draw_lines() const override;
-    };
+
 }
 #endif
