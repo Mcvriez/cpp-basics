@@ -614,12 +614,14 @@ namespace Graph_lib {
         void draw_lines() const override;
         void set_fill_color(Color col) override;
         void set_arrow_color(Color col);
+        void mark_node(const string& path);
     protected:
         const string arrow_type;
         const int level;
         const int radius;
         const Point root;
         Vector_ref <Shape> circles;
+        Vector_ref <Text> marks;
         Vector_ref <Shape> triangles;
         Vector_ref <Shape> arrows;
     };

@@ -516,6 +516,7 @@ namespace Graph_lib {
 	}
 
     Binary_tree::Binary_tree(Point s, int l, int r, string  at): root{s}, level {l}, radius{r}, arrow_type {std::move(at)}{
+
 	    int delta_y = radius * 4;
 	    int delta_x = radius / 2;
 	    int max = int(pow(2, level)) * radius + delta_x * int(pow(2, level));
@@ -584,7 +585,40 @@ namespace Graph_lib {
         for (int i = 0; i < arrows.size(); ++i){
             arrows[i].draw();
         }
+        fl_font(0, 300);
+        for (int i = 0; i < marks.size(); ++i){
+            marks[i].draw();
+        }
 	}
+
+    void Binary_tree::mark_node(const string& path) {
+	    if (path.size() == 1)
+        marks.push_back(new Text(Point{root.x - 40, root.y + int(radius * 1.2)}, "Marked element"));
+	    if (path.size() > 1){
+	        int l = 0;
+	        int pos = 1;
+	        for (int i = 1; i < path.size(); ++i) {
+	            switch(path[i]) {
+                    case 'l':
+                        pos = pos * 2 + 1;
+                        break;
+                    case 'r':
+                        pos = pos * 2;
+                        break;
+	                default:
+	                    cout << "Unknown symbol " << path[i] << " - skipping." << endl;
+                }
+	        }
+            int pointx = (int(pow(2, level)) - 1) - pos;
+            if (pointx >=0){
+                Point n = point(pointx);
+                n.x -= 40;
+                n.y += int(radius * 1.4);
+                marks.push_back(new Text(n, "Marked element"));
+	        }
+        }
+	}
+
     void Binary_tree_triangle::draw_lines() const {
         for (int i = 0; i < triangles.size(); ++i){
             triangles[i].draw();
@@ -592,19 +626,11 @@ namespace Graph_lib {
         for (int i = 0; i < arrows.size(); ++i){
             arrows[i].draw();
         }
+        for (int i = 0; i < marks.size(); ++i){
+            marks[i].draw();
+        }
 	}
 }
 // Graph
-
-
-
-
-
-
-
-
-
-
-
 
 
