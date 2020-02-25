@@ -2,6 +2,7 @@
 #include "Simple_window.h"
 #include "std_lib_facilities.h"
 #include <cstdlib>
+#include <utility>
 
 //#include<iostream>
 //#include<vector>
@@ -11,126 +12,138 @@
 
 /*
 
-16. Define a class Controller with four virtual functions on(), off(), set_level(int), and show().
-Derive at least two classes from Controller.
-
-One should be a simple test class where show() prints out whether the class is set to on or off and what is the current level.
-
-The second derived class should somehow control the line color of a Shape;
-the exact meaning of “level” is up to you.
-
-Try to find a third “thing” to control with such a Controller class.
+Drill chapter 15
 
 */
 
-class Controller {
-    virtual void on() = 0;
-    virtual void off() = 0;
-    virtual void set_level(int x) = 0;
-    virtual void show() = 0;
-};
-class Test : Controller {
-public:
-    Test(int lev, bool st): level {lev}, turned_on {st} {if (lev < 0) level = 0;};
-    explicit Test(int lev): level {lev}, turned_on {false} {if (lev < 0) level = 0;};
-    Test(): level {0}, turned_on {false} {};
-    void set_level(int x) override { if (x >= 0) level = x; else cout << "Attempt to assign negative level: " << x << endl;}
-    void on() override {turned_on = true;}
-    void off() override {turned_on = false;}
-    void show() override {
-        cout << "Test class object is turned ";
-        turned_on ? cout << "on" << endl : cout << "off" << endl;
-        cout << "Test class object level is: " << level << endl;
-    }
-private:
-    int level;
-    bool turned_on;
-};
-class ShapeController : Controller {
-public:
-    explicit ShapeController(Shape& sh): shape {sh}, color {sh.color()}, old_color {sh.color()}, turned_on {false} {};
-    void set_level(int x) override {
-        if (x >= 0) color = x;
-        else cout << "Attempt to assign negative level: " << x << endl;
-    }
-    void on() override {turned_on = true;}
-    void off() override {turned_on = false;}
-    void show() override {
-        if (turned_on) {shape.set_color(color);} else shape.set_color(old_color);;
-    }
-private:
-    Shape& shape;
-    Graph_lib::Color color;
-    Graph_lib::Color old_color;
-    bool turned_on;
-};
-class SoundController : Controller {
-public:
-    SoundController (): turned_on {false}, level{15}, new_level {0} {};
-    void set_level(int x) override { if (x < 100 && x > -100) new_level =x;}
-    void on() override {turned_on = true;}
-    void off() override {turned_on = false; show();}
-    void show() override {
-        if (turned_on) {
-            string scom = "pactl set-sink-volume 1 " + to_string(new_level) + "%";
-            const char* com = scom.c_str();
-            cout << com << endl;
-            system(com);}
-        else {
-            string scom = "pactl set-sink-volume 1 " + to_string(level) + "%";
-            const char* com = scom.c_str();
-            cout << com << endl;
-            system(com);
+constexpr int xmax = 1200;
+constexpr int ymax = 1200;
+constexpr int xoffset = 200; // distance from left-hand side of window to y axis
+constexpr int yoffset = 200; // distance from bottom of window to x axis
+constexpr int xspace = 200; // space beyond axis
+constexpr int yspace = 200;
+constexpr int xlength = xmax - xoffset - xspace;
+constexpr int ylength = ymax - yoffset - yspace;
+constexpr int notches = 20;
+
+constexpr int r_min = -10;
+constexpr int r_max = 10;
+constexpr int n_points = 400; // number of points used in range
+constexpr int x_scale = 40; // scaling factors
+constexpr int y_scale = 40;
+
+
+double one(double x) { return 1; }
+double slope(double x) { return x/2; }
+double square(double x) { return x*x; }
+double sloping_cos(double x) {return slope(x) + cos(x);}
+
+struct Person {
+    explicit Person(const string& n = "John",const string& sn = "Doe", int a = 0) {
+        if (a > 0 && a < 150) p_age = a;
+        for (char c: restricted_symbols){
+            if (n.find(c) != std::string::npos || sn.find(c) != std::string::npos) {
+                string em = "symbol is not allowed for naming: " + string(1, c);
+                error(em);}
         }
     }
+    string name() const {return p_name + " " + p_sname;}
+    void set_fist_name(const string& n) {
+        for (char c: restricted_symbols){
+            if (n.find(c) != std::string::npos) {
+                string em = "symbol is not allowed: " + string(1, c);
+                error(em);}
+        }
+        p_name = n;
+    }
+    void set_second_name(const string& n) {
+        for (char c: restricted_symbols){
+            if (n.find(c) != std::string::npos) {
+                string em = "symbol is not allowed: " + string(1, c);
+                error(em);}
+        }
+        p_sname = n;
+    }
+    void set_age (int a) {
+        if (a > 0 && a < 150) p_age = a;
+    }
+    int age() const {return p_age;}
 private:
-    int level;
-    int new_level;
-    bool turned_on;
+    string p_name;
+    string p_sname;
+    int p_age;
+    const vector <char> restricted_symbols {';', ':', '"', '\'', '[', ']', '*', '&', '^', '%', '$', '#', '@', '!'};
 };
+
+istream& operator >> (istream& is, Person& p) {
+    cout << "Enter the person's full name and age: ";
+    string name; string sname; int age;
+    if (is >> name >> sname >> age) {
+        p.set_fist_name(name);
+        p.set_second_name(sname);
+        p.set_age(age);
+    }
+    return is;
+}
+ostream& operator << (ostream& os, Person& p) {
+    if (os)
+        os << "Person name is " << p.name() <<" with age of " << p.age() << endl;
+    return os;
+}
+
+vector <Person> persons;
 
 int main()
 try {
-
     Point tl(500,500);
-    Point tl2(300,300);
-    Simple_window win(tl,2400,1500,"My window");
+    Point pmidle {xmax/2, ymax/2};
+
+    Simple_window win(tl, xmax, ymax,"Function graphs.");
+    Axis x_axis (Axis::x, Point{xoffset, ymax / 2}, xlength, notches, "1 = = 20 pixels");
+    Axis y_axis (Axis::y, Point{xmax/2, ymax - yspace}, ylength, notches, "1 = = 20 pixels");
+    x_axis.set_color(Color::dark_red);
+    x_axis.set_style(Line_style(Line_style::solid, 2));
+    y_axis.set_color(Color::dark_red);
+    y_axis.set_style(Line_style(Line_style::solid, 2));
+
+    Function one_f {one, r_min, r_max, pmidle, n_points, x_scale, y_scale};
+    Function slope_f {slope, r_min, r_max, pmidle, n_points, x_scale, y_scale};
+    Text slope_t {Point {xspace, 785}, "x/2"};
+    Function square_f {square, -3, 3, pmidle, n_points, x_scale, y_scale};
+    Function cos_f {cos, r_min, r_max, pmidle, n_points, x_scale, y_scale};
+    cos_f.set_color(Color::dark_blue);
+    Function scos_f {sloping_cos, r_min, r_max, pmidle, n_points, x_scale, y_scale};
 
 
-    Rectangle rec {tl2, 700, 700};
-    rec.set_style(Line_style(Line_style::dash, 10)); win.attach(rec);
-    win.wait_for_button();
+    win.attach(x_axis);
+    win.attach(y_axis);
+    win.attach(one_f);
+    win.attach(slope_f); win.attach(slope_t);
+    win.attach(square_f);
+    win.attach(cos_f);
+    win.attach(scos_f);
+    //win.wait_for_button();
+    //Person p {"Larry", 77};
+    //p.name = "Goofy";
+    //p.age = 63;
+    //cout << p.name << " " << p.age << endl;
+    //cin >> p;
+    //cout << p;
 
-    ShapeController cont (rec); cont.on(); cont.set_level(199); cont.show();
-    win.wait_for_button();
-
-    cont.set_level(99); cont.off(); cont.show();
-    win.wait_for_button();
-
-    Test t1 {};
-    t1.show(); t1.set_level(15); t1.on(); t1.set_level(-14); t1.show();
-
-    SoundController sc;
-    win.wait_for_button();
-
-    sc.on();sc.set_level(10);sc.show();
-    win.wait_for_button();
-
-    sc.on();sc.set_level(20);sc.show();
-    win.wait_for_button();
-
-    sc.on();sc.set_level(-20);sc.show();
-    win.wait_for_button();
-
-    sc.on();sc.off();
-    win.wait_for_button();
-
+    for (Person p; cin >> p;)
+        if (p.name() != "stop please")
+        persons.push_back(p);
+        else break;
+    for (Person p: persons)
+        cout << p;
 
 
 
 }
+
 catch (exception& e) {
     cerr << "exception: " << e.what() << endl;
+    keep_window_open();
 }
 catch (...) {
     cerr << "exception\n";
