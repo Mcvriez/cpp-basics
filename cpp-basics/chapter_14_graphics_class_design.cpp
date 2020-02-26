@@ -4,75 +4,64 @@
 
 /*
 
-3. Modify Fct from the previous exercise to take an extra argument to control precision or whatever. Make the type of that
-argument a template parameter for extra flexibility.
+Graph
+ a sine (sin()),
+ a cosine (cos()),
+ the sum of those (sin(x) + cos(x)),
+ and the sum of the squares of those (sin(x)*sin(x)+cos(x)*cos(x)) on a single graph.
+
+Do provide axes and labels.
 
 */
 
-typedef double Fctn(double, int);
+constexpr int xmax = 1200; constexpr int ymax = 1200; constexpr int xoffset = 200; constexpr int yoffset = 200;
+constexpr int xspace = 200; constexpr int yspace = 200; constexpr int xlength = xmax - xoffset - xspace;
+constexpr int ylength = ymax - yoffset - yspace; constexpr int notches = 20;
 
-double cos_plus (double x, int i) {return cos(x) + x / 4;}
-double cos_plus_plus (double x,  int i) {return cos(x) + x / 2 ;}
-
-double fac(double n) { double r = 1; while (n>1) { r*=n; --n; }return r;}
-double term(double x, int n) { return pow(x,n)/fac(n); }
-double expe(double x, int n) {
-    double sum = 0;
-    for (int i=0; i<n; ++i) sum+=term(x,i);
-    return sum;
-}
-
-
-struct Ffct : Shape {
-    Ffct (Fctn f, double r1, double r2, Point orig, int c = 100, double xs = 25, double ys = 25, int pr= 1) :
-    range_start(r1), range_end(r2), root {orig}, count {c}, xscale {xs}, yscale {ys}, funct{f}, precision {pr}
-    {
-        if (range_end - range_start <= 0) error("bad graphing range");
-        if (count <= 0) error("non-positive graphing count");
-        double dist = (range_end - range_start) / count;
-        double r = range_start;
-        for (int i = 0; i < count; ++i) {
-            add(Point(root.x + int(r * xscale), root.y - int(funct(r, precision) * yscale)));
-            r += dist;
-        }
-    }
-    Fctn* funct;
-    double range_start;
-    int precision;
-    double range_end;
-    Point root;
-    int count;
-    double xscale;
-    double yscale;
-    void reset() {
-        points.clear();
-        if (range_end - range_start <= 0) error("bad graphing range");
-        if (count <= 0) error("non-positive graphing count");
-        double dist = (range_end - range_start) / count;
-        double r = range_start;
-        for (int i = 0; i < count; ++i) {
-            add(Point(root.x + int(r * xscale), root.y - int(funct(r, precision) * yscale)));
-            r += dist;
-        }
-    }
-};
-
+constexpr int r_min = -5; constexpr int r_max = 5; constexpr int n_points = 400;
+constexpr int x_scale = 80; constexpr int y_scale = 80;
 
 int main()
 try {
     Point tl(500,500);
-    Simple_window win(tl, 2400, 1200,"Function graphs.");
-    Ffct my_function (cos_plus, 10, 35, Point {00, 1100}, 50, 50, 50);
-    win.attach(my_function);
-    win.wait_for_button();
+    Point pmidle {xmax/2, ymax/2};
 
-    my_function.funct = expe;
-    my_function.precision = 10;
-    my_function.root = Point{300, 1000};
-    my_function.reset();
-    win.wait_for_button();
+    Simple_window win(tl, xmax, ymax,"Function graphs.");
+    Axis x_axis (Axis::x, Point{xoffset, ymax / 2}, xlength, notches, "1 = = 40 pixels");
+    Axis y_axis (Axis::y, Point{xmax/2, ymax - yspace}, ylength, notches, "1 = = 40 pixels");
+    x_axis.set_color(Color::dark_red);
+    x_axis.set_style(Line_style(Line_style::solid, 2));
+    y_axis.set_color(Color::dark_red);
+    y_axis.set_style(Line_style(Line_style::solid, 2));
+    win.attach(x_axis);
+    win.attach(y_axis);
 
- }
+
+    Function cos_f {cos, r_min, r_max, pmidle, n_points, x_scale, y_scale};
+    cos_f.set_color(Color::dark_blue);
+
+    Function sin_f {sin, r_min, r_max, pmidle, n_points, x_scale, y_scale};
+    sin_f.set_color(Color::dark_green);
+
+    Function sum_f {[](double x) {return cos(x) + sin(x);}, r_min, r_max, pmidle, n_points, x_scale, y_scale};
+    sum_f.set_color(Color::dark_yellow);
+
+    Function sum_sq_f {[](double x) {return cos(x) * cos(x) + sin(x) * sin(x);}, r_min, r_max, pmidle, n_points, x_scale, y_scale};
+    sum_sq_f.set_color(Color::dark_magenta);
+
+    win.attach(cos_f);
+    win.attach(sin_f);
+    win.attach(sum_f);
+    win.attach(sum_sq_f);
+
+    sum_f.set_style(Line_style(Line_style::solid, 4));
+    sum_sq_f.set_style(Line_style(Line_style::solid, 2));
+    sin_f.set_style(Line_style(Line_style::solid, 2));
+    cos_f.set_style(Line_style(Line_style::solid, 2));
+
+
+    win.wait_for_button();
+}
 
 catch (exception& e) {
     cerr << "exception: " << e.what() << endl;
