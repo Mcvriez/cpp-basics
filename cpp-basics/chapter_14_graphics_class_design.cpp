@@ -4,16 +4,10 @@
 
 /*
 
-8. Here is a collection of heights in centimeters together with the number of people in a group of that height
-(rounded to the nearest 5cm):
-
-(170,7), (175,9), (180,23), (185,17), (190,6), (195,1).
-
-How would you graph that data?
-If you can’t think of anything better, do a bar graph.
-Remember to provide axes and labels.
-
-Place the data in a file and read it from that file.
+9. Find another data set of heights (an inch is 2.54cm) and graph them with your program from the previous exercise. For
+example, search the web for “height distribution” or “height of people in the United States” and ignore a lot of rubbish or
+ask your friends for their heights. Ideally, you don’t have to change anything for the new data set. Calculating the scaling
+from the data is a key idea. Reading in labels from input also helps minimize changes when you want to reuse code.
 
 */
 
@@ -23,25 +17,24 @@ constexpr int ylength = ymax - yoffset - yspace; constexpr int notches = 20;
 
 
 struct Bubble {
-    explicit Bubble (int pn, int h = 11, int col = 0) : number_of_people {pn}, color {col}, height {h} {}
-    int number_of_people;
+    explicit Bubble (double pn, int h = 0, int col = 0) : number_of_people {pn}, color {col}, height {h} {}
+    double number_of_people;
     int color;
     int height;
 };
 
-// (170,7), (175,9), (180,23), (185,17), (190,6), (195,1).
+// 5'4" 3.7
 istream& operator >> (istream& is, Bubble& bb)
 {
-    char c1, c2, c3, c4;
-    int height;
-    int number_of_people;
-    is >> c1 >> height >> c2 >> number_of_people >> c3 >> c4;
-    if (!is || c1!= '(' || c2 != ',' || c3 != ')' || (c4 != ',' && c4 != '.')) return is;
-    bb = Bubble(number_of_people, height, sqrt((number_of_people + 2) * 33));
+    char c1, c2;
+    int heigh_f;
+    int heigh_d;
+    double number_of_people;
+    is >> heigh_f >> c1 >> heigh_d >> c2 >> number_of_people;
+    if (!is || (c1!= '\'' && c1 != '.') || (c2 != '"')) return is;
+    bb = Bubble(number_of_people, heigh_f * 12 + heigh_d, sqrt((number_of_people + 2) * 33));
     return is;
 }
-
-
 
 class Bubbles: public Shape {
     Point root;
@@ -87,6 +80,7 @@ public:
     void add_bubble(Bubble *b){
         bars.push_back(b);
     }
+    int size() {return bars.size();}
     explicit Bubbles (
             Point r = Point {0, 0},
             int sc = 10,
@@ -101,8 +95,15 @@ void fill_from_file (Bubbles& bubbles, const string& name)
     ifstream ist(name.c_str());
     if (!ist) error("can't open input file ",name);
     Bubble bb(0);
+    double onp = bb.number_of_people;
+    int oh = bb.height;
     while (ist >> bb) {
-        bubbles.add_bubble(new Bubble {bb.number_of_people, bb.height, bb.color});
+        double np = bb.number_of_people;
+        int h = bb.height;
+        if (!(oh == h && np == onp)) {
+            bubbles.add_bubble(new Bubble {np, h, bb.color});}
+        onp = np;
+        oh = h;
     }
 }
 
