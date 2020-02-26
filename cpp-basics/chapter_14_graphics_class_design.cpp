@@ -4,26 +4,64 @@
 
 /*
 
-1. Here is another way of defining a factorial function:
-
-int fac(int n) { return n>1 ? n * fac(n–1) : 1; } // factorial n!
-
-It will do fac(4) by first deciding that since 4>1 it must be 4*fac(3), and that’s obviously 4*3*fac(2), which again is
-4*3*2*fac(1), which is 4*3*2*1. Verify that the
-recursive fac() works and gives the same results as the iterative fac() by calculating the factorial of 0, 1, 2, 3, 4, up until
-and including 20.
+2. Define a class Fct that is just like Function except that it stores its constructor arguments.
+Provide Fct with “reset” operations, so that you can use it repeatedly for different ranges, different functions, etc.
 
 */
-int fac_recursive(int n) { return n > 1 ? n * fac_recursive(n - 1) : 1; } // factorial n!
-int fac(int n) { int r = 1; while (n > 1) {r *= n; --n;} return r; }
+
+typedef double Fctn(double);
+
+double cos_plus (double x) {return cos(x) + x / 4;}
+double cos_plus_plus (double x) {return cos(x) + x / 2 ;}
+
+
+struct Ffct : Shape {
+    Ffct (Fctn f, double r1, double r2, Point orig, int c = 100, double xs = 25, double ys = 25) :
+    range_start(r1), range_end(r2), root {orig}, count {c}, xscale {xs}, yscale {ys}, funct{f}
+    {
+        if (range_end - range_start <= 0) error("bad graphing range");
+        if (count <= 0) error("non-positive graphing count");
+        double dist = (range_end - range_start) / count;
+        double r = range_start;
+        for (int i = 0; i < count; ++i) {
+            add(Point(root.x + int(r * xscale), root.y - int(funct(r) * yscale)));
+            r += dist;
+        }
+    }
+    Fctn* funct;
+    double range_start;
+    double range_end;
+    Point root;
+    int count;
+    double xscale;
+    double yscale;
+    void reset() {
+        points.clear();
+        if (range_end - range_start <= 0) error("bad graphing range");
+        if (count <= 0) error("non-positive graphing count");
+        double dist = (range_end - range_start) / count;
+        double r = range_start;
+        for (int i = 0; i < count; ++i) {
+            add(Point(root.x + int(r * xscale), root.y - int(funct(r) * yscale)));
+            r += dist;
+        }
+    }
+};
+
 
 int main()
 try {
     Point tl(500,500);
-    Simple_window win(tl, 1200, 1200,"Function graphs.");
-    for (int i = 1; i < 15; ++i){
-        cout << fac(i) << "\t\t\t\t\t" << fac_recursive(i) << endl;
-    }
+    Simple_window win(tl, 2400, 1200,"Function graphs.");
+    Ffct my_function (cos_plus, 10, 35, Point {00, 1100}, 50, 50, 50);
+    win.attach(my_function);
+    win.wait_for_button();
+
+    my_function.funct = cos_plus_plus;
+    my_function.root = Point{300, 1000};
+    my_function.reset();
+    win.wait_for_button();
+
  }
 
 catch (exception& e) {
