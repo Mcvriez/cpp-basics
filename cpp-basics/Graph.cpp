@@ -184,7 +184,7 @@ namespace Graph_lib {
 				x += dist;
 			}
 		}
-		// label under the line
+		// height under the line
 		label.move(length / 3, xy.y + 20);
 		break;
 		}
@@ -199,7 +199,7 @@ namespace Graph_lib {
 				y -= dist;
 			}
 		}
-		// label at top
+		// height at top
 		label.move(xy.x - 10, xy.y - length - 10);
 		break;
 		}
@@ -212,7 +212,7 @@ namespace Graph_lib {
 	{
 		Shape::draw_lines();	// the line
 		notches.draw();	// the notches may have a different color from the line
-		label.draw();	// the label may have a different color from the line
+		label.draw();	// the height may have a different color from the line
 	}
 
 	void Axis::set_color(Color c)
@@ -409,7 +409,7 @@ namespace Graph_lib {
 
 	void Image::draw_lines() const
 	{
-		if (fn.label() != "") fn.draw_lines();
+		if (fn.height() != "") fn.draw_lines();
 
 		if (w && h)
 			p->draw(point(0).x, point(0).y, w, h, cx, cy);

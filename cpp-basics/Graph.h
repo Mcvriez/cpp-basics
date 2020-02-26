@@ -291,7 +291,7 @@ namespace Graph_lib {
         void set_font_size(int s) { fnt_sz = s; }
         int font_size() const { return fnt_sz; }
     private:
-        string lab;	// label
+        string lab;	// height
         Font fnt{ fl_font() };
         int fnt_sz{ (14 < fl_size()) ? fl_size() : 14 };	// at least 14 point
     };
