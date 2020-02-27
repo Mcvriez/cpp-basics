@@ -59,6 +59,7 @@ public:
             for (int i = 0; i < bars.size(); ++i) {
                 if (bars[i].color != 0) fl_color(bars[i].color);
                 current_angle += bars[i].number_of_people / total * 360;
+                if (i + 1 ==  bars.size()) current_angle = 360;
                 int spec_size = size * sqrt(sqrt(bars[i].number_of_people / total));
                 fl_pie(x_base + (size - spec_size) / 2 , y_base + (size - spec_size) / 2, spec_size, spec_size, start_angle, current_angle);
                 start_angle = current_angle;
@@ -80,6 +81,7 @@ public:
             for (int i = 0; i < bars.size(); ++i) {
 
                 current_angle += bars[i].number_of_people / total * 360;
+                if (i + 1 ==  bars.size()) current_angle = 360;
                 int spec_size = size * sqrt(sqrt(bars[i].number_of_people / total));
                 int x1 = spec_size / 2 * cos(start_angle * PI / 180);
                 int y1 = -spec_size / 2 * sin(start_angle * PI / 180);
@@ -96,8 +98,10 @@ public:
                 start_angle = current_angle;
 
                 if (bars[i].height != 0) {
-                    string height = to_string(bars[i].height) + " inches " + to_string((bars[i].number_of_people) / total * 100) + "%";
+                    string height = to_string(bars[i].height) + " inches";
                     fl_draw(height.c_str(), x_center + x3, y_center + y3);
+                    height = to_string((bars[i].number_of_people) / total * 100) + " %";
+                    fl_draw(height.c_str(), x_center + x3, y_center + y3 + 15);
                 }
             }
         }
