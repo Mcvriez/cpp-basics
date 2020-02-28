@@ -39,6 +39,7 @@ namespace Graph_lib {
 		virtual void hide() { pw->hide(); }
 		virtual void show() { pw->show(); }
 		virtual void attach(Window&) = 0;
+        virtual void set_color (int col) { pw->color(col); }
 
 		Point loc;
 		int width;

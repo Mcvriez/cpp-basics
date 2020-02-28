@@ -45,3 +45,73 @@ void Simple_window::next()
 }
 
 //------------------------------------------------------------------------------
+
+My_window::My_window (Point xy, int w, int h, const string& title) :
+        Window(xy, w, h, title),
+        next_button(
+                Point{x_max()-70,0},
+                70,
+                20,
+                "Next",
+                cb_next),
+        quit_button(
+                Point{x_max()-70,25},
+                70,
+                20,
+                "Quit",
+                cb_quit),
+        button_pushed(false)
+{
+    attach(next_button);
+    attach(quit_button);
+}
+
+//------------------------------------------------------------------------------
+
+Checker_window::Checker_window (Point xy, int w, int h, const string& title) :
+        Window(xy, w, h, title),
+        next_button(
+                Point{x_max()-70,0},
+                70,
+                20,
+                "Next",
+                cb_next),
+        quit_button(
+                Point{x_max()-70,25},
+                70,
+                20,
+                "Quit",
+                cb_quit),
+        check_nw(
+                Point{x_max() / 2 - 150,y_max() / 2 - 150},
+                145,
+                145,
+                "Iceland",
+                cb_check_nw),
+        check_ne(
+                Point{x_max() / 2,y_max() / 2 - 150},
+                145,
+                145,
+                "Norway",
+                cb_check_ne),
+        check_sw(
+                Point{x_max() / 2 - 150,y_max() / 2},
+                145,
+                145,
+                "Morocco",
+                cb_check_sw),
+        check_se(
+                Point{x_max() / 2,y_max() / 2},
+                145,
+                145,
+                "Yemen",
+                cb_check_se),
+        button_pushed(false)
+{
+    attach(next_button);
+    attach(quit_button);
+    attach(check_nw);
+    attach(check_ne);
+    attach(check_sw);
+    attach(check_se);
+}
