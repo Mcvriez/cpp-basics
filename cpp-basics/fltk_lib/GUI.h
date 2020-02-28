@@ -59,8 +59,8 @@ namespace Graph_lib {
 	//------------------------------------------------------------------------------
 
 	struct Button : Widget {
-		Button(Point xy, int w, int h, const string& label, Callback cb)
-			: Widget(xy, w, h, label, cb)
+		Button(Point p, int w, int h, const string& label, Callback cb)
+			: Widget(p, w, h, label, cb)
 		{}
 
 		void attach(Window&);
@@ -69,8 +69,8 @@ namespace Graph_lib {
 	//------------------------------------------------------------------------------
 
 	struct In_box : Widget {
-		In_box(Point xy, int w, int h, const string& s)
-			:Widget(xy, w, h, s, 0) { }
+		In_box(Point p, int w, int h, const string& s)
+			:Widget(p, w, h, s, 0) { }
 		int get_int();
 		string get_string();
 
@@ -80,8 +80,8 @@ namespace Graph_lib {
 	//------------------------------------------------------------------------------
 
 	struct Out_box : Widget {
-		Out_box(Point xy, int w, int h, const string& s)
-			:Widget(xy, w, h, s, 0) { }
+		Out_box(Point p, int w, int h, const string& s)
+			:Widget(p, w, h, s, 0) { }
 		void put(int);
 		void put(const string&);
 

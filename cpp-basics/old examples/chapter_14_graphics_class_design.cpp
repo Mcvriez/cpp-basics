@@ -3,11 +3,9 @@
 #include "std_lib_facilities.h"
 
 /*
-
 11. Find the average maximum temperatures for each month of the year for two or more locations (e.g., Cambridge, England,
 and Cambridge, Massachusetts; there are lots of towns called “Cambridge”) and graph them together. As ever, be careful
 with axes, labels, use of color, etc.
-
 */
 
 constexpr int xmax = 1800; constexpr int ymax = 1200; constexpr int xoffset = 200; constexpr int yoffset = 200;
@@ -28,7 +26,7 @@ istream& operator >> (istream& is, Temp_max& ttm) {
     if (is >> c1 >> tm.month >> c2 >> tm.cay >> tm.zur >> tm.crb >> c3) {
         if (!is || c1!= '(' || c2 != ':' || c3 != ')')  {
             is.clear(ios_base::failbit);
-        return is;
+            return is;
         }
     }
     else
