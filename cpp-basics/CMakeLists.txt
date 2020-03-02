@@ -16,4 +16,4 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl -lpthread")
 
 find_package(FLTK REQUIRED NO_MODULE)
 include_directories(${FLTK_INCLUDE_DIR})
-target_link_libraries(cpp-basics ${FLTK_BASE_LIBRARY} ${FLTK_PLATFORM_DEPENDENT_LIBS} fltk)
+target_link_libraries(cpp-basics ${FLTK_BASE_LIBRARY} ${FLTK_PLATFORM_DEPENDENT_LIBS} fltk fltk_images)

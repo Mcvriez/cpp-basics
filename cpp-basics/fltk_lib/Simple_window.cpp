@@ -10,23 +10,31 @@
 
 Simple_window::Simple_window(Point xy, int w, int h, const string& title) :
         Window(xy,w,h,title),
-        next_button(Point{x_max()-70,0}, 70, 20, "Next", cb_next),
+        next_button(Point(x_max()-70,0), 70, 20, "Next", cb_next),
         button_pushed(false)
 {
     attach(next_button);
 }
 
 //------------------------------------------------------------------------------
-void Simple_window::wait_for_button()
+
+bool Simple_window::wait_for_button()
 // modified event loop:
 // handle all events (as per default), quit when button_pushed becomes true
 // this allows graphics without control inversion
 {
-    // Simpler handler
-    while (!button_pushed)
-        Fl::wait();
+    show();
     button_pushed = false;
+#if 1
+    // Simpler handler
+    while (!button_pushed) Fl::wait();
     Fl::redraw();
+#else
+    // To handle the case where the user presses the X button in the window frame
+    // to kill the application, change the condition to 0 to enable this branch.
+    Fl::run();
+#endif
+    return button_pushed;
 }
 
 //------------------------------------------------------------------------------
@@ -42,12 +50,15 @@ void Simple_window::cb_next(Address, Address pw)
 void Simple_window::next()
 {
     button_pushed = true;
+    hide();
 }
 
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 My_window::My_window (Point xy, int w, int h, const string& title) :
         Window(xy, w, h, title),
+        bsize {128},
         next_button(
                 Point{x_max()-70,0},
                 70,
@@ -60,10 +71,18 @@ My_window::My_window (Point xy, int w, int h, const string& title) :
                 20,
                 "Quit",
                 cb_quit),
+        moving_button(
+                Point{(x_max() - bsize) / 2 ,(y_max() - bsize) / 2},
+                bsize,
+                bsize,
+                "uncatchable Joe",
+                cb_move),
         button_pushed(false)
 {
     attach(next_button);
     attach(quit_button);
+    attach(moving_button);
+    attach(img);
 }
 
 //------------------------------------------------------------------------------

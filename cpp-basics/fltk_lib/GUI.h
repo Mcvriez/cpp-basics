@@ -36,6 +36,7 @@ namespace Graph_lib {
 		{}
 
 		virtual void move(int dx, int dy) { hide(); pw->position(loc.x += dx, loc.y += dy); show(); }
+		virtual void move(Point p) { hide(); pw->position(p.x, p.y); show(); }
 		virtual void hide() { pw->hide(); }
 		virtual void show() { pw->show(); }
 		virtual void attach(Window&) = 0;

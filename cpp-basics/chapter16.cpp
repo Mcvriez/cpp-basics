@@ -4,9 +4,7 @@
 
 /*
 
-2. Make a window (based on My_window) with a 4-by-4 checkerboard of square buttons. When pressed, a button
-performs a simple action, such as printing its coordinates in an output box, or turns a slightly different color (until another
-button is pressed).
+Place an Image on top of a Button; move both when the button is pushed.
 
 */
 
@@ -14,7 +12,9 @@ button is pressed).
 int main()
 try {
     Point rootp(500,500);
-    Checker_window win {rootp, 500, 500, "Custom Window"};
+    My_window win {rootp, 1500, 1500, "Custom Window"};
+
+
     win.wait_for_button();
     }
 
