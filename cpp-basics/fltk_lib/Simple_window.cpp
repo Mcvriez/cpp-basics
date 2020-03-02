@@ -3,7 +3,7 @@
 // This is a GUI support code to the chapters 12-16 of the book
 // "Programming -- Principles and Practice Using C++" by Bjarne Stroustrup
 //
-
+#include <unistd.h>
 #include "Simple_window.h"
 
 //------------------------------------------------------------------------------
@@ -58,7 +58,6 @@ void Simple_window::next()
 
 My_window::My_window (Point xy, int w, int h, const string& title) :
         Window(xy, w, h, title),
-        bsize {128},
         next_button(
                 Point{x_max()-70,0},
                 70,
@@ -71,20 +70,49 @@ My_window::My_window (Point xy, int w, int h, const string& title) :
                 20,
                 "Quit",
                 cb_quit),
-        moving_button(
-                Point{(x_max() - bsize) / 2 ,(y_max() - bsize) / 2},
-                bsize,
-                bsize,
-                "uncatchable Joe",
-                cb_move),
         button_pushed(false)
 {
     attach(next_button);
     attach(quit_button);
-    attach(moving_button);
     attach(img);
+    color(55);
+    reattach();
 }
 
+//------------------------------------------------------------------------------
+
+void My_window::draw_hands() {
+    time_t theTime = time(nullptr);
+    struct tm *aTime = localtime(&theTime);
+    int hour = aTime-> tm_hour;
+    hour > 11 ? hour -= 12 : hour;
+    int min = aTime -> tm_min;
+    int sec = aTime -> tm_sec;
+    int rad = 320;
+
+    double minutes = PI * (min * 6 + sec / 10) / 180;
+    double seconds = PI * sec / 30;
+    double hours = PI * (hour * 30 + min * 0.5) / 180;
+
+    if (shapes.size() > 0){
+        shapes[0].update(Point{int(root.x + sin(hours) * rad / 1.5), int(root.y - cos(hours) * rad / 1.5)});
+        shapes[1].update(Point{int(root.x + sin(minutes) * rad / 1.1), int(root.y - cos(minutes) * rad / 1.1)});
+        shapes[2].update(Point{int(root.x + sin(seconds) * rad ), int(root.y - cos(seconds) * rad )});
+    }
+    else {
+        shapes.push_back(new Line{root, Point{int(root.x + sin(hours) * rad / 1.5), int(root.y - cos(hours) * rad / 1.5)}});
+        shapes.push_back(new Line{root, Point{int(root.x + sin(minutes) * rad / 1.3), int(root.y - cos(minutes) * rad / 1.3)}});
+        shapes.push_back(new Line{root, Point{int(root.x + sin(seconds) * rad ), int(root.y - cos(seconds) * rad )}});
+    }
+
+    shapes[0].set_style(Line_style(Line_style::Line_style::solid, 20));
+    shapes[1].set_style(Line_style(Line_style::Line_style::solid, 10));
+    shapes[2].set_style(Line_style(Line_style::Line_style::solid, 5));
+    shapes[2].set_color(89);
+}
+
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 Checker_window::Checker_window (Point xy, int w, int h, const string& title) :
@@ -135,6 +163,7 @@ Checker_window::Checker_window (Point xy, int w, int h, const string& title) :
     attach(check_se);
 }
 
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 Shapes_window::Shapes_window (Point p, int w, int h, const string& title)
@@ -202,10 +231,14 @@ Shapes_window::Shapes_window (Point p, int w, int h, const string& title)
 
 }
 
+//------------------------------------------------------------------------------
+
 void Shapes_window::quit()
 {
     hide();
 }
+
+//------------------------------------------------------------------------------
 
 void Shapes_window::next()
 {
@@ -219,6 +252,8 @@ void Shapes_window::next()
     }
     redraw();
 }
+
+//------------------------------------------------------------------------------
 
 void Shapes_window::circle_pressed()
 {
@@ -236,6 +271,8 @@ void Shapes_window::circle_pressed()
     reattach();
     redraw();
 }
+
+//------------------------------------------------------------------------------
 
 void Shapes_window::triangle_pressed()
 {
@@ -260,6 +297,8 @@ void Shapes_window::triangle_pressed()
     redraw();
 }
 
+//------------------------------------------------------------------------------
+
 void Shapes_window::square_pressed()
 {
     int x = next_x.get_int();
@@ -275,6 +314,8 @@ void Shapes_window::square_pressed()
     reattach();
     redraw();
 }
+
+//------------------------------------------------------------------------------
 
 void Shapes_window::hexagon_pressed()
 {
