@@ -142,7 +142,7 @@ Shapes_window::Shapes_window (Point p, int w, int h, const string& title)
           next_button {Point{x_max() - 150, 0},
                        70,
                        20,
-                       "Next point",
+                       "Move",
                        cb_next},
 
           quit_button {Point(x_max() - 70,0),
@@ -180,6 +180,7 @@ Shapes_window::Shapes_window (Point p, int w, int h, const string& title)
                      "style"}
 
 {
+
     attach(next_button);
     attach(quit_button);
     attach(next_x);
@@ -213,6 +214,9 @@ void Shapes_window::next()
     ostringstream ss;
     ss << '(' << x << ',' << y << ')';
     xy_out.put(ss.str());
+    if (x > 0 && y > 0) {
+        shapes[shapes.size()-1].move(Point{x, y});
+    }
     redraw();
 }
 
@@ -222,12 +226,14 @@ void Shapes_window::circle_pressed()
     int y = next_y.get_int();
     if (x > 0 && y > 0) {
         shapes.push_back(new Circle{Point{x, y}, 100});
-        shapes[shapes.size() - 1].set_fill_color(col);
+        shapes[shapes.size() - 1].set_color(col);
+        shapes[shapes.size() - 1].set_style(Line_style(Line_style::Line_style::dash, 5));
+
     }
     ostringstream ss;
     ss << '(' << x << ',' << y << ')';
     xy_out.put(ss.str());
-    reatach();
+    reattach();
     redraw();
 }
 
@@ -236,7 +242,7 @@ void Shapes_window::triangle_pressed()
 
     int x = next_x.get_int();
     int y = next_y.get_int();
-    double angle = PI / 160 * 30;
+    double angle = PI / 180 * 30;
     if (x > 0 && y > 0) {
         shapes.push_back(new Polygon{
                 {x, y - 100},
@@ -244,12 +250,13 @@ void Shapes_window::triangle_pressed()
                 {x - int(100 * cos(angle)), y + int(100 * sin(angle))},
                 {x + int(100 * cos(angle)), y + int(100 * sin(angle))}
         });
-        shapes[shapes.size() - 1].set_fill_color(col);
+        shapes[shapes.size() - 1].set_color(col);
+        shapes[shapes.size() - 1].set_style(Line_style(Line_style::Line_style::dash, 5));
     }
     ostringstream ss;
     ss << '(' << x << ',' << y << ')';
     xy_out.put(ss.str());
-    reatach();
+    reattach();
     redraw();
 }
 
@@ -259,12 +266,13 @@ void Shapes_window::square_pressed()
     int y = next_y.get_int();
     if (x > 0 && y > 0) {
         shapes.push_back(new Rectangle{Point {x - 100, y - 100}, 200, 200});
-        shapes[shapes.size() - 1].set_fill_color(col);
+        shapes[shapes.size() - 1].set_color(col);
+        shapes[shapes.size() - 1].set_style(Line_style(Line_style::Line_style::dash, 5));
     }
     ostringstream ss;
     ss << '(' << x << ',' << y << ')';
     xy_out.put(ss.str());
-    reatach();
+    reattach();
     redraw();
 }
 
@@ -274,11 +282,12 @@ void Shapes_window::hexagon_pressed()
     int y = next_y.get_int();
     if (x > 0 && y > 0) {
         shapes.push_back(new Regular_hexagon {Point {x, y}, 100});
-        shapes[shapes.size() - 1].set_fill_color(col);
+        shapes[shapes.size() - 1].set_color(col);
+        shapes[shapes.size() - 1].set_style(Line_style(Line_style::Line_style::dash, 5));
     }
     ostringstream ss;
     ss << '(' << x << ',' << y << ')';
     xy_out.put(ss.str());
-    reatach();
+    reattach();
     redraw();
 }
