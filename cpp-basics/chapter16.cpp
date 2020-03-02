@@ -4,7 +4,9 @@
 
 /*
 
-Place an Image on top of a Button; move both when the button is pushed.
+4. Make a menu with items that make a circle, a square, an equilateral triangle, and a hexagon, respectively. Make an input
+box (or two) for giving a coordinate pair, and place the shape made by pressing a menu item at that coordinate. Sorry, no
+drag and drop.
 
 */
 
@@ -12,10 +14,8 @@ Place an Image on top of a Button; move both when the button is pushed.
 int main()
 try {
     Point rootp(500,500);
-    My_window win {rootp, 1500, 1500, "Custom Window"};
-
-
-    win.wait_for_button();
+    Shapes_window win {rootp, 1500, 1500, "Custom Window"};
+    return gui_main();
     }
 
 catch (exception& e) {
