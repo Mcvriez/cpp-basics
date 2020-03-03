@@ -1,47 +1,60 @@
 #include "fltk_lib/Graph.h"
 #include "fltk_lib/Simple_window.h"
 #include "fltk_lib/std_lib_facilities.h"
+#include "calc.h"
 
 /*
 
-8. Provide a currency converter. Read the conversion rates from a file on startup. Enter an amount in an input window and
-provide a way of selecting currencies to convert to and from (e.g., a pair of menus).
+9. Modify the calculator from Chapter 7 to get its input from an input box and return its results in an output box.
 
 */
 
-istream& operator >> (istream& is, Currency& cc)
+struct Calc: public Graph_lib::Window {
+    Calc(Point p, int w, int h, const string& title);
+private:
+    Button result_button;
+    Button quit_button;
+
+    In_box amount_input;
+    Out_box result_output;
+
+    void quit() { hide();}
+    void calculate();
+
+    static void cb_result(Address, Address pw) { reference_to<Calc>(pw).calculate();};
+    static void cb_quit(Address, Address pw) {reference_to<Calc>(pw).quit();};
+};
+
+Calc::Calc(Point p, int w, int h, const string &title)
+    : Window(p, w, h, title),
+      result_button {Point{x_max()-150,0},70,20,"Calculate", cb_result},
+      quit_button   {Point(x_max()-70,0),70,20,"Quit", cb_quit},
+      amount_input  {Point{70, 0}, 150, 20, "Expression"},
+      result_output {Point{70, 25}, 50, 20, "Result:"}
 {
-    string notion;
-    char c1, c2, c3, c4;
-    double gbp_rate;
-    double eur_rate;
-    double usd_rate;
-    is >> notion >> c1 >> gbp_rate >> c2 >> eur_rate >> c3 >> usd_rate >> c4;
-    if (!is || c1!= '{' || c2 != ',' || c3 != ',' || c4 != '}') return is;
-    cc = Currency(notion, gbp_rate, eur_rate, usd_rate);
-    return is;
+    attach(quit_button);
+    attach(result_button);
+    attach(amount_input);
+    attach(result_output);
+    result_output.put("");
+
 }
 
-void fill_from_file (Vector_ref <Currency>& rates, const string& path)
-{
-    ifstream ist(path.c_str());
-    if (!ist) error("can't open input file ", path);
-    Currency cc;
-    while (ist >> cc) {
-        if (cc.notion != "None")
-            rates.push_back(new Currency {cc.notion, cc.gbp_rate, cc.eur_rate, cc.usd_rate});
-    }
+void Calc::calculate() {
+    string expression = amount_input.get_string();
+    Calc_lib::Calculator cc;
+    string result;
+    result = cc.calculate(expression);
+    result_output.put(result);
 }
+
 
 int main()
 try {
     Point rootp(500,500);
-    const string path = "/home/wq/CLionProjects/cpp-basics/cpp-basics/rates.txt";
-    Vector_ref <Currency> rates;
-    fill_from_file(rates, path);
-
-    Currency_window win {rootp, 500, 200, "Custom Window", rates};
+    Calc win {rootp, 500, 200, "Custom Window"};
     return gui_main();
+
 
 }
 
