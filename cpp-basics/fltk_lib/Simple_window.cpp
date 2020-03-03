@@ -130,7 +130,7 @@ draw_plain() {
     struct tm *aTime = localtime(&theTime);
     int sec = aTime -> tm_sec;
     if (!pause_flag){
-        delta += 650 / radius;
+        delta += 1650 / radius;
         int(delta) % 360 == 0 ? delta = 0 : delta;
         if (sec % 3 == 0){
             radius += ascension;
@@ -141,7 +141,7 @@ draw_plain() {
     }
     int x = root.x + radius * cos(delta / 180 * PI);
     int y = root.y + radius * sin(delta / 180 * PI);
-    cout << x << "~" << y << "->" << delta << endl;
+    cout << radius << "~" << "->" << delta << endl;
     plane.move(Point {x, y});
 }
 
@@ -366,4 +366,49 @@ void Shapes_window::hexagon_pressed()
     xy_out.put(ss.str());
     reattach();
     redraw();
+}
+
+Currency_window::Currency_window(Point p, int w, int h, const string &title, const Vector_ref<Graph_lib::Currency> &vr)
+    : Window(p, w, h, title),
+      result_button {Point{x_max()-150,0},70,20,"Calculate", cb_result},
+      quit_button   {Point(x_max()-70,0),70,20,"Quit", cb_quit},
+      amount_input  {Point{50, 0}, 50, 20, "Amount:"},
+      pair_output   {Point{170,0},50,20,"Pair:"},
+      result_output {Point{50, 25}, 50, 20, "Result:"},
+      crosses_menu  {Point{x_max() - 70, 40}, 70, 20, Menu::vertical, "cross pairs"},
+      bases_menu    {Point{x_max() - 160, 40}, 70, 20, Menu::vertical, "base pairs"}
+{
+    rates = vr;
+    attach(result_button);
+    attach(quit_button);
+    attach(amount_input);
+    attach(result_output);
+    attach(pair_output);
+
+    result_output.put("");
+    crosses_menu.attach(new Button{Point{0, 0}, 0, 0, "GBP", cb_gbp_c});
+    crosses_menu.attach(new Button{Point{0, 0}, 0, 0, "EUR", cb_eur_c});
+    crosses_menu.attach(new Button{Point{0, 0}, 0, 0, "USD", cb_usd_c});
+    bases_menu.attach(new Button{Point{0, 0}, 0, 0, "GBP", cb_gbp});
+    bases_menu.attach(new Button{Point{0, 0}, 0, 0, "EUR", cb_eur});
+    bases_menu.attach(new Button{Point{0, 0}, 0, 0, "USD", cb_usd});
+
+    attach(crosses_menu);
+    attach(bases_menu);
+}
+
+void Currency_window::calculate() {
+    double amount = amount_input.get_int();
+    double result;
+    Currency cc;
+    if (rates.size() < 2 || amount < 0) return;
+    if (base_cur == "GBP") cc = rates[0];
+    if (base_cur == "EUR") cc = rates[1];
+    if (base_cur == "USD") cc = rates[2];
+
+    if (cross_cur == "GBP") result = cc.gbp_rate * amount;
+    if (cross_cur == "EUR") result = cc.eur_rate * amount;
+    if (cross_cur == "USD") result = cc.usd_rate * amount;
+
+    result_output.put(result);
 }
