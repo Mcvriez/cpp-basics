@@ -59,24 +59,35 @@ void Simple_window::next()
 My_window::My_window (Point xy, int w, int h, const string& title) :
         Window(xy, w, h, title),
         next_button(
-                Point{x_max()-70,0},
+                Point{x_max()-70, 0},
                 70,
                 20,
-                "Next",
-                cb_next),
+                "Start",
+                cb_start),
         quit_button(
-                Point{x_max()-70,25},
+                Point{x_max()-70, 50},
                 70,
                 20,
                 "Quit",
                 cb_quit),
-        button_pushed(false)
+        pause_button(
+                Point{x_max()-70, 25},
+                70,
+                20,
+                "Pause",
+                cb_pause),
+        button_pushed(false),
+        pause_flag(false)
 {
     attach(next_button);
     attach(quit_button);
+    attach(pause_button);
     attach(img);
     color(55);
     reattach();
+    attach(plane);
+    plane.set_color(136);
+    plane.set_style(Line_style(Line_style::Line_style::dash, 8));
 }
 
 //------------------------------------------------------------------------------
@@ -101,7 +112,7 @@ void My_window::draw_hands() {
     }
     else {
         shapes.push_back(new Line{root, Point{int(root.x + sin(hours) * rad / 1.5), int(root.y - cos(hours) * rad / 1.5)}});
-        shapes.push_back(new Line{root, Point{int(root.x + sin(minutes) * rad / 1.3), int(root.y - cos(minutes) * rad / 1.3)}});
+        shapes.push_back(new Line{root, Point{int(root.x + sin(minutes) * rad / 1.1), int(root.y - cos(minutes) * rad / 1.1)}});
         shapes.push_back(new Line{root, Point{int(root.x + sin(seconds) * rad ), int(root.y - cos(seconds) * rad )}});
     }
 
@@ -109,6 +120,29 @@ void My_window::draw_hands() {
     shapes[1].set_style(Line_style(Line_style::Line_style::solid, 10));
     shapes[2].set_style(Line_style(Line_style::Line_style::solid, 5));
     shapes[2].set_color(89);
+}
+
+//------------------------------------------------------------------------------
+
+void My_window::
+draw_plain() {
+    time_t theTime = time(nullptr);
+    struct tm *aTime = localtime(&theTime);
+    int sec = aTime -> tm_sec;
+    if (!pause_flag){
+        delta += 650 / radius;
+        int(delta) % 360 == 0 ? delta = 0 : delta;
+        if (sec % 3 == 0){
+            radius += ascension;
+        }
+        if (radius < 100 || radius > 650) {
+            ascension *= -1;
+        }
+    }
+    int x = root.x + radius * cos(delta / 180 * PI);
+    int y = root.y + radius * sin(delta / 180 * PI);
+    cout << x << "~" << y << "->" << delta << endl;
+    plane.move(Point {x, y});
 }
 
 
@@ -161,6 +195,7 @@ Checker_window::Checker_window (Point xy, int w, int h, const string& title) :
     attach(check_ne);
     attach(check_sw);
     attach(check_se);
+
 }
 
 //------------------------------------------------------------------------------
