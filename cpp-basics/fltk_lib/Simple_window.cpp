@@ -368,3 +368,83 @@ void Shapes_window::hexagon_pressed()
     redraw();
 }
 
+Math_window::Math_window(Point xy, int w, int h, const string &title) :
+        Window(xy, w, h, title),
+        draw_button   {Point{x_max() - 100,10},70, 20, "Redraw", cb_next},
+        quit_button   {Point(x_max() - 100,40),70,20,"Save", cb_save},
+        save_button   {Point(x_max() - 100,70),70,20,"Quit", cb_quit},
+        mult_input    {Point{80, 10}, 50, 20, "Multiplier:"},
+        x0_input      {Point{80, 40}, 50, 20, "Starting X:"},
+        y0_input      {Point{80, 70}, 50, 20, "Starting Y:"},
+        func_output   {Point{300, 10}, 70,20, "Function:"},
+        func_menu     {Point{150, 10}, 70,20,Menu::vertical, "Functions"},
+        button_pushed {false},
+        function_id   {-1}
+
+{
+    attach(draw_button); attach(quit_button); attach(save_button); attach(mult_input);
+    attach(x0_input);    attach(y0_input);    attach(func_output); attach(x0_input);
+    func_output.put("Not chosen");
+    func_menu.attach(new Button{Point{0, 0}, 0, 0, "Log", cb_log});
+    func_menu.attach(new Button{Point{0, 0}, 0, 0, "Sin", cb_sin});
+    func_menu.attach(new Button{Point{0, 0}, 0, 0, "Cos", cb_cos});
+    attach(func_menu);
+
+    shapes.push_back(new Axis (Axis::x, Point {100,y_max()/2 }, w - 200, (w - 200) / 50, "1 = = 50 pixels"));
+    shapes.push_back(new Axis (Axis::y, Point {x_max()/2,y_max() - 100 }, h - 200, (h - 200) / 50, "1 = = 50 pixels"));
+    shapes[0].set_color(Color::dark_red);
+    shapes[0].set_style(Line_style(Line_style::solid, 2));
+    shapes[1].set_color(Color::dark_red);
+    shapes[1].set_style(Line_style(Line_style::solid, 2));
+    draw_shapes();
+}
+
+void Math_window::update_funct_output() {
+    string current_funct;
+    switch (function_id) {
+        case 0:
+            current_funct = "Logarithm"; break;
+        case 1:
+            current_funct = "Sine"; break;
+        case 2:
+            current_funct = "Cosine"; break;
+        default:
+            current_funct = "Not defined";
+    }
+    func_output.put(current_funct);
+    double amount = mult_input.get_int();
+}
+
+void Math_window::next() {
+    detach(*current);
+    double mult, x0, y0;
+
+    !mult_input.get_string().empty() ? mult = atof(mult_input.get_string().c_str()) : mult = 1;
+    !x0_input.get_string().empty() ? x0 = atof(x0_input.get_string().c_str()) : x0 = 0;
+    !y0_input.get_string().empty() ? y0 = atof(y0_input.get_string().c_str()) : y0 = 0;
+    if (mult == -999999) mult = 1; if (x0   == -999999) x0 = 0; if (y0   == -999999) y0 = 0;
+    Point orig {x_max()/2 + int(x0) * 50, y_max()/2 + int(y0) * 50};
+
+    int count = 500;
+    double max = 50;
+    double xscale = 50 * mult;
+    double yscale = 50 * mult;
+
+    switch (function_id) {
+        case 0:
+            current = new Function {f_log,  0.001, max, orig, count, xscale, yscale}; break;
+        case 1:
+            current = new Function {f_sin, -max, max, orig, count, xscale, yscale}; break;
+        case 2:
+            current = new Function {f_cos, -max, max, orig, count, xscale, yscale}; break;
+        default:
+            return;
+    }
+    current->set_style((Line_style(Line_style::solid, 3 * (mult / 1.5  + 0.5))));
+    current->set_color(sqrt((69 + x0 - y0) * (function_id + 1) * mult));
+    attach(*current);
+    draw_shapes();
+    Fl::redraw();
+}
+
+

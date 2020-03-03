@@ -8,7 +8,7 @@ add_executable(cpp-basics
         fltk_lib/Graph.cpp
         fltk_lib/GUI.cpp
         fltk_lib/Simple_window.cpp
-        fltk_lib/Window.cpp chapter16.cpp calc.cpp calc.h)
+        fltk_lib/Window.cpp chapter16.cpp)
 
 set(FLTK_SKIP_FLUID true)
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl -lpthread")
