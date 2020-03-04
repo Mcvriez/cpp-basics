@@ -1,5 +1,3 @@
-#include "fltk_lib/Graph.h"
-#include "fltk_lib/Simple_window.h"
 #include "fltk_lib/std_lib_facilities.h"
 
 /*
