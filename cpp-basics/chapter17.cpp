@@ -2,26 +2,55 @@
 
 /*
 
-4. Write a function, char* strdup(const char*), that copies a C-style string into memory it allocates on the free store.
-Do not use any standard library functions.
+5. Write a function, char* findx(const char* s, const char* x), that finds the first occurrence of the C-style string x in s.
 
 */
 
-char* strdup(const char* pcc) {
+const char* findx_const(const char* s, const char* x) {
+    if (!s || !x) return nullptr;
     int i = 0;
-    while(pcc[i]){++i;}
-    char* res = new char[i]; i = 0;
-    while (pcc[i]){ res[i] = pcc[i]; ++i; }
-    res[i] = char(0); // 0 terminator
-    return res;
+    while(s[i]){
+        if (s[i] == x[0]){
+            int j = 0;
+            const char* pr = &(s[i]);
+            while(x[j]) {
+                if (x[j] != s[i]) break;
+                ++j; ++i;
+            }
+            if (!x[j]) return pr;
+        }
+        ++i;
+    }
+    return nullptr;
+}
+
+char* findx(const char* s, const char* x) {
+    if (!s || !x) return nullptr;
+    int i = 0;
+    while(s[i]){
+        if (s[i] == x[0]){
+            int j = 0;
+            char* pr = const_cast<char *>(&(s[i])); // ???
+            while(x[j]) {
+                if (x[j] != s[i]) break;
+                ++j; ++i;
+            }
+            if (!x[j]) return pr;
+        }
+        ++i;
+    }
+    return nullptr;
 }
 
 int main()
 try {
-    string s = "12345";
-    char* pcn = strdup(s.c_str());
-    cout << pcn << "~" << pcn[0] << pcn[4] << pcn[5]<<s.c_str()[5] << endl;
-    cout << pcn << "~" << s.c_str()[0] << s.c_str()[4] << s.c_str()[5] << s.c_str()[6];
+    string s = "123abd456aBc789abc0123";
+    const char* pch = s.c_str();
+    const char x[] {"abc"};
+    const char* res = findx(pch, x);
+    res ? cout << *res << res[1] << res[2] << res[3] : cout << "Nullptr";
+
+
 }
 
 catch (exception& e) {
