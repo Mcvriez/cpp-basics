@@ -2,34 +2,67 @@
 
 /*
 
-6. This chapter does not say what happens when you run out of memory using new. That’s called memory exhaustion. Find
-out what happens. You have two obvious alternatives: look for documentation, or write a program with an infinite loop
-that allocates but never deallocates. Try both. Approximately how much memory did you manage to allocate before
-failing?
+7. Write a program that reads characters from cin into an array that you allocate on the free store.
+Read individual characters until an exclamation mark (!) is entered.
+Do not use a std::string. Do not worry about memory exhaustion.
 
 */
 
-/*
+vector<char*> expired;
 
-Mar  5 15:39:49 wq-null kernel: [13363.189684] Out of memory: Killed process 24086 (a.out)
+char* temp (char* prev_arr_p, int size, char last){
+    char* temp_arr = new char[size + 1];
+    int i = 0;
+    if (prev_arr_p) {
+        while(prev_arr_p[i])
+            {temp_arr[i] = prev_arr_p[i]; ++i;}
 
- total-vm: 12 889 580kB,
- anon-rss: 12 873 860kB,
- file-rss:0kB, shmem-rss:0kB
-
- */
-
-void danger(){
-    new vector<string> [100000];
+        temp_arr[i] = last;
+        temp_arr[i + 1] = char(0);
+        expired.push_back(prev_arr_p);
+        delete[] prev_arr_p;
+    }
+    else temp_arr[0] = last;
+    return temp_arr;
 }
+
+
+char* read_from(istream &is) {
+    cout << "Enter characters, '!' to escape" << endl;
+    char ch;
+    int i = 0;
+    char* pch = nullptr;
+    while(is.get(ch) && ch != '!'){
+        ++i;
+        pch = temp(pch, i, ch);
+    }
+    return pch;
+}
+
+
 int main()
-try {
-    while (1) danger();
-}
+try
+{
+    char* ret = read_from(cin);
+    int i = 0;
+    while(ret[i]) {cout << ret[i] << "~"; ++i;}
+    cout << endl << "-----------" << endl;
 
+    // checking garbage
+    for (char* x: expired){
+        int j = 0;
+        if (x) {
+            while(x[j]) {
+            cout << x[j];
+            ++j;
+            }
+            cout << endl;
+        }
+    }
+}
 catch (exception& e) {
     cerr << "exception: " << e.what() << endl;
-    keep_window_open();
+    cout << expired.size();
 }
 catch (...) {
     cerr << "exception\n";
