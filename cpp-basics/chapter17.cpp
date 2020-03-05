@@ -2,55 +2,29 @@
 
 /*
 
-5. Write a function, char* findx(const char* s, const char* x), that finds the first occurrence of the C-style string x in s.
+6. This chapter does not say what happens when you run out of memory using new. That’s called memory exhaustion. Find
+out what happens. You have two obvious alternatives: look for documentation, or write a program with an infinite loop
+that allocates but never deallocates. Try both. Approximately how much memory did you manage to allocate before
+failing?
 
 */
 
-const char* findx_const(const char* s, const char* x) {
-    if (!s || !x) return nullptr;
-    int i = 0;
-    while(s[i]){
-        if (s[i] == x[0]){
-            int j = 0;
-            const char* pr = &(s[i]);
-            while(x[j]) {
-                if (x[j] != s[i]) break;
-                ++j; ++i;
-            }
-            if (!x[j]) return pr;
-        }
-        ++i;
-    }
-    return nullptr;
-}
+/*
 
-char* findx(const char* s, const char* x) {
-    if (!s || !x) return nullptr;
-    int i = 0;
-    while(s[i]){
-        if (s[i] == x[0]){
-            int j = 0;
-            char* pr = const_cast<char *>(&(s[i])); // ???
-            while(x[j]) {
-                if (x[j] != s[i]) break;
-                ++j; ++i;
-            }
-            if (!x[j]) return pr;
-        }
-        ++i;
-    }
-    return nullptr;
-}
+Mar  5 15:39:49 wq-null kernel: [13363.189684] Out of memory: Killed process 24086 (a.out)
 
+ total-vm: 12 889 580kB,
+ anon-rss: 12 873 860kB,
+ file-rss:0kB, shmem-rss:0kB
+
+ */
+
+void danger(){
+    new vector<string> [100000];
+}
 int main()
 try {
-    string s = "123abd456aBc789abc0123";
-    const char* pch = s.c_str();
-    const char x[] {"abc"};
-    const char* res = findx(pch, x);
-    res ? cout << *res << res[1] << res[2] << res[3] : cout << "Nullptr";
-
-
+    while (1) danger();
 }
 
 catch (exception& e) {
@@ -60,3 +34,4 @@ catch (exception& e) {
 catch (...) {
     cerr << "exception\n";
 }
+
