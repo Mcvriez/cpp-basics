@@ -1,69 +1,73 @@
-#include "lib/Link.h"
+#include <iostream>
+#include <unistd.h>
+#include <algorithm>
+//#include <vector>
+//#include "lib/std_lib_facilities.h"
+using namespace std;
 
-/*
+void sleep() {
+    constexpr int sleeptime = 2000000;
+    cout << "----------------------\n";
+    usleep(sleeptime);
+}
+struct X {
+    int val;
+    void out(const string& s, int nv) { cerr << "v: " << val << "->"<< nv << " " << s << "\t<- " << this << endl; }
+    X(){ out("\tX()\tconstructor",0); val=0; }
+    explicit X(int v) { val=v; out( "\tX(int)\tconstructor", v); }
+    X(const X& x){ val=x.val; out("\tX(X&)\tcopy constr",x.val); }
+    X& operator = (const X& a) { out("\tX::operator = ()",a.val); val=a.val; return *this; }
+    ~X() { out("\t~X()\tdestructor",0); }
+};
+X copy(X a) { return a; }
+X copy2(X a) { X aa = a; return aa; }
+X& ref_to(X& a) { return a; }
+X* make(int i) { X a(i); return new X(a); }
+struct XX { X a; X b; };
 
-14. Could the “list of gods” example from §17.10.1 have been written using a singly-linked list;
-that is, could we have left the prev member out of Link?
-Why might we want to do that?
+void try_this1() {
+    //X glob(9108);
+    //X loc{4};
+    // X loc2  = loc; loc2.val = 10;
+    //loc.val = 7;
+    // loc = X{5};
+    // loc2 = copy(loc);
+    // loc2 = copy2(loc);
+    // X loc3 {6};
+    // X& r = ref_to(loc);
+    // X* m = make(7); delete m;
+    // vector <X> v (2);
+    // XX loc4;
+    // X* p = new X{9};
+    X* pp = new X[2];
+    sleep();
+    // delete p;
+    delete[] pp;
+}
+void try_this2(){
+    class vector {
+        int sz;
+        double* elem;
+    public:
+        explicit vector(int s) : sz(s),elem(new double[s])
+        {
+            for (int i = 0; i<s; ++i) elem[i] = 0;
+        }
+        double operator[](int i) { return elem[i]; }
+    };
 
-For what kind of examples would it make sense to use a singly-linked list?
-Re-implement that example using only a singly-linked list.
-
-*/
-
-
-void print_all(Link* p)
-{
-    cout << "{ ";
-    while (p) {
-        cout << p -> value;
-        p = p -> next();
-        if (p) cout << ", ";
-    }
-    cout << " }\n";
+    vector v(10);
+    double x = v[2];
+    cout << x;
+    //v[3] = x;
 }
 
-void gods(){
-    Link* norse_gods = new Link{"Thor"};
-    norse_gods = norse_gods->insert(new Link{"Odin"});
-    norse_gods = norse_gods->insert(new Link{"Zeus"});
-    norse_gods = norse_gods->insert(new Link{"Freia"});
 
-    Link* greek_gods = new Link{"Hera"};
-    greek_gods = greek_gods->insert(new Link{"Athena"});
-    greek_gods = greek_gods->insert(new Link{"Mars"});
-    greek_gods->add(new Link{"Hermes"});
-    greek_gods = greek_gods->insert(new Link{"Poseidon"});
-
-    Link* p2 = norse_gods->find("Zeus");
-    if (p2) {
-        if (p2==norse_gods) norse_gods = p2->next(); // re-binding norse_gods to the first element if Zeus was first
-        p2->erase();
-        greek_gods = greek_gods->insert(p2);
-    }
-
-    Link* p = greek_gods->find("Mars");
-    if (p) p->value = "Ares";
-
-
-
-    print_all(norse_gods);
-    print_all(greek_gods);
-}
 
 int main()
-try
 {
 
 
     gods();
 
 
-}
-catch (exception& e)
-{
-    cerr << "exception: " << e.what() << endl;
-}
-catch (...) {
-    cerr << "exception\n";
-}
