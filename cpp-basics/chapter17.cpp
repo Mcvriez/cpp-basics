@@ -81,8 +81,7 @@ void drill_vector(){
 
 int main()
 {
-
-
-    gods();
+    drill_vector();
+}
 
 
