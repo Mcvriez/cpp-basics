@@ -81,7 +81,7 @@ void drill_vector(){
 
 int main()
 {
-    drill_vector();
+    drill_array();
 }
 
 
