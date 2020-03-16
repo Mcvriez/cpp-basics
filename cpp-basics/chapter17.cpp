@@ -1,36 +1,37 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
 /*
 
-2. Write a function, char* findx(const char* s, const char* x), that finds the first occurrence of the C-style string x in s. 
-Do not use any standard library functions. 
-Do not use subscripting; use the dereference operator * instead.
+3. Write a function, int strcmp(const char* s1, const char* s2), that compares C-style strings.
+Let it return
+    a negative number if s1 is lexicographically before s2,
+    zero if s1 equals s2,
+    and a positive number if s1 is lexicographically after s2.
+Do not use any standard library functions. Do not use subscripting; use the dereference operator * instead.
 
 */
 
-char* findx(const char* s, const char* x) {
-    while (*s) {
-        char* p = const_cast<char*>(s);
-        const char* xp = x; 
-        while (*xp==*s) {
-            ++xp;++s;
-            if (!*xp) return p;
-            if(*xp!=*s) --s;
-        }
-        ++s;
+int strcmp(const char* s1, const char* s2) {
+    while (*s1 && s2) {
+        if (*s1 > *s2) return 1;
+        if (*s2 > *s1) return -1;
+        s1++; s2++;
     }
-    return nullptr;
+    if (*s1) return 1;
+    if (*s2) return -1;
+    return 0;
 }
 
 
 int main()
 {
-    const char* fp {"test b2 3d1kfsfs dfjs12121223lkjnk  111233  askd"};
-    const char* subs {"123"};
-    char* f = findx(fp, subs);
-    if (f) cout << f << endl;
-    else cout << "No result" << endl;
+    const char* fp {"1"};
+    const char* subs {"2"};
+
+    int f = strcmp(fp, subs);
+    cout << f << endl;
 
 }
 
