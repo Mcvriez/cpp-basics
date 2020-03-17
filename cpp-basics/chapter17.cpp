@@ -3,98 +3,43 @@ using namespace std;
 
 /*
 
-4. Consider what happens if you give strdup(), findx(), and strcmp() an argument that is not a C-style string.
-Try it!
+5. Write a function, string cat_dot(const string& s1, const string& s2), that concatenates two strings with a dot in
+between. For example, cat_dot("Niels", "Bohr") will return a string containing Niels.Bohr.
 
-First figure out how to get a char* that doesn’t point to a zero-terminated array of characters and then use it
-(never do this in real — non-experimental — code; it can create havoc).
+6. Modify cat_dot() from the previous exercise to take a string to be used as the separator (rather than dot) as its third argument.
 
-Try it with free-store-allocated and stack-allocated “fake C-style strings.”
-
-If the results still look reasonable, turn off debug mode.
-
-Redesign and re-implement those three functions so that they take another argument giving the maximum number of elements allowed in argument strings.
-Then, test that with correct C-style strings and “bad” strings.
-
+7. Write versions of the cat_dot()s from the previous exercises to take C-style strings as arguments
+ and return a free-store-allocated C-style string as the result.
+Do not use standard library functions or types in the implementation. Test these functions with several strings.
+Be sure to free (using delete) all the memory you allocated from free store (using new).
+Compare the effort involved in this exercise with the effort involved for exercises 5 and 6.
 */
 
-char* strdup(const char* cp, int count) {
-    const char* ccp = cp; int counter = 1;
-    while (*ccp ) {++counter; ++ccp;}
-    char* r = new char[counter]; char* result = r;
-    while (*cp && count > 0) {
-        *r = *cp;
-        ++r; ++cp; --count;
-    }
-    *r = 0;
-    return result;
+string cat_dot(const string& s1, const string& s2, const string& sep) {
+    return s1 + sep + s2;
 }
 
-char* findx(const char* s, const char* x, int count) {
-    while (*s && count >=0) {
-        char* p = const_cast<char*>(s);
-        const char* xp = x;
-        while (*xp==*s) {
-            ++xp;++s;
-            if (!*xp) return p;
-            if(*xp!=*s) {--s; ++count;}
-        }
-        ++s;--count;
-    }
-    return nullptr;
-}
-
-int strcmp(const char* s1, const char* s2, int count) {
-    while (*s1 && *s2 && count >= 0) {
-        if (*s1 > *s2) return 1;
-        if (*s2 > *s1) return -1;
-        s1++; s2++; --count;
-    }
-    if (*s1&&count) return 1;
-    if (*s2&&count) return -1;
-    return 0;
-}
-
-
-void corrupted_chars() {
-    char okay[] = "test_correct_strdup";
-    char fokay[] = "test_correct_findx";
-    char cokay[] = "test_correct_strcmp";
-    char corrupted {'a'}; char ch2 {'b'};
-    //char ch3 {0};
-
-    cout << strdup(&corrupted, 2) << endl;
-    cout <<  strdup(okay, 100) << endl;
-    cout <<  findx(&corrupted, new char {'b'}, 2) << endl;
-    cout <<  findx(fokay, new char[3] {'c', 'o', 'r'}, 5) << endl;
-    cout <<  strcmp(&corrupted, new char[2] {'a', 'b'}, 2) << endl;
-    cout <<  strcmp(cokay, new char[2] {'a', 'b'}, 2) << endl;
-
-    cout << "-----------" << endl;
-
-}
-void corrupted_new_chars(){
-
-    char* corrupted = new char {'q'};
-    for (int x = 100; x > 0; --x) { corrupted[x] = 'q';} corrupted[5] = '!';
-    char* okay = new char[8] {'t', 'e', 's', 't', 'd','u', 'p', 0};
-    char* fokay = new char[8] {'t', 'e', 's', 't', 'f','n', 'x', 0};
-    char* cokay = new char[4] {'t', 'e', 's', 0};
-
-    cout << strdup(corrupted, 10) << endl;
-    cout << strdup(okay, 15) << endl;
-    cout << findx(corrupted, new char('!'), 10) << endl;
-    cout << findx(fokay, new char('s'), 6) << endl;
-    cout << strcmp(corrupted, new char[4] {'t', 'e', 's', 0}, 3) << endl;
-    cout << strcmp(cokay, new char[4] {'t', 'e', 's', 0}, 6) << endl;
-    cout << "-----------" << endl;
+char* cat_dot_c(const char* c1, const char* c2, const char* sep) {
+    int count = 1;
+    const char* c = c1; while(*c){ ++count; ++c;}
+    c = c2; while(*c){ ++count; ++c;}
+    c = sep; while(*c){ ++count; ++c;}
+    char* res = new char[count];
+    res[count] = 0;
+    count = 0;
+    while(*c1){res[count] = *c1; ++c1;++count;}
+    while(*sep){res[count] = *sep; ++sep;++count;}
+    while(*c2){res[count] = *c2; ++c2;++count;}
+    return res;
 }
 
 
 int main()
 {
-    corrupted_chars();
-    corrupted_new_chars();
+    char s1[] = "Gogel"; char s2[] = "Barabek"; char sep[] = " Mogel ";
+    char* res = cat_dot_c(s1, s2, sep);
+    cout << res << endl;
+    delete[] res;
 }
 
 
