@@ -1,49 +1,82 @@
 #include <iostream>
-#include <vector>
-#include <random>
+#include "lib/std_lib_facilities.h"
 using namespace std;
 
 /*
+10. Look at the “array solution” to the palindrome problem in §18.7.2. 
 
-9. Consider the memory layout in §17.4. 
-Write a program that tells the order in which static storage, the stack, and the free store are laid out in memory. 
-In which direction does the stack grow: upward toward higher addresses or downward toward lower addresses? 
-In an array on the free store, are elements with higher indices allocated at higher or lower addresses?
+Fix it to deal with long strings by 
+- (a) reporting if an input string was too long and 
+- (b) allowing an arbitrarily long string. 
 
+Comment on the complexity of the two versions.
 */
 
-static long a, b, c, d, e, g;
-
-void stack_grow(){
-	int a, b, c, d, e, g, f, h, i, k;
-	a = 10; g = 11; k = 12;
-	if (&a > &k) {
-		cout << "stack grows down" << endl;
+bool is_palindrome(const char s[], int n)
+{
+	int first = 0;
+	int last = n-1;
+	while (first < last) {
+		if (s[first]!=s[last]) return false;
+		++first;
+		--last;
 	}
-	else 
-		cout << "stack grows up" << endl;
-			cout << "-------------" << endl;}
+	return true;
+}
 
-void free_mem_grow(int k){
-	int d = k / 10;
-	int* last_p;
-	srand (time(NULL));
-	while(k!=0){
-		--k;
-		int* x = new int {rand() % 100};
-		if (k % d == 0) {
-			if (last_p < x){cout << x << " ↑↑\n";}
-			else {cout << x << " ↓↓\n";}
-		}
-		last_p = x;
-	}}
 
+istream& read_word(istream& is, char* buffer, int max)
+{
+	is.width(max);
+	is >> buffer;
+	return is;
+}
+
+void a10(int max) {
+	for (char s[max]; read_word(cin, s, max); ) 
+	{
+		char buff = 0;
+		cout << s << " is";
+		if (!is_palindrome(s, strlen(s))) cout << " not";
+		cout << " a palindrome\n";
+		buff = cin.get();
+		if (buff != 0 && buff != '\n' && buff != ' ') cout << "input string is longer than " << max << " characters!\n";
+		cin.unget();
+	}
+}
+
+istream& read_word_unlim(istream& is, char* &buffer)
+{
+	char read;
+	int count = 0;
+	char* a = new char[1];
+	while(cin.get(read))
+	{
+		if (read == ' ' || read == '\n') break;
+		a[count] = read;
+		++count;
+		char* backup = new char[count + 1];
+		for (int i = 0; i < count; ++i) {backup[i] = a[i];}
+		delete[] a;
+		a = backup;
+	}
+	buffer = a; 
+	return is;
+}
+
+void b10() {
+	for (char* s; read_word_unlim(cin, s);) 
+	{
+		cout << s << " is";
+		if (!is_palindrome(s, strlen(s))) cout << " not";
+		cout << " a palindrome\n";
+	}
+}
 
 int main()
 {
-	&a > &g? cout << "static storage grows down\n" : cout << "static storage grows up\n";
-	stack_grow();
-	free_mem_grow(1000000);
+	//a10(5);
+	b10();
 }
 
 
