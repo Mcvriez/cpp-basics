@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(lib)
 
 add_executable(cpp_basics
-        lib/Skiplist.cpp
-        lib/Skiplist.h
         lib/std_lib_facilities.h
         chapter18.cpp
-        CMakeLists.txt)
+        CMakeLists.txt lib/Game.h lib/Game.cpp)
