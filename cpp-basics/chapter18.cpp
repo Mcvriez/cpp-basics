@@ -24,23 +24,12 @@ Hint: Be sure to have a way to produce a debug output of the state of the cave.
 
  */
 
-void game(){
-    srand(time(nullptr));
-    Map map {20};
-    cout << "HUNT THE WUMPUS\nINSTRUCTIONS (Y-n)?\n";
-    string a;
-    getline(cin, a); if (a == "Y" || a == "y") Map::instruction();
-    map.status_message();
-    while(!map.game_over()) {
-        map.action();
-        map.status_message();
-    }
-}
 
 int main()
 try {
-    game();
-    //srand(time(nullptr)); Map m {14};
+    srand(time(nullptr));
+    Game game;
+    game.loop();
 }
 catch (exception& e) {
     cerr << "exception: " << e.what() << endl;

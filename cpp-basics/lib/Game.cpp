@@ -5,9 +5,9 @@ bool is_number(const std::string& s)
     return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 }
 
-Map::Map(int sz) {
-    map_size = sz; wumpus_awake = false;
-    if (map_size < 12 || map_size > 200 || map_size % 2 != 0) throw std::runtime_error ("Map::Map invalid map_size");
+Game::Game(int sz) {
+    map_size = sz;
+    if (map_size < 12 || map_size > 200 || map_size % 2 != 0) throw std::runtime_error ("Game::Game invalid map_size");
     random_map();
     int bats = map_size / 10; int pits = map_size / 10;
     while (bats > 0) {
@@ -20,25 +20,28 @@ Map::Map(int sz) {
     }
     while (true) {
         int r = rand() % map_size;
-        if (!cave[r].pit && !cave[r].bat) {wumpus_room = cave[r].number; break;}
+        if (!cave[r].pit && !cave[r].bat) {wumpus.current_room = &cave[r]; break;}
     }
     while (true) {
         int r = rand() % map_size;
-        if (!cave[r].pit && !cave[r].bat && cave[r].number!= wumpus_room)
-        {adventurer.current_room = cave[r].number; break;}
+        if (!cave[r].pit && !cave[r].bat && &cave[r] != wumpus.current_room)
+        {adventurer.current_room = &cave[r]; break;}
     }
-    //print_map();
+    system("clear");
+    cout << "HUNT THE WUMPUS\nINSTRUCTIONS (Y-n)?\n";
+    string a;
+    getline(cin, a); if (a == "Y" || a == "y") Game::instruction(); else system("clear");
 }
 
-void Map::print_map() {
-    if (tries > 1) cout << "Map was generated from " << to_string(tries) << " try\n";
+void Game::print_map() {
+    if (tries > 1) cout << "Game was generated from " << to_string(tries) << " try\n";
     for (auto & i : cave)
     {
         cout << i.number << ":\t";
         if (i.bat) cout << "B";
         if (i.pit) cout << "P";
-        if (i.number == wumpus_room) {cout << "W"; if (wumpus_awake) cout << '!';};
-        if (i.number == adventurer.current_room) cout << "A";
+        if (i.number == wumpus.current_room->number) {cout << "W"; if (wumpus.awake) cout << '!';};
+        if (i.number == adventurer.current_room->number) cout << "A";
         cout << "\t[";
         cout << i.passages[0]->number << "|";
         cout << i.passages[1]->number << "|";
@@ -47,7 +50,7 @@ void Map::print_map() {
     }
 }
 
-void Map::instruction() {
+void Game::instruction() {
     const char * message = R"V0G0N(
 WELCOME TO 'HUNT THE WUMPUS'
 
@@ -102,14 +105,13 @@ PIT - 'I FEEL A DRAFT'
     cout << message;
 }
 
-void Map::status_message() {
-    system("clear");
-    Room room = cave[adventurer.current_room - 1];
+void Game::status_message() {
+    Room room = *adventurer.current_room;
     cout << "\nYOU ARE IN ROOM " << room.number << endl;
 
-    if (room.passages[0]->number == wumpus_room ||
-        room.passages[1]->number == wumpus_room ||
-        room.passages[2]->number == wumpus_room)
+    if (room.passages[0]->number == wumpus.current_room->number ||
+        room.passages[1]->number == wumpus.current_room->number ||
+        room.passages[2]->number == wumpus.current_room->number)
         cout << "I SMELL A WUMPUS\n";
     if (room.passages[0]->bat ||
         room.passages[1]->bat ||
@@ -126,7 +128,7 @@ void Map::status_message() {
          << room.passages[2]->number << "\n";
 }
 
-void Map::random_map() {
+void Game::random_map() {
     if (tries == 1000) {throw std::runtime_error("can't generate random map after " + to_string(tries) + " attempts;\n" );}
     cave.clear();
     int counter = 100;
@@ -197,48 +199,94 @@ void Map::random_map() {
 
 }
 
-void Map::action() {
-    char ch;
+void Game::action() {
+    status_message();
+    char ch; string answ; int number;
     cout << "SHOOT OR MOVE (S-M)?\n";
-    string answ;
+    cin.get(ch); if (ch == '\n') {system("clear"); return;}
     getline(cin, answ);
-    if (answ == "S" || answ == "s") {
-        cout << "Rooms?\n";
-        int x; vector <int> shooting;
-
-        while (cin.get(ch) && ch != '\n') {
-            cin.unget();
-            if ((isdigit(ch) || ch == ' ') && adventurer.arrows > 0) {
-                cin >> x;
-                shooting.push_back(x);
+    if (ch == 'S' || ch == 's') {
+        cout << "ROOMS? YOU HAVE " << adventurer.arrows << " ARROWS\n";
+        vector <int> targets;
+        while (cin.get(ch)) {
+            if (ch == '\n') break;
+            if (isdigit(ch) && adventurer.arrows > 0) {
+                cin.unget();
+                cin >> number;
+                targets.push_back(number);
                 --adventurer.arrows;
             }
-            else {
-                while (cin.get(ch) && ch != '\n') {}
-            }
+            else if (ch != ' ') {getline(cin, answ); break;}
         }
-
-        for (int i : shooting) cout << i << " ";
-        cout << endl;
+        if (!targets.empty()) {system("clear"); shoot(targets);}
     }
-    else if (answ == "M" || answ == "m") {
-        string an;
+    else if (ch == 'M' || ch == 'm') {
+        cout << "WHERE TO?\n";
+        getline(cin, answ);
+        system("clear");
+        if (is_number(answ) && answ.size() < 8) {
+            if
+            (adventurer.current_room->connected(stoi(answ)))
+                {
+                    adventurer.current_room = &cave[stoi(answ) - 1];
+                }
+            else {system("clear"); cout << "THERE IS NO PASSAGE TO ROOM " << answ << endl; }
+            }
+        else {system("clear"); cout << "PATH IS UNCLEAR"; }
+    }
+    else if (ch == 'd') {system("clear"); print_map();}
+    else {system("clear"); cout << "HUH?";}
+    if (adventurer.current_room->bat) {
+        system("clear");
+        cout << "ZAP -- SUPER BAT SNATCH! ELSEWHEREVILLE FOR YOU!\n";
         while (true) {
-            cout << "WHERE TO?\n";
-            getline(cin, an);
-            if (is_number(an) && an.size() < 8) {
-                if
-                (stoi(an) == cave[adventurer.current_room - 1].passages[0]->number ||
-                stoi(an) == cave[adventurer.current_room - 1].passages[1]->number ||
-                stoi(an) == cave[adventurer.current_room - 1].passages[2]->number)
-                    {
-                        adventurer.current_room = stoi(an);
-                        break;
-                    }
-                else {cout << "THERE IS NO PASSAGE TO ROOM " << an << endl; }
+            Room* random = &cave[rand() % map_size];
+            if (!random->bat) {
+                adventurer.current_room = random;
+                break;
             }
-            else {cout << "PATH IS UNCLEAR\n"; }
         }
     }
-    else {cout << "HUH?";}
+    if (adventurer.current_room->pit) {cout << "YYYIIIIEFEE . . . FELL IN PIT\n"; adventurer.alive = false;}
+    if (wumpus.awake && wumpus.alive) {
+        wumpus.move();
+        if (wumpus.current_room == adventurer.current_room) {cout << "TSK TSK TSK- WUMPUS GOT YOU!"; adventurer.alive = false;}
+    }
+
+    if (adventurer.current_room == wumpus.current_room && adventurer.alive){
+        system("clear");
+        cout << "...OOPS! BUMPED A WUMPUS!\n";
+        if (!wumpus.awake) wumpus.awake = true;
+    }
+    if (adventurer.arrows == 0 && wumpus.alive && adventurer.alive) {
+        cout << "YOU RUN OUT OF ARROWS\n";
+        adventurer.alive = false;
+    }
+    if (!adventurer.alive) cout << "HA HA HA - YOU LOSE!\n";
+}
+
+void Game::shoot(const vector <int> &targets) {
+    wumpus.awake = true;
+    Room* current_room = adventurer.current_room;
+    cout << "Arrow flies: [" << current_room->number << "]";
+    for (int x: targets) {
+        if (current_room->connected(x)){
+            current_room = &cave[x - 1];
+        }
+        else current_room = current_room->random_pass();
+        cout << " → " <<current_room->number;
+        if (current_room->number == wumpus.current_room->number) {wumpus.alive = false; cout << "[W]";}
+        if (current_room->number == adventurer.current_room->number) {adventurer.alive = false; cout << "[A]";}
+    }
+    cout << endl;
+    if (wumpus.alive) cout << "MISSED!\n";
+    if (!adventurer.alive) {cout << "OUCH! ARROW GOT YOU!\n"; return;}
+    if (!wumpus.alive) cout << "AHA! YOU GOT THE WUMPUS!\nHEEHEE HEE - THE WUMPUS'LL GETCHA NEXT TIME!!\n";
+}
+
+void Wumpus::move() {
+    int choice = rand() % 4;
+    if (choice != 3) {
+        current_room = current_room->random_pass();
+    }
 }
