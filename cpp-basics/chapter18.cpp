@@ -28,19 +28,19 @@ void game(){
     srand(time(nullptr));
     Map map {20};
     cout << "HUNT THE WUMPUS\nINSTRUCTIONS (Y-n)?\n";
-    char a; cin.get(a); if (a == 'Y') Map::instruction();
+    string a;
+    getline(cin, a); if (a == "Y" || a == "y") Map::instruction();
     map.status_message();
-    cout << "here\n";
     while(!map.game_over()) {
-        //map.action();
-        //map.status_message();
+        map.action();
+        map.status_message();
     }
-    map.status_message();
 }
 
 int main()
 try {
     game();
+    //srand(time(nullptr)); Map m {14};
 }
 catch (exception& e) {
     cerr << "exception: " << e.what() << endl;

@@ -6,13 +6,13 @@
 using namespace std;
 
 struct Room {
-    explicit Room (int n) : number {n}, connected_rooms {3, nullptr}, pit {false}, bat {false} {};
+    explicit Room (int n = 0) : number {n}, passages {3, nullptr}, pit {false}, bat {false} {};
     int number;
     bool pit;
     bool bat;
-    std::vector <Room*> connected_rooms;
-    ~Room() {for (auto r : connected_rooms) delete r;}
+    std::vector <Room*> passages;
 };
+
 struct Adventurer {
     Adventurer() : current_room {0}, arrows {5}, dead {false} {};
     int current_room;
@@ -27,7 +27,10 @@ public:
     bool game_over() {return adventurer.dead;}
     static void instruction();
     void status_message();
+    void action();
 private:
+    int tries = 1;
+    void random_map();
     Adventurer adventurer;
     bool wumpus_awake;
     int wumpus_room;
