@@ -3,32 +3,44 @@
 using namespace std;
 
 
-//2. Write a template function that takes a vector<T> vt and a vector<U> vu as arguments and returns the sum of all
-//vt[i]*vu[i]s.
+//3. Write a template class Pair that can hold a pair of values of any type.
+// Use this to implement a simple symbol table like the one we used in the calculator (§7.8).
 
 template <typename T, typename U>
-double f(const vector<T>& v1, const vector<U>& v2) {
-    double k = 0;
-    for (int i = 0; i < v1.size() && i < v2.size(); ++i) {
-        k += v1[i] * v2[i];
-    }
-    return k;
+struct Pair {
+    T key;
+    U value;
+    explicit Pair(T p1 = T(), U p2 = U()) : key {p1}, value {p2} {};
+};
+
+template <typename T, typename U>
+ostream& operator << (ostream& os, Pair<T,U>& p) {
+    os << p.key << ":\t" << p.value << endl;
 }
 
 template <typename T>
 void print (const vector<T>& v){
-    for (T x: v) { cout << x << ' ';}
+    for (T x: v) { cout << x;}
     cout << endl;
 }
 
 
 int main()
 try {
-    vector <int> v1 {12, 342, 54, 12};
-    vector <char> v12 = {'a', 'b', 'c'};
-    vector <double> v2 {1.1, 2.1, 4.4, 12};
-    double r = f(v1, v2); cout << r << endl;
-    double r2 = f(v12, v2); cout << r2 << endl;
+    vector <Pair<string, char>> symbol_table;
+    symbol_table.emplace_back("let", 'L');
+    symbol_table.emplace_back("quit", 'Q');
+    symbol_table.emplace_back("print", ';');
+    symbol_table.emplace_back("number", '8');
+    symbol_table.emplace_back("name", 'a');
+    symbol_table.emplace_back("square", 'S');
+    symbol_table.emplace_back("mod", 'M');
+    symbol_table.emplace_back("power", 'P');
+    symbol_table.emplace_back("const", 'C');
+    symbol_table.emplace_back("help", 'H');
+    print(symbol_table);
+
+
 }
 
 catch (exception& e) { cerr << "exception: " << e.what() << endl;}
