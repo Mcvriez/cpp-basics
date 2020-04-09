@@ -6,11 +6,12 @@ using namespace std;
 
 template<typename T>
 struct S {
-    explicit S(T value = T()) : val {std::move(value)} {}
-    T& get() const;
+    S() : val {T()} {}
+    explicit S(T d) : val(d) { }
+    const T& get() const;
     T& get();
     void set(T v);
-    void operator=(const T&);
+    T& operator=(const T&);
     void read_val(T& v);
 private:
     T val;
@@ -20,18 +21,15 @@ private:
 //For both input and output use a { val, val, val }
 //format. That will allow read_val() to also handle the S<vector<int>> variable.
 
-template<typename T>
-T& S<T>::get() const {return val;}
+template<typename T> const T& S<T>::get() const {return val;}
 
-template<typename T>
-T &S<T>::get() {return val;}
+template<typename T> T &S<T>::get() {return val;}
 
-template<typename T>
-void S<T>::set(const T v) {val = v;}
+template<typename T> void S<T>::set(const T v) {val = v;}
 
 //Replace set() with an S<T>::operator=(const T&). Hint: Much simpler than §19.2.5.
 template<typename T>
-void S<T>::operator=(const T& t) {val = t;}
+T& S<T>::operator=(const T& t) {val = t;}
 
 //Define a function template<typename T> read_val(T& v) that reads from cin into v.
 template <typename T>
@@ -47,6 +45,7 @@ istream& operator >> (istream& is, S <vector<T>>& sv) {
     is >> ch;
     if (ch!= '{') return is;
     vector<T> nv;
+    if (!is) return is;
     while (is >> t) {
         is.get(ch);
         nv.push_back(t);
