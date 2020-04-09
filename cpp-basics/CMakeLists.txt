@@ -7,5 +7,5 @@ include_directories(lib)
 
 add_executable(cpp_basics
         lib/std_lib_facilities.h
-        chapter18.cpp
-        CMakeLists.txt lib/Game.h lib/Game.cpp)
+        chapter19.cpp
+        CMakeLists.txt lib/vector.h)
