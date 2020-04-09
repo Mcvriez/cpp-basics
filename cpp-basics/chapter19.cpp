@@ -3,26 +3,32 @@
 using namespace std;
 
 
-//1. Write a template function f() that adds the elements of one vector<T> to the elements of another; for example, f(v1,v2)
-//should do v1[i]+=v2[i] for each element of v1.
+//2. Write a template function that takes a vector<T> vt and a vector<U> vu as arguments and returns the sum of all
+//vt[i]*vu[i]s.
+
+template <typename T, typename U>
+double f(const vector<T>& v1, const vector<U>& v2) {
+    double k = 0;
+    for (int i = 0; i < v1.size() && i < v2.size(); ++i) {
+        k += v1[i] * v2[i];
+    }
+    return k;
+}
 
 template <typename T>
-vector<T>& f(vector<T>& v1, const vector<T>& v2) {
-    for (int i = 0; i < v1.size() && i < v2.size(); ++i) {
-        v1[i] += v2[i];
-    }
-    return v1;
+void print (const vector<T>& v){
+    for (T x: v) { cout << x << ' ';}
+    cout << endl;
 }
+
 
 int main()
 try {
-    vector <int> v1 {1, 2, 4, 4};
-    v1 = {1, 3};
-    // v1 = {};
-    vector <int> v2 {1, 2, 4};
-    // v2 = {};
-    f(v1, v2);
-    for (int x: v1) cout << x << '-';
+    vector <int> v1 {12, 342, 54, 12};
+    vector <char> v12 = {'a', 'b', 'c'};
+    vector <double> v2 {1.1, 2.1, 4.4, 12};
+    double r = f(v1, v2); cout << r << endl;
+    double r2 = f(v12, v2); cout << r2 << endl;
 }
 
 catch (exception& e) { cerr << "exception: " << e.what() << endl;}
