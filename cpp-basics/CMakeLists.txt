@@ -8,4 +8,4 @@ include_directories(lib)
 add_executable(cpp_basics
         lib/std_lib_facilities.h
         chapter19.cpp
-        CMakeLists.txt lib/vector.h lib/Link.h lib/Link.cpp)
+        CMakeLists.txt lib/vector.h)

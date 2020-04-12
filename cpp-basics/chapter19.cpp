@@ -1,64 +1,38 @@
-#include "lib/Link.h"
-#include "lib/Link.cpp"
+#include <iostream>
 
-//4. Modify class Link from §17.9.3 to be a template with the type of value as the template argument.
-// Then redo exercise 13 from Chapter 17 with Link<God>.
+using namespace std;
 
-void const print_all (Link<God>* p)
-{
-    cout << "------------\n";
-    while(p->previous()) p = p->previous();
-    while (p) {
-        if (p->description.name != "~")
-            cout << p -> description.name << ": "<< p -> description.weapon << "; "<< p -> description.vehicle << endl;
-        p = p -> next();
-    }
+//5. Define a class Int having a single member of class int. Define constructors, assignment, and operators +, –, *, / for it.
+//Test it, and improve its design as needed (e.g., define operators << and >> for convenient I/O).
 
-}
+struct Int {
+    Int() : value(0) { };
+    explicit Int(int val = 0): value {val} {std::cout << "constructor called!\n";};
+    Int(const Int& n) {std::cout << "copy constructor called!\n"; value = n.value;}
+    Int& operator= (const Int&n) {if (this == &n) return *this;
+        std::cout << "copy assignment called!\n"; value = n.value; return *this;}
+    Int& operator+ (const Int&n) {value += n.value; return *this;}
+    Int& operator- (const Int&n) {value -= n.value; return *this;}
+    Int& operator* (const Int&n) {value *= n.value; return *this;}
+    Int& operator/ (const Int&n) {value /= n.value; return *this;}
+    int val() const {return value;}
+private:
+    int value;
+};
 
-Link<God>* gods(){
-    Link<God>*  gods = new Link<God> {God {"Zeus", "Greek", "", "lightning"}};
-
-    gods = gods->add_ordered (new Link<God> {God{"Odin", "Norse", "Eight-legged flying horse called Sleipner", "Spear called Gungnir"}});
-    gods = gods->add_ordered (new Link<God> {God{"Thor", "Norse", "Chariot drawn by goats", "Mjöllnir"}});
-    gods = gods->add_ordered (new Link<God> {God{"Vídar", "Norse", "", "Unnamed sword"}});
-    gods = gods->add_ordered (new Link<God> {God{"Loki", "Norse", "", "Deception"}});
-    gods = gods->add_ordered (new Link<God> {God {"Poseidon", "Greek", "Chariot drawn by horses", "Trident"}});
-    gods = gods->add_ordered (new Link<God> {God {"Apollo", "Greek", "Chariot pulled by swans", "Bow and arrows"}});
-    gods = gods->add_ordered (new Link<God> {God {"Athena", "Greek", "", "Spear and aegis"}});
-    gods = gods->add_ordered (new Link<God> {God {"Huitzilopochtli", "Aztec", "", "Xiuhcoatl, turquoise snake"}});
-    gods = gods->add_ordered (new Link<God> {God {"Quetzalcoatl", "Aztec", "", "Lethal darts"}});
-    gods = gods->add_ordered (new Link<God> {God {"Tezcatlipoca", "Aztec", "", "Spear and shield"}});
-    gods = gods->add_ordered (new Link<God> {God {"Yogg Saron", "Old gods", "", "The Beast With a Thousand Maws"}});
-    gods = gods->add_ordered (new Link<God> {God {"C'Tun", "Old gods", "", "Madness and chaos"}});
-    gods = gods->add_ordered (new Link<God> {God {"N'Zoth", "Old gods", "", "Corruption and nightmares"}});
-    return gods;
-}
-
+ostream& operator << (ostream& os, const Int& n) {os << n.val() << endl; return os;}
+istream& operator >> (istream& is, Int& n) {int k; is >> k; if (is) n = Int {k}; return is;}
 
 int main()
 try {
-    Link<God>* god_list = gods();
-    Link<God>* aztec_gods = new Link<God> {God {"~", "~", "", "~"}};
-    Link<God>* greek_gods = new Link<God> {God {"~", "~", "", "~"}};
-    Link<God>* norse_gods = new Link<God> {God {"~", "~", "", "~"}};
-    Link<God>* old_gods = new Link<God> {God {"~", "~", "", "~"}};
+    const Int k {11};
+    Int n = k;
+    n = Int {15};
+    n = n - k;
+    cout << n;
+    cin >> n;
+    cout << n;
 
-    while(god_list->previous()) god_list = god_list->previous();
-    while(god_list){
-        Link<God>* p = god_list;
-        god_list = god_list->erase();
-        cout << p->description.name << " " << p << endl;
-        if (p && p->description.mythology == "Greek") greek_gods->add_ordered(p);
-        if (p && p->description.mythology == "Aztec") aztec_gods->add_ordered(p);
-        if (p && p->description.mythology == "Norse") norse_gods->add_ordered(p);
-        if (p && p->description.mythology == "Old gods") old_gods->add_ordered(p);
-    }
-
-    print_all(old_gods);
-    print_all(norse_gods);
-    print_all(greek_gods);
-    print_all(aztec_gods);
 }
 catch (exception& e) { cerr << "exception: " << e.what() << endl;}
 catch (...) {cerr << "exception\n";}
