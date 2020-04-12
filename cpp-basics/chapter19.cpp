@@ -2,35 +2,42 @@
 
 using namespace std;
 
-//5. Define a class Int having a single member of class int. Define constructors, assignment, and operators +, –, *, / for it.
-//Test it, and improve its design as needed (e.g., define operators << and >> for convenient I/O).
+//6. Repeat the previous exercise, but with a class Number<T> where T can be any numeric type. Try adding % to
+//Number and see what happens when you try to use % for Number<double> and Number<int>.
 
-struct Int {
-    Int() : value(0) { };
-    explicit Int(int val = 0): value {val} {std::cout << "constructor called!\n";};
-    Int(const Int& n) {std::cout << "copy constructor called!\n"; value = n.value;}
-    Int& operator= (const Int&n) {if (this == &n) return *this;
-        std::cout << "copy assignment called!\n"; value = n.value; return *this;}
-    Int& operator+ (const Int&n) {value += n.value; return *this;}
-    Int& operator- (const Int&n) {value -= n.value; return *this;}
-    Int& operator* (const Int&n) {value *= n.value; return *this;}
-    Int& operator/ (const Int&n) {value /= n.value; return *this;}
+template <typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
+struct Number {
+    Number() : value {0} {std::cout << "default constructor called!\n";};
+    explicit Number(T val): value {val} {std::cout << "constructor called!\n";};
+    Number(const Number& n) {std::cout << "copy constructor called!\n"; value = n.value;}
+    Number& operator= (const Number&n) {
+        if (this == &n) return *this;
+        std::cout << "copy assignment called!\n";
+        value = n.value;
+        return *this;}
+    Number& operator+ (const Number&n) { value += n.value; return *this;}
+    Number& operator- (const Number&n) { value -= n.value; return *this;}
+    Number& operator* (const Number&n) { value *= n.value; return *this;}
+    Number& operator/ (const Number&n) { value /= n.value; return *this;}
+    Number& operator% (const Number&n) { value %= n.value; return *this;} // error: invalid operands of types ‘double’ and ‘double’ to binary ‘operator%’
     int val() const {return value;}
 private:
-    int value;
+    T value;
 };
 
-ostream& operator << (ostream& os, const Int& n) {os << n.val() << endl; return os;}
-istream& operator >> (istream& is, Int& n) {int k; is >> k; if (is) n = Int {k}; return is;}
+template <typename T>
+ostream& operator << (ostream& os, const Number<T>& n) {os << n.val() << endl; return os;}
+
+template <typename T>
+istream& operator >> (istream& is, Number<T>& n) {T k; is >> k; if (is) n = Number<T> {k}; return is;}
 
 int main()
 try {
-    const Int k {11};
-    Int n = k;
-    n = Int {15};
-    n = n - k;
-    cout << n;
-    cin >> n;
+    const Number<int> k {11};
+    Number<int> n;
+
+    n = Number<int> {15};
+    n = n % k;
     cout << n;
 
 }
